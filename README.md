@@ -7,4 +7,3 @@ More information on this project:
 * [requirements](doc/requirements.md)
 * [proposal](doc/proposal.md)
 
-
