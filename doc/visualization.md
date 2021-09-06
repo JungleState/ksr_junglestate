@@ -12,8 +12,8 @@ Die Visualisierung wird als Web-App implementiert. Die App wird von einem dedizi
 
 Endpoint | Parameters | JSON Response | Example
 -------- | ---------- | ------------- | -------
-`/visualization/list` | *none* | `{ "games": [game URLs...] }` | <code>{<br/>  "games": [     "/visualization/game/123",<br/>    "/visualization/game/42" <br/>  ]<br/> }</code>
-`/visualization/game/<game_id>` | *game_id*: Game-Id, wie von `/list` zurückgegeben. | <code>{ "id": <game_id>, "state": <game_state> "cells": <array of strings> }</code> | <code>{<br/>  "id": "123",<br/>  "state": "playing",<br/>  "cells": [ <br/>    "WWWWWWWWWWWWWWWWWWWWWWW",<br/>    "WW   P               WW",<br/>    "WW             12    WW",<br/>    "WW    08   C         WW",<br/>    "WWWWWWWWWWWWWWWWWWWWWWW"<br/>  ],<br/>  "players": {<br/>     "12": {<br/>      "id": "123",<br/>      "name": "Wally",<br/>      "lives": 3,<br/>      "ammo": 2<br/>     }, ...<br/>}</code>
+`/visualization/list` | *none* | `{ "games": [game URLs...] }` | <pre>{<br/>  "games": [     "/visualization/game/123",<br/>    "/visualization/game/42" <br/>  ]<br/> }</pre>
+`/visualization/game/<game_id>` | *game_id*: Game-Id, wie von `/list` zurückgegeben. | <code>{ "id": <game_id>, "state": <game_state>, "cells": <array of strings> }</code> | <pre>{<br/>  "id": "123",<br/>  "state": "playing",<br/>  "cells": [ <br/>    "WWWWWWWWWWWWWWWWWWWWWWW",<br/>    "WW  PP               WW",<br/>    "WW             12    WW",<br/>    "WW    08  CC         WW",<br/>    "WWWWWWWWWWWWWWWWWWWWWWW"<br/>  ],<br/>  "players": {<br/>     "12": {<br/>      "id": "123",<br/>      "name": "Wally",<br/>      "lives": 3,<br/>      "ammo": 2<br/>     }, ...<br/>}</pre>
 
 ### Identifiers
 Alle Identifier können beliebige Zeichenketten sein (also nicht nur Zahlen).
@@ -25,8 +25,8 @@ Name | Beispiel | Beschreibung
 ---- | -------- | ------------
 leer | `"  "` | Leere Zelle
 Wand | `"WW"` | Undurchdringliche Wand
-Ananas | `" P"` | Ananas Token
-Kokosnuss | `" C"` | Kokosnuss Token
+Ananas | `"PP"` | Ananas Token
+Kokosnuss | `"CC"` | Kokosnuss Token
 Spieler | `"08"` | Spieler-Id. Die Id ist nur eine Visualisierungs-Id und dient als Schlüssel im "players"-Objekt.
 
 Die Informationen zu jedem Spieler unter der Visualisierungs-Id im `players`-Objekt unter folgenden Attributen abgelegt:
