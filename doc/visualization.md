@@ -34,7 +34,7 @@ Die Informationen zu jedem Spieler unter der Visualisierungs-Id im `players`-Obj
 Name | Beispiel | Beschreibung
 ---- | -------- | ------------
 `id` | `"123-ab"` | Eindeutiger Identifier des Spielers
-`name` | `"Wally"` | Ein selbstgewählter Namde des Spielers
+`name` | `"Wally"` | Ein selbstgewählter Name des Spielers
 `lives` | 4 | Verbleibende Lebensenergie des Spielers. Eine Energie von 0 bezeichnet ohnmächtige Spieler.
 `ammo` | 3 | Verbleibende Kokosnüsse des Spielers.
 `action`| `"move"` | Rundenaktion des Spielers. Mögliche Werte: <code>move, throw</code>
