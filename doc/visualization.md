@@ -45,6 +45,14 @@ Name | Beispiel | Beschreibung
 
 Alle Anfragen an das Visualisierungs-API müssen authentifiziert werden, um zu verhindern, dass die Spielfeldinformation von böswilligen Teilnehmern misbraucht werden kann. Die Index-Seite enthält dafür ein Passwort-Feld, in das das Visualisierungs-Passwort eingegeben werden muss. Im Server wird das gehashte Passwort mit einem hartcodierten (oder auf der Kommandozeile gegebenen) Hash verglichen und ein 403 zurückgegeben, wenn es ungültig ist.
 
+### Long-polling etc.
+
+Wie stellen wir sicher, dass der Visualisierungs-Client keine Updates verpasst? Über Client-Polling können wir nie ganz sicher sein, dass wir nicht eine Runde verpasst haben.
+
+Ideen:
+* Websockets: wir öffnen einen Websocket, der Server pusht alle updates über die Verbindung zum Client.
+* HTTP 102 (Still Processing): Server gibt solange einen 102 (und den Inhalt) zurück, bis das Spiel beendet ist, worauf ein 200 erfolgt. Das tönt nach einem Hack...
+
 ### Nice to have
 
 Folgende Dinge sind nicht zwingend, aber lohnenswerte Erweiterungen:
