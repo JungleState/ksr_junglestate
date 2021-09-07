@@ -8,7 +8,11 @@ Die Visualisierungs-Komponente dient dazu, den ganzen Spielverlauf im Junglecamp
 
 ## Technical Design
 
-Die Visualisierung wird als Web-App implementiert. Die App wird von einem dedizierten Pfad des Game-Servers (`/visualization/`) geladen und besteht aus drei Teilen:
+Die Visualisierung wird als Web-App implementiert und über JSON-Endpoints mit Daten beliefert.
+
+![Komponentendiagramm](https://docs.google.com/drawings/d/e/2PACX-1vRAm6kpBC_tKuZkuTI6TLuOaZg-FCM23fvqHlSLsOAYu829yqgWOrzoolqrVyAQCf2EpRbXZKXuSvIg/pub?w=960&h=720)
+
+Die App wird von einem dedizierten Pfad des Game-Servers (`/visualization/`) geladen und besteht aus drei Teilen:
 1. Login-Seite (`/visualization/login.html`)
 2. Anzeige der laufenden Spiele (`/visualization/games.html`)
 3. Visualisierung eines einzelnen Spiels (`/visualization/game/<game_id>.html`)
