@@ -6,7 +6,7 @@ Die Umsetzung folgt der Entwicklung in einer Software-Firma:
 1. Kick-off (1w):
    * Der Auftraggeber stellt das Projekt und die Requirements vor.
    * Die Projektgruppe definiert ihre Projektorganisation und erstellt ein Proposal.
-   * Einreichung des Proposals inkl. Komponentenplanung und Zeitplan
+   * Einreichung des Proposals inkl. Komponentenplanung und Zeitplan ([issue 1](https://github.com/JungleState/ksr_junglestate/issues/1))
 1. Implementierungsphase (5w)
    * Umsetzung gemäss Proposal
    * Alle Artefakte werden in Github abgelegt:
