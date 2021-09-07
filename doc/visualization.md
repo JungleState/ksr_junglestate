@@ -8,12 +8,17 @@ Die Visualisierungs-Komponente dient dazu, den ganzen Spielverlauf im Junglecamp
 
 ## Technical Design
 
-Die Visualisierung wird als Web-App implementiert. Die App wird von einem dedizierten Pfad des Game-Servers (`/visualization/`) geladen. Daten über die Spiele werden durch das folgende REST-API zur Verfügung gestellt:
+Die Visualisierung wird als Web-App implementiert. Die App wird von einem dedizierten Pfad des Game-Servers (`/visualization/`) geladen und besteht aus drei Teilen:
+1. Login-Seite (`/visualization/login.html`)
+2. Anzeige der laufenden Spiele (`/visualization/games.html`)
+3. Visualisierung eines einzelnen Spiels (`/visualization/game/<game_id>.html`)
+
+Daten über die Spiele werden durch das folgende REST-API zur Verfügung gestellt:
 
 Endpoint | Parameters | JSON Response | Example
 -------- | ---------- | ------------- | -------
-`/visualization/list` | *none* | `{ "games": [game URLs...] }` | <pre>{<br/>  "games": [     "/visualization/game/123",<br/>    "/visualization/game/42" <br/>  ]<br/> }</pre>
-`/visualization/game/<game_id>` | *game_id*: Game-Id, wie von `/list` zurückgegeben. | <code>{ "id": <game_id>, "state": <game_state>, "cells": <array of strings> }</code> | <pre>{<br/>  "id": "123",<br/>  "state": "playing",<br/>  "cells": [ <br/>    "WWWWWWWWWWWWWWWWWWWWWWW",<br/>    "WW  PP               WW",<br/>    "WW             12    WW",<br/>    "WW    08  CC         WW",<br/>    "WWWWWWWWWWWWWWWWWWWWWWW"<br/>  ],<br/>  "players": {<br/>     "12": {<br/>      "id": "123",<br/>      "name": "Wally",<br/>      "lives": 3,<br/>      "ammo": 2<br/>     }, ...<br/>}</pre>
+`/visualization/games.json` | *none* | `{ "games": [game URLs...] }` | <pre>{<br/>  "games": [     "/visualization/game/123",<br/>    "/visualization/game/42" <br/>  ]<br/> }</pre>
+`/visualization/game/<game_id>.json` | *game_id*: Game-Id, wie von `/list` zurückgegeben. | <code>{ "id": <game_id>, "state": <game_state>, "cells": <array of strings> }</code> | <pre>{<br/>  "id": "123",<br/>  "state": "playing",<br/>  "cells": [ <br/>    "WWWWWWWWWWWWWWWWWWWWWWW",<br/>    "WW  PP               WW",<br/>    "WW             12    WW",<br/>    "WW    08  CC         WW",<br/>    "WWWWWWWWWWWWWWWWWWWWWWW"<br/>  ],<br/>  "players": {<br/>     "12": {<br/>      "id": "123",<br/>      "name": "Wally",<br/>      "lives": 3,<br/>      "ammo": 2<br/>     }, ...<br/>}</pre>
 
 ### Identifiers
 Alle Identifier können beliebige Zeichenketten sein (also nicht nur Zahlen).
