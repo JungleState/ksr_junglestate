@@ -35,6 +35,7 @@ Name | Beispiel | Beschreibung
 leer | `"  "` | Leere Zelle
 Wand | `"WW"` | Undurchdringliche Wand
 Ananas | `"PP"` | Ananas Token
+Banane | `"BB"` | Banane Token
 Kokosnuss | `"CC"` | Kokosnuss Token
 Spieler | `"08"` | Spieler-Id. Die Id ist nur eine Visualisierungs-Id und dient als Schlüssel im "players"-Objekt.
 
