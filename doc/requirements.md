@@ -1,6 +1,6 @@
 # Requirements
 
-JungleState möchte einen Game-Server entwickeln lassen, der remote Clients in einem rundenbasierten Game gegeneinander spielen lässt. Die _Requirements_ definieren die Vorgaben zum Spiel und zur gewählten Technologie.
+*CanopySoft* möchte einen Game-Server entwickeln lassen, der remote Clients in einem rundenbasierten Game gegeneinander spielen lässt. Die _Requirements_ definieren die Vorgaben zum Spiel und zur gewählten Technologie.
 
 ## Spielbeschrieb
 
