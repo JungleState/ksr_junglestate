@@ -1,6 +1,6 @@
 # Ablauf
 
-Alle Talenta/EF Schüler:innen gründen zusammen die Software-Firma **CanopySoft Corp**, um einen Game-Server zu realisieren. Die Lehrperson hat dabei zwei Rollen: einerseits vertritt sie die Auftraggeberin, die **JungleState Inc**, andererseits fungiert sie als Projekt-Coach.
+Alle Talenta/EF Schüler:innen gründen zusammen die Software-Firma **JungleState Inc**, um einen Game-Server zu realisieren. Die Lehrperson hat dabei zwei Rollen: einerseits vertritt sie die Auftraggeberin, die **CanopySoft Corp**, andererseits fungiert sie als Projekt-Coach.
 
 Die Umsetzung folgt der Entwicklung in einer Software-Firma:
 1. Kick-off (1w):
