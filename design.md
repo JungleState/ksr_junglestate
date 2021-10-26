@@ -19,7 +19,7 @@
 * styleSheet.css: Verschönert view.html
 * script.js: Anzeigelogik
 
-## Implementation of REST-endpoints
+## Implementation of REST-API
 
 Website (Rückgabe in HTML)
 * /: Gibt view Website
@@ -28,9 +28,38 @@ Spielsuche (Rückgabe in JSON):
 * /joinGame: POST; Tritt Spiel bei, wenn keins vorhanden: erstellt eins
 
 Aktives Spiel (Rückgabe in JSON):
-* /player/client/\<gameID>/\<playerID>/\<Action>: POST; Aktion an Server, Spielstatus zurück
 * /spectator/view/\<gameID>: GET; Gibt Spielmatrix zurück
 
-## API
+Client endpoints (Rückgabe in JSON):
+* /player/action/\<gameID>/\<playerID>/\<Action>: POST; Aktion an Server
+* /player/getEnvironment/\<gameID>/\<playerID>: GET; Gibt 5x5 Matrix um den Spieler zurück
+
+
+
+## JSON Structure
+
+Spectator:
+* GameID
+* gameField (Matrix etwa 50x50)
+* gameState (win or running)
+* round (Welche Runde?)
+* playerList (Liste der Spieler, jeder Spieler hat eine eigene Liste mit:)
+    * id
+    * name
+    * health
+    * coconuts 
+    * bananas
+    * pinapples
+    * points
+
+Client:
+* fieldMatrix (5x5 Matrix um ihn herum)
+* items
+    * coconuts
+    * bananas
+    * pinapples
+* round
+
+
 
 
