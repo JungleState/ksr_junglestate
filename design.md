@@ -44,6 +44,7 @@ Spectator:
 * gameState (win or running)
 * round (Welche Runde?)
 * playerList (Liste der Spieler, jeder Spieler hat eine eigene Liste mit:)
+    * type: player (einfacher um im Code zu unterscheiden)
     * id
     * name
     * health
@@ -52,7 +53,8 @@ Spectator:
     * pinapples
     * points
 
-Client:
+spectator:
+* type: spectator (einfacher um im Code zu unterscheiden)
 * fieldMatrix (5x5 Matrix um ihn herum)
 * items
     * coconuts
