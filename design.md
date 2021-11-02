@@ -53,15 +53,32 @@ Spectator:
     * pinapples
     * points
 
-spectator:
-* type: spectator (einfacher um im Code zu unterscheiden)
+client
 * fieldMatrix (5x5 Matrix um ihn herum)
-* items
+* items (liste mit items darin, jedes item  ist eine Liste für sich [item_id, count] für item_id siehe Matrix system)
     * coconuts
     * bananas
     * pinapples
 * round
 
+## Matrix system
 
+In der Matrix befinden sich nur Zahlen. Jede Zahl steht für ein Feld.
+
+* 0 = Nichts ist in dem Feld
+* <100 = Item oder Hinderniss Id
+    * 1 = Dickicht
+    * 2 = Kokosnuss
+    * 3 = Banane
+    * 4 = Ananass
+
+* \>100 = player ID 
+    * 101 = player 1
+    * 102 = player 2
+    * ...
+
+Die Matrix ist wie ein Koordinatensystem aufgebaut, indem die Ecke links oben der Ursprung ist. Das Feld links oben in der Ecke auf unserem Spielfeld entspricht demnach dem Ursprung. 
+Jedes Feld entspricht einer ganzzahligen Koordinate.  
+Zugriff => Game.matrix[x][y]
 
 
