@@ -28,7 +28,7 @@ Spielsuche (Rückgabe in JSON):
 * /joinGame: POST; Tritt Spiel bei, wenn keins vorhanden: erstellt eins
 
 Aktives Spiel (Rückgabe in JSON):
-* /spectator/view/\<gameID>: GET; Gibt Spielmatrix zurück
+* /SpectView/\<gameID>: GET; Gibt Spielmatrix zurück
 
 Client endpoints (Rückgabe in JSON):
 * /player/action/\<gameID>/\<playerID>/\<Action>: POST; Aktion an Server
@@ -55,8 +55,8 @@ Spectator:
     * points
 
 client
-* fieldMatrix (5x5 Matrix um ihn herum)
-* items (liste mit items darin, jedes item  ist eine Liste für sich [item_id, count] für item_id siehe Matrix system)
+* field_of_view (5x5 Matrix um ihn herum)
+* items (dict mit item anzahl darin)
     * coconuts
     * bananas
     * pinapples
