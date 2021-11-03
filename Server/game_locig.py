@@ -7,6 +7,8 @@ class Item:
 class Player:
     def __init__(self, id, name):
         self.id 
+        self.knockouts = 0
+        self.hits = 0
         self.x = 0
         self.y = 0
         self.sight = 5#dimension of field of view matrix, needs to be odd
@@ -35,13 +37,15 @@ class Game:
     def GetPlayerListForJSON(self):
         player_list = []
         for player in self.player_list:
-            player_list.append([player.id,
-                                player.name,
-                                player.health,
-                                player.coconuts,
-                                player.bananas,
-                                player.pinapples,
-                                player.poinzs])
+            player_list.append({"id":player.id,
+                                "name": player.name,
+                                "health": player.health,
+                                "knockouts": player.knockouts,
+                                "hits": player.hits,
+                                "coconuts": player.item_list[0].count,#coconuts
+                                "bananas": player.item_list[1].count,#bananas
+                                "pinapples": player.item_list[2].count,#pinapples
+                                "points": player.points})
         return player_list
 
     def GetFieldOfView(self, player_id):#for specific player

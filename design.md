@@ -39,15 +39,16 @@ Client endpoints (Rückgabe in JSON):
 ## JSON Structure
 
 Spectator:
-* GameID
-* gameField (Matrix etwa 50x50)
-* gameState (win or running)
+* id
+* field (Matrix etwa 50x50)
+* state (win or running)
 * round (Welche Runde?)
-* playerList (Liste der Spieler, jeder Spieler hat eine eigene Liste mit:)
-    * type: player (einfacher um im Code zu unterscheiden)
+* player_list (Liste der Spieler, jeder Spieler hat eine eigene Liste mit:)
     * id
     * name
     * health
+    * knockouts
+    * hits
     * coconuts 
     * bananas
     * pinapples
