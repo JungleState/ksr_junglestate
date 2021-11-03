@@ -28,7 +28,7 @@ Spielsuche (Rückgabe in JSON):
 * /joinGame: POST; Tritt Spiel bei, wenn keins vorhanden: erstellt eins
 
 Aktives Spiel (Rückgabe in JSON):
-* /spectator/view/\<gameID>: GET; Gibt Spielmatrix zurück
+* /SpectView/\<gameID>: GET; Gibt Spielmatrix zurück
 
 Client endpoints (Rückgabe in JSON):
 * /player/action/\<gameID>/\<playerID>/\<Action>: POST; Aktion an Server

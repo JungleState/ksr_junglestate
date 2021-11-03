@@ -2,6 +2,7 @@ import os
 from typing import _SpecialForm
 from flask import Flask
 from flask import jsonify
+from flask.helpers import get_template_attribute
 from game_logic import Game
 
 
@@ -26,7 +27,20 @@ def GetJSON(mode, game_id, player_id=None):
                                state=game.state, 
                                round=game.round,
                                player_list = game.GetPlayerListForJSON())
-
 @app.route("/")
 def index():
     pass
+
+@app.route("/SpectView/<int:game_id>")
+def SpectView(game_id):
+    for game in game_list:
+        if game.id == game_id:
+            return GetJSON("spec", game_id)
+
+@app.route("/joinGame/<str:player_name>", methods=['POST'])
+def joinGame(player_name):
+    global next_game_id
+    if len(game_list) == 0:
+        game_list.append(Game(next_game_id))
+        next_game_id += 1
+    game_list[0].join(player_name)
