@@ -55,8 +55,8 @@ Spectator:
     * points
 
 client
-* fieldMatrix (5x5 Matrix um ihn herum)
-* items (liste mit items darin, jedes item  ist eine Liste für sich [item_id, count] für item_id siehe Matrix system)
+* field_of_view (5x5 Matrix um ihn herum)
+* items (dict mit item anzahl darin)
     * coconuts
     * bananas
     * pinapples

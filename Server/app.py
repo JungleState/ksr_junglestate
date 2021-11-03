@@ -18,7 +18,7 @@ def GetJSON(mode, game_id, player_id=None):
         if game.id == game_id:
             if mode == "client":#returns JSON file for client
                 return jsonify(field_of_view=game.GetFieldOfView(player_id),
-                               items=game.GetItemList(player_id),
+                               items=game.GetItemDict(player_id),
                                round=game.round)
             elif mode == "spec":#returns JSON file for spectator
                 return jsonify(id=100, 

@@ -1,3 +1,6 @@
+FIELD_LENGH = 50
+FIELD_HEIGHT = 50
+
 class Item:
     def __init__(self, name, id):
         self.name = name
@@ -6,7 +9,7 @@ class Item:
 
 class Player:
     def __init__(self, id, name):
-        self.id 
+        self.id = id
         self.knockouts = 0
         self.hits = 0
         self.x = 0
@@ -14,7 +17,7 @@ class Player:
         self.sight = 5#dimension of field of view matrix, needs to be odd
         self.name = name
         self.health = 100
-        self.item_list = [Item("coconut", 2), Item("banana", 3), Item("pinapple", 4)]
+        self.item_list = [Item("coconuts", 2), Item("bananas", 3), Item("pinapples", 4)]
         self.points = 0
     
 
@@ -24,11 +27,11 @@ class Game:
         self.player_list = []
         self.state = "waiting"
         self.round = 0
-        self.field_dim = [50, 50] #field dimension 1st element = x; 2nd element = y
+        self.field_dim = [FIELD_LENGH-1, FIELD_HEIGHT-1] #field dimension 1st element = x; 2nd element = y
         self.matrix = []
-        for x in range(self.field_dim[0]):
+        for x in range(self.field_dim[0]+1):
             self.matrix.append([])
-            for y in range(self.field_dim[1]):
+            for y in range(self.field_dim[1]+1):
                 self.matrix[x].append(0)
           
     def join(self, id, name):
@@ -52,28 +55,37 @@ class Game:
         for player in self.player_list:
             if player.id == player_id:
                 field_of_view_matrix = []
-                #checks for vision disability ecause of field border
+                #checks for vision disability ecause of field border/ detects point of player in view matrix
                 sight_x = player.sight
                 sight_y = player.sight
-                for border in range(int(player.sight_x/2)):
-                    if player.x == border:
-                        sight_x -= border+1 
-                for border in range(int(player.sight_y/2)):
-                    if player.y == border:
-                        sight_y -= border+1 
+                point_of_player_in_sight_matrix = [int(player.sight/2), int(player.sight/2)]
+
+                if player.x < int(player.sight/2):
+                    sight_x -= int(player.sight/2) - player.x  
+                    point_of_player_in_sight_matrix[0] -= player.sight - sight_x 
+                if player.x > self.field_dim[0] - int(player.sight/2):
+                    sight_x -= int(player.sight/2) - self.field_dim[0] + player.x 
+
+                if player.y < int(player.sight/2):
+                    sight_y -= int(player.sight/2) - player.y 
+                    point_of_player_in_sight_matrix[1] -= player.sight - sight_y
+                if player.y > self.field_dim[1] - int(player.sight/2):
+                    sight_y -= int(player.sight/2) - self.field_dim[1] + player.y
+                
                 #makes matrix
                 for x in range(sight_x):
                     field_of_view_matrix.append([])
                     for y in range(sight_y):
-                        field_of_view_matrix.append(0)
+                        field_of_view_matrix[x].append(self.matrix[x+player.x-point_of_player_in_sight_matrix[0]][y+player.y-point_of_player_in_sight_matrix[1]])
                 return field_of_view_matrix
         return []
 
-    def GetItemList(self, player_id):#for specific player
+    def GetItemDict(self, player_id):#for specific player
         for player in self.player_list:
             if player.id == player_id:
-                item_list = []
+                item_dict = {}
                 for item in player.item_list:
-                    item_list.append([item.id, item.count])
-                return item_list
+                    item_dict[f'{item.name}'] = item.count
+                return item_dict
         return []
+
