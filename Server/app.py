@@ -2,7 +2,7 @@ import os
 from typing import _SpecialForm
 from flask import Flask
 from flask import jsonify
-from game_locig import Game
+from game_logic import Game
 
 
 app = Flask(__name__)
