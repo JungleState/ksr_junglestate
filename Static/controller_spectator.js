@@ -3,6 +3,10 @@ import "View_Spectator"
 class Controller {
     constructor() {
         this.field == getData("field");
+
+        setInterval(() => { // live updates
+            View.ShowField(this.getData("field"));
+        }, 500);
     }
 
     async getData(info) { // get certain info from app.py
@@ -20,8 +24,9 @@ class Controller {
                 return json.player_list;
         }
     }
-
-    setInterval(() => {
-        View.ShowField(getData("field"));
-    }, 500);
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    controller = new Controller;
+    view = new View;
+});
