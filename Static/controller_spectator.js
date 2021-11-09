@@ -1,11 +1,11 @@
-import view_spectator.js
+import "View_Spectator"
 
 class Controller {
     constructor() {
         this.field == getData("field");
     }
 
-    async getField(info) { // get certain info from app.py
+    async getData(info) { // get certain info from app.py
         const response = await fetch("/view");
         const json = await response.json;
 
@@ -22,6 +22,6 @@ class Controller {
     }
 
     setInterval(() => {
-        view.ShowField
+        View.ShowField(getData("field"));
     }, 500);
 }
