@@ -6,7 +6,6 @@
 
 * app.py: Wie in Vier-Gewinnt. 
 * gameLogic.py: Beinhalted game logic
-* collector.py: Sammelt eingehende Aktionen, führt Sicherheitscheck durch
 
 ### Client
 
