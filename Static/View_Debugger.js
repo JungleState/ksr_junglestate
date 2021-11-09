@@ -35,7 +35,3 @@ class View{
     }
 
 }
-
-class Connector{
-
-}
