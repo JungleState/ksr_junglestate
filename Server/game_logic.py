@@ -62,6 +62,15 @@ class Game:
                                 "points": player.points})
         return player_list
 
+    def doNextRound(self):
+        for move in self.move_list:  # check for moves
+            if move[1] == 1:
+                pass
+
+        for move in self.move_list:  # check for shoot
+            if move[1] == 2:
+                pass
+
     def GetFieldOfView(self, player_id):  # for specific player
         for player in self.player_list:
             if player.id == player_id:
