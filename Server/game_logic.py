@@ -36,7 +36,7 @@ class Game:
                 self.matrix[x].append(0)
           
     def join(self, name):
-        id = 101
+        id = 100
         self.player_list.append(Player(id, name))
     
     def GetPlayerListForJSON(self):
