@@ -23,9 +23,10 @@ class Player:
 
 class Game:
     def __init__(self, id):
+        self.move_list = []
         self.id = id
         self.player_list = []
-        self.state = "waiting"
+        self.state = 0
         self.round = 0
         self.field_dim = [FIELD_LENGH-1, FIELD_HEIGHT-1] #field dimension 1st element = x; 2nd element = y
         self.matrix = []
