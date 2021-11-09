@@ -1,11 +1,15 @@
-import view_spectator.js
+import "View_Spectator"
 
 class Controller {
     constructor() {
         this.field == getData("field");
+
+        setInterval(() => { // live updates
+            View.ShowField(this.getData("field"));
+        }, 500);
     }
 
-    async getField(info) { // get certain info from app.py
+    async getData(info) { // get certain info from app.py
         const response = await fetch("/view");
         const json = await response.json;
 
@@ -20,8 +24,9 @@ class Controller {
                 return json.player_list;
         }
     }
-
-    setInterval(() => {
-        view.ShowField
-    }, 500);
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    controller = new Controller;
+    view = new View;
+});
