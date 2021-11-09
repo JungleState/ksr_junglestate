@@ -26,3 +26,14 @@ Die Umsetzung folgt der Entwicklung in einer Software-Firma:
      * Organisation
      * Planung
      * Implementierung
+
+# Log
+## 2021-11-09
+* Zwei Endpoints sind definiert
+* Zuordnung der Teil-Projekte
+  * Game-Logic: Pacifico & Sheran
+  * `app.py` / Endpoints: Matthias
+  * Visualization JS: Joran
+    * Client JS: Philipp
+  * Visualization HTML & CSS: Bruno
+![Design](design.jpg)
