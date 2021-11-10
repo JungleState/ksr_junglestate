@@ -37,11 +37,3 @@ class View{
     }
 
 }
-types = {
-    0: "plain",
-    1: "jungle",
-    2: "coconut",
-    3: "banana",
-    4: "pineapple"}
-
-console.log(type.1)
