@@ -72,9 +72,9 @@ In der Matrix befinden sich nur Zahlen. Jede Zahl steht für ein Feld.
     * 3 = Banane
     * 4 = Ananass
 
-* \>100 = player ID 
-    * 101 = player 1
-    * 102 = player 2
+* \>=100 = player ID 
+    * 100 = player 1
+    * 101 = player 2
     * ...
 
 Die Matrix ist wie ein Koordinatensystem aufgebaut, indem die Ecke links oben der Ursprung ist. Das Feld links oben in der Ecke auf unserem Spielfeld entspricht demnach dem Ursprung. 
