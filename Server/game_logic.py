@@ -19,8 +19,9 @@ class Player:
         self.sight = 5  # dimension of field of view matrix, needs to be odd
         self.name = name
         self.health = 100
-        self.item_list = [Item("coconuts", 2), Item(
-            "bananas", 3), Item("pinapples", 4)]
+        self.item_list = [Item("coconuts", 2), 
+                          Item("bananas", 3), 
+                          Item("pinapples", 4)]
         self.points = 0
 
 
@@ -29,6 +30,7 @@ class Game:
         self.move_list = []
         self.id = id
         self.player_list = []
+        self.next_player_id = 100
         self.state = 0
         self.round = 0
         # field dimension 1st element = x; 2nd element = y
@@ -40,8 +42,8 @@ class Game:
                 self.matrix[x].append(0)
 
     def join(self, name):
-        id = 100
-        self.player_list.append(Player(id, name))
+        self.player_list.append(Player(self.next_player_id, name))
+        self.next_player_id += 1
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:
@@ -50,6 +52,7 @@ class Game:
         # 2: Shoot
         #
         # dir list:
+        # -1: No direction
         # 0: up
         # 1: up right
         # 2: right
@@ -65,6 +68,7 @@ class Game:
         self.move_list.append([player_id, move_id, dir])
         if len(self.move_list) == len(self.player_list):
             self.doNextRound()
+            
         return True
 
     def GetPlayerListForJSON(self):
