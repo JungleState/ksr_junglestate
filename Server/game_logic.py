@@ -40,8 +40,7 @@ class Game:
         self.field_dim = [FIELD_LENGH-1, FIELD_HEIGHT-1]
         self.matrix = []
         self.createMap()
-        print(self.matrix)
-
+        
     def join(self, name):
         self.player_list.append(Player(self.next_player_id, name))
         self.next_player_id += 1
