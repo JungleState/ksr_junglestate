@@ -48,7 +48,7 @@ class Game:
         # 0: Stay
         # 1: Move
         # 2: Shoot
-        # 
+        #
         # dir list:
         # 0: up
         # 1: up right
@@ -80,11 +80,23 @@ class Game:
     def doNextRound(self):
         for move in self.move_list:  # check for moves
             if move[1] == 1:
-                pass
+                for player in self.player_list:
+                    if player.id == move[0]:
+                        old_coords = [player.x, player.y]
+                        if move[2] == 0:
+                            player.y = player.y - 1
+                        elif move[2] == 2:
+                            player.x = player.x + 1
+                        elif move[2] == 4:
+                            player.y = player.y + 1
+                        elif move[2] == 6:
+                            player.x = player.x - 1
 
         for move in self.move_list:  # check for shoot
             if move[1] == 2:
                 pass
+
+        self.move_list.clear()
 
     def GetFieldOfView(self, player_id):  # for specific player
         for player in self.player_list:
