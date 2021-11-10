@@ -39,8 +39,6 @@ Command
 - Command: move <number>
 - Command: attack <number>
 
-
-
 ## JSON Structure
 
 Spectator:
