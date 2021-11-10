@@ -58,7 +58,10 @@ class Game:
         # 5: down left
         # 6: left
         # 7: up left
-        pass
+        
+        self.move_list.append([player_id, move_id, dir])
+        if len(self.move_list) == len(self.player_list):
+            self.doNextRound()
 
     def GetPlayerListForJSON(self):
         player_list = []
