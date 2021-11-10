@@ -21,17 +21,23 @@
 ## Implementation of REST-API
 
 Website (Rückgabe in HTML)
-* /: Gibt view Website
+* /: Does nothing
 
 Spielsuche (Rückgabe in JSON):
-* /joinGame: POST; Tritt Spiel bei, wenn keins vorhanden: erstellt eins
+* /joinGame/<mode>/<playerName>: 
+- Mode: spec/client
+- Überprüft, ob der Spielername noch nicht gebraucht ist
+- Schreibt eine PlayerID in die session
+- Schreibt Modus in die session
 
-Aktives Spiel (Rückgabe in JSON):
-* /SpectView/\<gameID>: GET; Gibt Spielmatrix zurück
+View (Rückgabe in JSON)
+* /view:
+- Anhand der session wird erkannt, ob es sich um einen Spectator oder Spieler handelt
 
-Client endpoints (Rückgabe in JSON):
-* /player/action/\<gameID>/\<playerID>/\<Action>: POST; Aktion an Server
-* /player/getEnvironment/\<gameID>/\<playerID>: GET; Gibt 5x5 Matrix um den Spieler zurück
+Command
+/action/<command>/<direction>:
+- Command: move <number>
+- Command: attack <number>
 
 
 
@@ -72,9 +78,9 @@ In der Matrix befinden sich nur Zahlen. Jede Zahl steht für ein Feld.
     * 3 = Banane
     * 4 = Ananass
 
-* \>100 = player ID 
-    * 101 = player 1
-    * 102 = player 2
+* \>=100 = player ID 
+    * 100 = player 1
+    * 101 = player 2
     * ...
 
 Die Matrix ist wie ein Koordinatensystem aufgebaut, indem die Ecke links oben der Ursprung ist. Das Feld links oben in der Ecke auf unserem Spielfeld entspricht demnach dem Ursprung. 
