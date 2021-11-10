@@ -17,8 +17,10 @@ def newGame(playerId):
         game = Game(newId)
         game.player_list.append(playerId)
         game.join(player_list.get(playerId))
+        return game.id
     else:
-        pass
+        game_list[-1].join(player_list.get(playerId))
+        return game_list[-1].id
 
 def GetJSON(mode, game_id, player_id=None):
     for game in game_list:
@@ -46,11 +48,13 @@ def joinGame(mode, player_name):
     if not player_name in player_list.values():
         print(f"Mode: {mode}, Name: {player_name}")
         newId = str(uuid.uuid4())
-        session['playerId'] = newId
-        session['mode'] = mode
         player_list.update({newId:player_name})
 
-        newGame(newId)
+        gameId = newGame(newId)
+
+        session['playerId'] = newId
+        session['mode'] = mode
+        session['gameId'] = gameId
 
         return send_file('..\\Static\\junglestate.html')
 
@@ -80,6 +84,10 @@ def view():
 def action(command, direction):
     playerId = session.get('playerId')
     if playerId in player_list.keys():
+        for game in game_list:
+            if game.id == session.get('gameId'):
+                pass
+
         return jsonify(msg="aha")
 
     else:
