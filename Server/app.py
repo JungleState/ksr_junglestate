@@ -17,7 +17,8 @@ def newGame(playerId):
         game = Game(newId)
         game.player_list.append(playerId)
         game.join(player_list.get(playerId))
-
+    else:
+        pass
 
 def GetJSON(mode, game_id, player_id=None):
     for game in game_list:
