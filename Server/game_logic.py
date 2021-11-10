@@ -19,8 +19,9 @@ class Player:
         self.sight = 5  # dimension of field of view matrix, needs to be odd
         self.name = name
         self.health = 100
-        self.item_list = [Item("coconuts", 2), Item(
-            "bananas", 3), Item("pinapples", 4)]
+        self.item_list = [Item("coconuts", 2), 
+                          Item("bananas", 3), 
+                          Item("pinapples", 4)]
         self.points = 0
 
 
