@@ -9,7 +9,15 @@ app.secret_key = os.urandom(16)
 
 next_game_id = 0
 game_list = []
-player_list = {} # Dict with player_name : player_id
+player_list = {} # Dict with playerID : playerName
+
+def newGame(playerId):
+    if len(game_list) == 0:
+        newId = uuid.uuid4()
+        game = Game(newId)
+        game.player_list.append(playerId)
+        game.join(player_list.get(playerId))
+
 
 def GetJSON(mode, game_id, player_id=None):
     for game in game_list:
@@ -34,23 +42,14 @@ def root():
 
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
-    if not player_name in player_list.keys():
+    if not player_name in player_list.values():
         print(f"Mode: {mode}, Name: {player_name}")
         newId = str(uuid.uuid4())
         session['playerId'] = newId
         session['mode'] = mode
-        player_list.update({player_name:newId})
+        player_list.update({newId:player_name})
 
-        global next_game_id
-
-        if len(game_list) == 0:
-            game_list.append(Game(next_game_id))
-            game_list[next_game_id].join(player_name)
-            session['gameId'] = 0
-            next_game_id += 1
-        else:
-            game_list[next_game_id].join(player_name)
-            session['gameId'] = next_game_id
+        newGame(newId)
 
         return send_file('..\\Static\\junglestate.html')
 
@@ -62,7 +61,7 @@ def joinGame(mode, player_name):
 @app.route('/view')
 def view():
     playerId = session.get('playerId')
-    if playerId in player_list.values():
+    if playerId in player_list.keys():
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
@@ -79,7 +78,7 @@ def view():
 @app.route('/action/<string:command>/<int:direction>')
 def action(command, direction):
     playerId = session.get('playerId')
-    if playerId in player_list.values():
+    if playerId in player_list.keys():
         return jsonify(msg="aha")
 
     else:
