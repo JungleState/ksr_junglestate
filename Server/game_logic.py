@@ -114,17 +114,19 @@ class Game:
                         elif field == 1:  # forrest field
                             player.x = old_coor[0]
                             player.y = old_coor[1]
-                            # + add player damage
+                            # TODO: add player damage
 
                         elif field > 1 and field < 100:  # item field
-                            # + collect item
+                            # TODO: collect item
+                            field = player.id
+                            self.matrix[old_coor[0]][old_coor[1]] = 0
                             pass
 
                         elif field > 99:
                             for player2 in self.player_list:
                                 if player2.id == field:
-                                    # + add player damage
-                                    # + add player2 damage
+                                    # TODO: add player damage
+                                    # TODO: add player2 damage
                                     hasp2moved = False
                                     for move2 in self.move_list:
                                         if move2[0] == player2.id:
@@ -133,19 +135,20 @@ class Game:
                                                 break
 
                                     if hasp2moved:
-                                        # get two random directions for monkeys
+                                        # TODO: eliminate a player
                                         pass
 
                                     else:
                                         player.x = old_coor[0]
                                         player.y = old_coor[1]
 
-                                    # + add player damage
-                                    # + add player2 damage
+                                    # TODO: add player damage
+                                    # TODO: add player2 damage
                                     break
 
         for move in self.move_list:  # check for shoot
             if move[1] == 2:
+                # TODO: add shooting
                 pass
 
         self.move_list.clear()
