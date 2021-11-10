@@ -1,17 +1,15 @@
-import "View_Debugger"
-
 class Controller {
     constructor() {
-        this.field == getData("field");
+        this.field == this.getData("field");
 
         // listen for input
-        window.onkeydown = function(key) {
-            this.input(key.keycode);
+        window.onkeydown = (key) => {
+            this.keyInput(key.keyCode);
         }
 
         // field updates
         setInterval(() => {
-            View.ShowField(this.getData("field"));
+            View.Showfield("spectator", this.getData("field"));
         }, 500);
     }
 
@@ -28,10 +26,12 @@ class Controller {
                 return json.round;
             case "player_list":
                 return json.player_list;
+            default:
+                return "error";
         }
     }
 
-    async input(commandKey) { // send command to app.py
+    async keyInput(commandKey) { // send command to app.py
         //012
         //345
         //678
@@ -49,18 +49,54 @@ class Controller {
         let type = "move";
         let direction = "none";
         switch(commandKey) {
-            case "w":
-                type = "move"
-                direction = 1
-            case "a":
-                type = "move"
-                direction = 3
-            case "s":
-                type = "move"
-                direction = 7
-            case "d":
-                type = "move"
-                direction = 3
+            case 87: // w
+                type = "move";
+                direction = 1;
+                break;
+            case 65: // a
+                type = "move";
+                direction = 3;
+                break;
+            case 83: // s
+                type = "move";
+                direction = 7;
+                break;
+            case 68: // d
+                type = "move";
+                direction = 3;
+                break;
+            case 85: // u
+                type = "attack";
+                direction = 0;
+                break;
+            case 73: // i
+                type = "attack";
+                direction = 1;
+                break;
+            case 79: // o
+                type = "attack";
+                direction = 2;
+                break;
+            case 74: // j
+                type = "attack";
+                direction = 3;
+                break;
+            case 97: // l
+                type = "attack";
+                direction = 5;
+                break;
+            case 78: // n
+                type = "attack";
+                direction = 6;
+                break;
+            case 77: // m
+                type = "attack";
+                direction = 7;
+                break;
+            case 188: // ,
+                type = "attack";
+                direction = 8;
+                break;
             default:
                 type = "move";
                 direction = "none";
@@ -72,6 +108,6 @@ class Controller {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    controller = new Controller;
     view = new View;
+    controller = new Controller;
 });

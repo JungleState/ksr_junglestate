@@ -19,8 +19,9 @@ class Player:
         self.sight = 5  # dimension of field of view matrix, needs to be odd
         self.name = name
         self.health = 100
-        self.item_list = [Item("coconuts", 2), Item(
-            "bananas", 3), Item("pinapples", 4)]
+        self.item_list = [Item("coconuts", 2),
+                          Item("bananas", 3),
+                          Item("pinapples", 4)]
         self.points = 0
 
 
@@ -29,6 +30,7 @@ class Game:
         self.move_list = []
         self.id = id
         self.player_list = []
+        self.next_player_id = 100
         self.state = 0
         self.round = 0
         # field dimension 1st element = x; 2nd element = y
@@ -40,16 +42,17 @@ class Game:
                 self.matrix[x].append(0)
 
     def join(self, name):
-        id = 100
-        self.player_list.append(Player(id, name))
+        self.player_list.append(Player(self.next_player_id, name))
+        self.next_player_id += 1
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:
         # 0: Stay
         # 1: Move
         # 2: Shoot
-        # 
+        #
         # dir list:
+        # -1: No direction
         # 0: up
         # 1: up right
         # 2: right
@@ -58,7 +61,15 @@ class Game:
         # 5: down left
         # 6: left
         # 7: up left
-        pass
+        for move in self.move_list:
+            if move[0] == player_id:
+                return False
+
+        self.move_list.append([player_id, move_id, dir])
+        if len(self.move_list) == len(self.player_list):
+            self.doNextRound()
+
+        return True
 
     def GetPlayerListForJSON(self):
         player_list = []
@@ -76,6 +87,68 @@ class Game:
                                 "pinapples": player.item_list[2].count,
                                 "points": player.points})
         return player_list
+
+    def doNextRound(self):
+        for move in self.move_list:  # check for moves
+            if move[1] == 1:
+                for player in self.player_list:
+                    if player.id == move[0]:
+
+                        old_coor = [player.x, player.y]
+
+                        if move[2] == 0:
+                            player.y = player.y - 1
+                        elif move[2] == 2:
+                            player.x = player.x + 1
+                        elif move[2] == 4:
+                            player.y = player.y + 1
+                        elif move[2] == 6:
+                            player.x = player.x - 1
+
+                        field = self.matrix[player.x][player.y]
+
+                        if field == 0:  # empty field
+                            field = player.id
+                            self.matrix[old_coor[0]][old_coor[1]] = 0
+
+                        elif field == 1:  # forrest field
+                            player.x = old_coor[0]
+                            player.y = old_coor[1]
+                            # + add player damage
+
+                        elif field > 1 and field < 100:  # item field
+                            # + collect item
+                            pass
+
+                        elif field > 99:
+                            for player2 in self.player_list:
+                                if player2.id == field:
+                                    # + add player damage
+                                    # + add player2 damage
+                                    hasp2moved = False
+                                    for move2 in self.move_list:
+                                        if move2[0] == player2.id:
+                                            if move2[1] == 1:
+                                                hasp2moved = True
+                                                break
+
+                                    if hasp2moved:
+                                        # get two random directions for monkeys
+                                        pass
+
+                                    else:
+                                        player.x = old_coor[0]
+                                        player.y = old_coor[1]
+
+                                    # + add player damage
+                                    # + add player2 damage
+                                    break
+
+        for move in self.move_list:  # check for shoot
+            if move[1] == 2:
+                pass
+
+        self.move_list.clear()
 
     def GetFieldOfView(self, player_id):  # for specific player
         for player in self.player_list:
