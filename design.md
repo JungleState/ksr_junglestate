@@ -21,17 +21,23 @@
 ## Implementation of REST-API
 
 Website (Rückgabe in HTML)
-* /: Gibt view Website
+* /: Does nothing
 
 Spielsuche (Rückgabe in JSON):
-* /joinGame: POST; Tritt Spiel bei, wenn keins vorhanden: erstellt eins
+* /joinGame/<mode>/<playerName>: 
+- Mode: spec/client
+- Überprüft, ob der Spielername noch nicht gebraucht ist
+- Schreibt eine PlayerID in die session
+- Schreibt Modus in die session
 
-Aktives Spiel (Rückgabe in JSON):
-* /SpectView/\<gameID>: GET; Gibt Spielmatrix zurück
+View (Rückgabe in JSON)
+* /view:
+- Anhand der session wird erkannt, ob es sich um einen Spectator oder Spieler handelt
 
-Client endpoints (Rückgabe in JSON):
-* /player/action/\<gameID>/\<playerID>/\<Action>: POST; Aktion an Server
-* /player/getEnvironment/\<gameID>/\<playerID>: GET; Gibt 5x5 Matrix um den Spieler zurück
+Command
+/action/<command>/<direction>:
+- Command: move <number>
+- Command: attack <number>
 
 
 
