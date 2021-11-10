@@ -90,7 +90,7 @@ class Game:
                 for player in self.player_list:
                     if player.id == move[0]:
 
-                        old_coords = [player.x, player.y]
+                        old_coor = [player.x, player.y]
 
                         if move[2] == 0:
                             player.y = player.y - 1
@@ -104,13 +104,12 @@ class Game:
                         field = self.matrix[player.x][player.y]
 
                         if field == 0:  # empty field
-                            self.matrix[player.x][player.y] = player.id
-                            self.matrix[old_coords[0]
-                                        ][old_coords[1]] = 0
+                            field = player.id
+                            self.matrix[old_coor[0]][old_coor[1]] = 0
 
                         elif field == 1:  # forrest field
-                            player.x = old_coords[0]
-                            player.y = old_coords[1]
+                            player.x = old_coor[0]
+                            player.y = old_coor[1]
                             # + add player damage
 
                         elif field > 1 and field < 100:  # item field
@@ -118,9 +117,28 @@ class Game:
                             pass
 
                         elif field > 99:
-                            player.x = old_coords[0]
-                            player.y = old_coords[1]
-                            # + add player damage
+                            for player2 in self.player_list:
+                                if player2.id == field:
+                                    # + add player damage
+                                    # + add player2 damage
+                                    hasp2moved = False
+                                    for move2 in self.move_list:
+                                        if move2[0] == player2.id:
+                                            if move2[1] == 1:
+                                                hasp2moved = True
+                                                break
+
+                                    if hasp2moved:
+                                        # get two random directions for monkeys
+                                        pass
+
+                                    else:
+                                        player.x = old_coords[0]
+                                        player.y = old_coords[1]
+
+                                    # + add player damage
+                                    # + add player2 damage
+                                    break
 
         for move in self.move_list:  # check for shoot
             if move[1] == 2:
