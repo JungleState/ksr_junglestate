@@ -22,6 +22,8 @@ class Controller {
                 return json.round;
             case "player_list":
                 return json.player_list;
+            default:
+                return "error";
         }
     }
 }
