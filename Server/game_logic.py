@@ -89,7 +89,9 @@ class Game:
             if move[1] == 1:
                 for player in self.player_list:
                     if player.id == move[0]:
+
                         old_coords = [player.x, player.y]
+
                         if move[2] == 0:
                             player.y = player.y - 1
                         elif move[2] == 2:
@@ -98,6 +100,27 @@ class Game:
                             player.y = player.y + 1
                         elif move[2] == 6:
                             player.x = player.x - 1
+
+                        field = self.matrix[player.x][player.y]
+
+                        if field == 0:  # empty field
+                            self.matrix[player.x][player.y] = player.id
+                            self.matrix[old_coords[0]
+                                        ][old_coords[1]] = 0
+
+                        elif field == 1:  # forrest field
+                            player.x = old_coords[0]
+                            player.y = old_coords[1]
+                            # + add player damage
+
+                        elif field > 1 and field < 100:  # item field
+                            # + collect item
+                            pass
+
+                        elif field > 99:
+                            player.x = old_coords[0]
+                            player.y = old_coords[1]
+                            # + add player damage
 
         for move in self.move_list:  # check for shoot
             if move[1] == 2:
