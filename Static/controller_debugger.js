@@ -49,24 +49,49 @@ class Controller {
         let type = "move";
         let direction = "none";
         switch(commandKey) {
-            case "w":
-                type = "move"
-                direction = 1
-            case "a":
-                type = "move"
-                direction = 3
-            case "s":
-                type = "move"
-                direction = 7
-            case "d":
-                type = "move"
-                direction = 3
+            case 87: // w
+                type = "move";
+                direction = 1;
+            case 65: // a
+                type = "move";
+                direction = 3;
+            case 83: // s
+                type = "move";
+                direction = 7;
+            case 68: // d
+                type = "move";
+                direction = 3;
+            case 85: // u
+                type = "attack";
+                direction = 0;
+            case 73: // i
+                type = "attack";
+                direction = 1;
+            case 79: // o
+                type = "attack";
+                direction = 2;
+            case 74: // j
+                type = "attack";
+                direction = 3;
+            case 97: // l
+                type = "attack";
+                direction = 5;
+            case 78: // n
+                type = "attack";
+                direction = 6;
+            case 77: // m
+                type = "attack";
+                direction = 7;
+            case 188: // ,
+                type = "attack";
+                direction = 8;
             default:
                 type = "move";
                 direction = "none";
         }
-        const response = await fetch("/action/${type}/${direction}");
-        const json = await response.json;
+        alert(type+direction);
+        // const response = await fetch("/action/${type}/${direction}");
+        // const json = await response.json;
     }
 
 }
