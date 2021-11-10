@@ -101,6 +101,7 @@ class Controller {
                 type = "move";
                 direction = "none";
         }
+
         const response = await fetch("/action/${type}/${direction}");
         const json = await response.json;
     }

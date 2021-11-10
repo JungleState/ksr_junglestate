@@ -1,3 +1,5 @@
+from random import randint
+
 FIELD_LENGH = 50
 FIELD_HEIGHT = 50
 
@@ -29,6 +31,7 @@ class Game:
     def __init__(self, id):
         self.move_list = []
         self.id = id
+        self.forest_spawning_rate = 8  # in procentage
         self.player_list = []
         self.next_player_id = 100
         self.state = 0
@@ -36,14 +39,23 @@ class Game:
         # field dimension 1st element = x; 2nd element = y
         self.field_dim = [FIELD_LENGH-1, FIELD_HEIGHT-1]
         self.matrix = []
-        for x in range(self.field_dim[0]+1):
-            self.matrix.append([])
-            for y in range(self.field_dim[1]+1):
-                self.matrix[x].append(0)
-
+        self.createMap()
+        
     def join(self, name):
         self.player_list.append(Player(self.next_player_id, name))
         self.next_player_id += 1
+
+    def createMap(self):
+        for x in range(self.field_dim[0]+1):
+            self.matrix.append([])
+            for y in range(self.field_dim[1]+1):
+                prob = randint(1, 100)
+                if prob <= self.forest_spawning_rate:
+                    self.matrix[x].append(1)
+                else:
+                    self.matrix[x].append(0)
+
+                self.matrix[x].append(0)
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:
@@ -68,7 +80,6 @@ class Game:
         self.move_list.append([player_id, move_id, dir])
         if len(self.move_list) == len(self.player_list):
             self.doNextRound()
-
         return True
 
     def GetPlayerListForJSON(self):
@@ -108,23 +119,26 @@ class Game:
                         field = self.matrix[player.x][player.y]
 
                         if field == 0:  # empty field
-                            field = player.id
-                            self.matrix[old_coor[0]][old_coor[1]] = 0
+                            self.matrix[player.x][player.y] = player.id
+                            self.matrix[old_coor[0]
+                                        ][old_coor[1]] = 0
 
                         elif field == 1:  # forrest field
                             player.x = old_coor[0]
                             player.y = old_coor[1]
-                            # + add player damage
+                            # TODO: add player damage
 
                         elif field > 1 and field < 100:  # item field
-                            # + collect item
+                            # TODO: collect item
+                            field = player.id
+                            self.matrix[old_coor[0]][old_coor[1]] = 0
                             pass
 
                         elif field > 99:
                             for player2 in self.player_list:
                                 if player2.id == field:
-                                    # + add player damage
-                                    # + add player2 damage
+                                    # TODO: add player damage
+                                    # TODO: add player2 damage
                                     hasp2moved = False
                                     for move2 in self.move_list:
                                         if move2[0] == player2.id:
@@ -133,19 +147,23 @@ class Game:
                                                 break
 
                                     if hasp2moved:
-                                        # get two random directions for monkeys
+                                        # TODO: eliminate a player
                                         pass
 
                                     else:
                                         player.x = old_coor[0]
                                         player.y = old_coor[1]
 
-                                    # + add player damage
-                                    # + add player2 damage
+                                    # TODO: add player damage
+                                    # TODO: add player2 damage
                                     break
+                            player.x = old_coor[0]
+                            player.y = old_coor[1]
+                            # + add player damage
 
         for move in self.move_list:  # check for shoot
             if move[1] == 2:
+                # TODO: add shooting
                 pass
 
         self.move_list.clear()
