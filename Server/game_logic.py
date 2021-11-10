@@ -29,6 +29,7 @@ class Game:
     def __init__(self, id):
         self.move_list = []
         self.id = id
+        self.forest_spawning_rate = 8 #in procentage
         self.player_list = []
         self.next_player_id = 100
         self.state = 0
@@ -44,6 +45,9 @@ class Game:
     def join(self, name):
         self.player_list.append(Player(self.next_player_id, name))
         self.next_player_id += 1
+
+    def createMap():
+        pass
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:
@@ -67,8 +71,7 @@ class Game:
 
         self.move_list.append([player_id, move_id, dir])
         if len(self.move_list) == len(self.player_list):
-            self.doNextRound()
-            
+            self.doNextRound()  
         return True
 
     def GetPlayerListForJSON(self):
