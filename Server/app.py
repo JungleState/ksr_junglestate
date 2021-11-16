@@ -15,7 +15,6 @@ def newGame(playerId):
     if len(game_list) == 0:
         newId = uuid.uuid4()
         game = Game(newId)
-        game.player_list.append(playerId)
         game.join(player_list.get(playerId), playerId)
         game_list.append(game)
         return game.id
@@ -100,7 +99,7 @@ def action(moveType, direction):
         abort(403)
 
 
-# Reset - only temporary
+### only temporary ###
 @app.route('/reset')
 def reset():
     global next_game_id
@@ -117,6 +116,8 @@ def reset():
 @app.route('/uuid')
 def getUuid():
     return jsonify(id=uuid.uuid4())
+
+### ###
 
 
 if __name__ == '__main__':
