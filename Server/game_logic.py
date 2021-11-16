@@ -42,6 +42,7 @@ class Game:
         
     def join(self, name, id):
         self.player_list.append(Player(id, name))
+        print(self.player_list)
 
     def createMap(self):
         #create random

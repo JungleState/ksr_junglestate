@@ -16,10 +16,11 @@ def newGame(playerId):
         newId = uuid.uuid4()
         game = Game(newId)
         game.player_list.append(playerId)
-        game.join(player_list.get(playerId))
+        game.join(player_list.get(playerId), playerId)
+        game_list.append(game)
         return game.id
     else:
-        game_list[-1].join(player_list.get(playerId))
+        game_list[-1].join(player_list.get(playerId), playerId)
         return game_list[-1].id
 
 def GetJSON(mode, game_id, player_id=None):
@@ -47,7 +48,7 @@ def root():
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
     if not player_name in player_list.values():
-        print(f"NEW PLAYER: {player_name} (Mode: {player_name})")
+        print(f"NEW PLAYER: {player_name} (Mode: {mode})")
         newId = str(uuid.uuid4())
         player_list.update({newId:player_name})
 
@@ -72,8 +73,8 @@ def view():
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
-                print(f"VIEW: RETURN JSON FOR {player_list.get(playerId)} (Mode: {session.get('mode')})")
-                return jsonify(GetJSON(session.get('mode'), gameId))
+                print(f"VIEW: RETURN JSON FOR '{player_list.get(playerId)}' (Mode: {session.get('mode')})")
+                return jsonify(GetJSON(session.get('mode'), gameId, playerId))
 
         print("ERROR: GAME NOT AVAILABLE")
         abort(410) # Game not available
@@ -111,6 +112,12 @@ def reset():
     player_list = {}
 
     return jsonify(msg="ok")
+
+
+@app.route('/uuid')
+def getUuid():
+    return jsonify(id=uuid.uuid4())
+
 
 if __name__ == '__main__':
     app.run(port=5500)
