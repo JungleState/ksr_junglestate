@@ -17,12 +17,11 @@ def newGame(playerId):
     if len(game_list) == 0:
         newId = uuid.uuid4()
         game = Game(newId)
-        game.player_list.append(playerId)
-        game.join(player_list.get(playerId))
+        game.join(player_list.get(playerId), playerId)
         game_list.append(game)
         return game.id
     else:
-        game_list[-1].join(player_list.get(playerId))
+        game_list[-1].join(player_list.get(playerId), playerId)
         return game_list[-1].id
 
 def GetJSON(mode, game_id, player_id=None):
@@ -45,12 +44,13 @@ def GetJSON(mode, game_id, player_id=None):
 
 @app.route('/')
 def root():
-    return send_file('../Static/junglestate.html')
+    app.logger.debug("ROOT")
+    return send_file('../static/junglestate.html')
 
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
     if not player_name in player_list.values():
-        app.logger.info(f"Mode: {mode}, Name: {player_name}")
+        app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
         newId = str(uuid.uuid4())
         player_list.update({newId:player_name})
 
@@ -60,11 +60,11 @@ def joinGame(mode, player_name):
         session['mode'] = mode
         session['gameId'] = gameId
 
-        return send_file('../Static/junglestate.html')
+        return jsonify(ok=True)
 
     else:
         app.logger.info("PLAYER NAME ALREADY IN USE")
-        abort(409) # Player name already in use
+        return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
 @app.route('/view')
@@ -75,7 +75,8 @@ def view():
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
-                return jsonify(GetJSON(session.get('mode'), gameId))
+                app.logger.debug(f"VIEW: RETURN JSON FOR '{player_list.get(playerId)}' (Mode: {session.get('mode')})")
+                return jsonify(GetJSON(session.get('mode'), gameId, playerId))
 
         app.logger.info("ERROR: GAME NOT AVAILABLE")
         abort(410) # Game not available
@@ -85,14 +86,14 @@ def view():
         abort(403) # Invalid player id
 
 # Input
-@app.route('/action/<string:command>/<int:direction>')
-def action(command, direction):
+@app.route('/action/<string:moveType>/<int:direction>')
+def action(moveType, direction):
     playerId = session.get('playerId')
     # Check if player is valid
     if playerId in player_list.keys():
         for game in game_list:
             if game.id == session.get('gameId'):
-                pass
+                game.addMove(playerId, moveType, direction)
 
         return jsonify(msg="aha")
 
@@ -101,18 +102,14 @@ def action(command, direction):
         abort(403)
 
 
-# Reset - only temporary
-@app.route('/reset')
-def reset():
-    global next_game_id
-    global player_list
-    global game_list
+### only temporary ##
 
-    next_game_id = 0
-    game_list = []
-    player_list = {}
+@app.route('/uuid')
+def getUuid():
+    return jsonify(id=uuid.uuid4())
 
-    return jsonify(msg="ok")
+### ###
+
 
 if __name__ == '__main__':
     app.run(port=5500)
