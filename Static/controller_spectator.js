@@ -26,9 +26,16 @@ class Controller {
                 return "error";
         }
     }
+
+    async joinGame(playerName) {
+        let mode = "spec";
+        const response = await fetch("/view/${mode}/${playerName}")
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function() {
     controller = new Controller;
     view = new View;
+
+    joinGame()
 });
