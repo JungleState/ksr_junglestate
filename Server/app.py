@@ -2,9 +2,11 @@ import os
 from flask import Flask, jsonify, session, abort, send_file
 from game_logic import Game
 import uuid
+import logging
 
 
 app = Flask(__name__)
+app.logger.setLevel("DEBUG")
 app.secret_key = os.urandom(16)
 
 next_game_id = 0
@@ -17,6 +19,7 @@ def newGame(playerId):
         game = Game(newId)
         game.player_list.append(playerId)
         game.join(player_list.get(playerId))
+        game_list.append(game)
         return game.id
     else:
         game_list[-1].join(player_list.get(playerId))
@@ -25,6 +28,7 @@ def newGame(playerId):
 def GetJSON(mode, game_id, player_id=None):
     for game in game_list:
         if game.id == game_id:
+            app.logger.info(f"Found game {game_id} for player {player_id}")
             if mode == "client":#returns JSON file for client
                 return {"field_of_view":game.GetFieldOfView(player_id),
                                "items":game.GetItemDict(player_id),
@@ -41,12 +45,12 @@ def GetJSON(mode, game_id, player_id=None):
 
 @app.route('/')
 def root():
-    return send_file('..\\Static\\junglestate.html')
+    return send_file('../Static/junglestate.html')
 
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
     if not player_name in player_list.values():
-        print(f"Mode: {mode}, Name: {player_name}")
+        app.logger.info(f"Mode: {mode}, Name: {player_name}")
         newId = str(uuid.uuid4())
         player_list.update({newId:player_name})
 
@@ -56,10 +60,10 @@ def joinGame(mode, player_name):
         session['mode'] = mode
         session['gameId'] = gameId
 
-        return send_file('..\\Static\\junglestate.html')
+        return send_file('../Static/junglestate.html')
 
     else:
-        print("PLAYER NAME ALREADY IN USE")
+        app.logger.info("PLAYER NAME ALREADY IN USE")
         abort(409) # Player name already in use
 
 # View - Server knows if the request comes from a spectator or a player
@@ -73,11 +77,11 @@ def view():
             if game.id == gameId:
                 return jsonify(GetJSON(session.get('mode'), gameId))
 
-        print("ERROR: GAME NOT AVAILABLE")
+        app.logger.info("ERROR: GAME NOT AVAILABLE")
         abort(410) # Game not available
 
     else:
-        print("INVALID PLAYER ID")
+        app.logger.info("INVALID PLAYER ID")
         abort(403) # Invalid player id
 
 # Input
@@ -93,7 +97,7 @@ def action(command, direction):
         return jsonify(msg="aha")
 
     else:
-        print("INVALID PLAYER ID")
+        app.logger.info("INVALID PLAYER ID")
         abort(403)
 
 
