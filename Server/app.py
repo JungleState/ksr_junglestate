@@ -17,8 +17,10 @@ def newGame(playerId):
         game = Game(newId)
         game.player_list.append(playerId)
         game.join(player_list.get(playerId))
+        return game.id
     else:
-        pass
+        game_list[-1].join(player_list.get(playerId))
+        return game_list[-1].id
 
 def GetJSON(mode, game_id, player_id=None):
     for game in game_list:
@@ -39,20 +41,23 @@ def GetJSON(mode, game_id, player_id=None):
 
 @app.route('/')
 def root():
-    return send_file('..\\Static\\junglestate.html')
+    print("ROOT")
+    return send_file('../static/junglestate.html')
 
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
     if not player_name in player_list.values():
-        print(f"Mode: {mode}, Name: {player_name}")
+        print(f"NEW PLAYER: {player_name} (Mode: {player_name})")
         newId = str(uuid.uuid4())
-        session['playerId'] = newId
-        session['mode'] = mode
         player_list.update({newId:player_name})
 
-        newGame(newId)
+        gameId = newGame(newId)
 
-        return send_file('..\\Static\\junglestate.html')
+        session['playerId'] = newId
+        session['mode'] = mode
+        session['gameId'] = gameId
+
+        return send_file('../static/junglestate.html')
 
     else:
         print("PLAYER NAME ALREADY IN USE")
@@ -62,10 +67,12 @@ def joinGame(mode, player_name):
 @app.route('/view')
 def view():
     playerId = session.get('playerId')
+    # Check if player is valid
     if playerId in player_list.keys():
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
+                print(f"VIEW: RETURN JSON FOR {player_list.get(playerId)} (Mode: {session.get('mode')})")
                 return jsonify(GetJSON(session.get('mode'), gameId))
 
         print("ERROR: GAME NOT AVAILABLE")
@@ -76,10 +83,15 @@ def view():
         abort(403) # Invalid player id
 
 # Input
-@app.route('/action/<string:command>/<int:direction>')
-def action(command, direction):
+@app.route('/action/<string:moveType>/<int:direction>')
+def action(moveType, direction):
     playerId = session.get('playerId')
+    # Check if player is valid
     if playerId in player_list.keys():
+        for game in game_list:
+            if game.id == session.get('gameId'):
+                game.addMove(playerId, moveType, direction)
+
         return jsonify(msg="aha")
 
     else:
