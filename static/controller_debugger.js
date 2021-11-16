@@ -36,8 +36,12 @@ class Controller {
             playerName = this.randomPlayerName();
         }
         let mode = "client";
-        const response = await fetch("/view/${mode}/${playerName}");
+        const response = await fetch(`/view/${mode}/${playerName}`);
         const json = await response.json;
+        // if name is already taken, choose random
+        if (json.ok == false) {
+            this.joinGame(this.randomPlayerName());
+        }
     }
 
     // only for testing (probably)
@@ -130,7 +134,7 @@ class Controller {
                 direction = -1;
         }
 
-        const response = await fetch("/action/${type}/${direction}");
+        const response = await fetch(`/action/${type}/${direction}`);
         const json = await response.json;
     }
 

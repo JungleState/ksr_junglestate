@@ -1,7 +1,7 @@
 from random import randint
 
-FIELD_LENGH = 50
-FIELD_HEIGHT = 50
+FIELD_LENGH = 17
+FIELD_HEIGHT = 17
 
 
 class Item:
@@ -32,6 +32,7 @@ class Game:
         self.move_list = []
         self.id = id
         self.forest_spawning_rate = 8  # in procentage
+        self.item_spawning_rate = 10  # in procentage
         self.player_list = []
         self.state = 0
         self.round = 0
@@ -39,7 +40,7 @@ class Game:
         self.field_dim = [FIELD_LENGH-1, FIELD_HEIGHT-1]
         self.matrix = []
         self.createMap()
-        
+
     def join(self, name, id):
         self.player_list.append(Player(id, name))
         x = randint(1, FIELD_LENGH-2)
@@ -49,7 +50,7 @@ class Game:
         self.player_list[len(self.player_list)-1].y = y
 
     def createMap(self):
-        #create random
+        # create random
         for x in range(self.field_dim[0]+1):
             self.matrix.append([])
             for y in range(self.field_dim[1]+1):
@@ -59,6 +60,8 @@ class Game:
                     prob = randint(1, 100)
                     if prob <= self.forest_spawning_rate:
                         self.matrix[x].append(1)
+                    elif prob <= self.forest_spawning_rate + self.item_spawning_rate:
+                        self.matrix[x].append(2)
                     else:
                         self.matrix[x].append(0)
 
@@ -136,6 +139,7 @@ class Game:
                         elif field > 1 and field < 100:  # item field
                             # TODO: collect item
                             field = player.id
+                            self.matrix[player.x][player.y] = player.id
                             self.matrix[old_coor[0]][old_coor[1]] = 0
                             pass
 
