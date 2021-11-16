@@ -34,7 +34,7 @@ def GetJSON(mode, game_id, player_id=None):
                                "round":game.round}
             elif mode == "spec":#returns JSON file for spectator
                 return {"id":100, 
-                               "field":game.matrix, 
+                               "field":game.SerializeMatrix(), 
                                "state":game.state, 
                                "round":game.round,
                                "player_list":game.GetPlayerListForJSON()}
