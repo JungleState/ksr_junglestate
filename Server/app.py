@@ -66,6 +66,7 @@ def joinGame(mode, player_name):
 @app.route('/view')
 def view():
     playerId = session.get('playerId')
+    # Check if player is valid
     if playerId in player_list.keys():
         gameId = session.get('gameId')
         for game in game_list:
@@ -83,6 +84,7 @@ def view():
 @app.route('/action/<string:command>/<int:direction>')
 def action(command, direction):
     playerId = session.get('playerId')
+    # Check if player is valid
     if playerId in player_list.keys():
         for game in game_list:
             if game.id == session.get('gameId'):
