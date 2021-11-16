@@ -42,18 +42,25 @@ class Game:
 
     def join(self, name, id):
         self.player_list.append(Player(id, name))
+        x = randint(1, FIELD_LENGH-2)
+        y = randint(1, FIELD_HEIGHT-2)
+        self.matrix[x][y] = id
+        self.player_list[len(self.player_list)-1].x = x
+        self.player_list[len(self.player_list)-1].y = y
 
     def createMap(self):
         # create random
         for x in range(self.field_dim[0]+1):
             self.matrix.append([])
             for y in range(self.field_dim[1]+1):
-                prob = randint(1, 100)
-                if prob <= self.forest_spawning_rate:
+                if x == 0 or x == FIELD_LENGH-1 or y == 0 or y == FIELD_HEIGHT-1:
                     self.matrix[x].append(1)
                 else:
-                    self.matrix[x].append(0)
-                self.matrix[x].append(0)
+                    prob = randint(1, 100)
+                    if prob <= self.forest_spawning_rate:
+                        self.matrix[x].append(1)
+                    else:
+                        self.matrix[x].append(0)
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:

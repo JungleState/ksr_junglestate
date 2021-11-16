@@ -1,3 +1,4 @@
+from random import randint
 import pygame
 import sys
 import game_logic
@@ -41,14 +42,24 @@ def view(game):
                 elif(map[i][j]) > 99:
                     pygame.draw.circle(SCREEN, BROWN,
                                        (i*40+20, j*40+20), 15)
-        clock.tick(30)
+        clock.tick(2)
         pygame.display.update()
 
 
 def doTurn(game):
+    game.doNextRound()
+    r1 = randint(0, 3)
+    game.addMove(100, 1, r1*2)
+    r2 = randint(0, 3)
+    game.addMove(101, 1, r2*2)
+    r3 = randint(0, 3)
+    game.addMove(102, 1, r3*2)
     return game.matrix
 
 
 if __name__ == "__main__":
     game = game_logic.Game(1)
+    game.join(f'Sheran', 100)
+    game.join(f'Joran', 101)
+    game.join(f'Matthias', 102)
     view(game)
