@@ -38,6 +38,10 @@ class Controller {
         let mode = "client";
         const response = await fetch("/view/${mode}/${playerName}");
         const json = await response.json;
+        // if name is already taken, choose random
+        if (json.ok == false) {
+            this.joinGame(this.randomPlayerName());
+        }
     }
 
     // only for testing (probably)
