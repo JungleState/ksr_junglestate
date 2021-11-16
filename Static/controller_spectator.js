@@ -26,9 +26,24 @@ class Controller {
                 return "error";
         }
     }
+
+    async joinGame(playerName) {
+        let mode = "spec";
+        const response = await fetch("/view/${mode}/${playerName}");
+        const json = await response.json;
+    }
+
+    // only for testing (probably)
+    async randomPlayerName() {
+        const response = await fetch("/uuid");
+        const json = await response.json;
+        return json.id;
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function() {
     controller = new Controller;
     view = new View;
+
+    joinGame(randomPlayerName());
 });
