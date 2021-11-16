@@ -31,6 +31,26 @@ class Controller {
         }
     }
 
+    async joinGame(playerName) {
+        if (playerName == "random") {
+            playerName = this.randomPlayerName();
+        }
+        let mode = "client";
+        const response = await fetch(`/view/${mode}/${playerName}`);
+        const json = await response.json;
+        // if name is already taken, choose random
+        if (json.ok == false) {
+            this.joinGame(this.randomPlayerName());
+        }
+    }
+
+    // only for testing (probably)
+    async randomPlayerName() {
+        const response = await fetch("/uuid");
+        const json = await response.json;
+        return json.id;
+    }
+
     async keyInput(commandKey) { // send command to app.py
         // # move_id list:
         // # 0: Stay
@@ -114,7 +134,7 @@ class Controller {
                 direction = -1;
         }
 
-        const response = await fetch("/action/${type}/${direction}");
+        const response = await fetch(`/action/${type}/${direction}`);
         const json = await response.json;
     }
 
@@ -123,4 +143,6 @@ class Controller {
 document.addEventListener("DOMContentLoaded", function() {
     view = new View;
     controller = new Controller;
+
+    joinGame("random");
 });

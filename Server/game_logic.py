@@ -32,6 +32,7 @@ class Game:
         self.move_list = []
         self.id = id
         self.forest_spawning_rate = 8  # in procentage
+        self.item_spawning_rate = 10  # in procentage
         self.player_list = []
         self.state = 0
         self.round = 0
@@ -42,18 +43,48 @@ class Game:
 
     def join(self, name, id):
         self.player_list.append(Player(id, name))
+        x = randint(1, FIELD_LENGH-2)
+        y = randint(1, FIELD_HEIGHT-2)
+        self.matrix[x][y] = id
+        self.player_list[len(self.player_list)-1].x = x
+        self.player_list[len(self.player_list)-1].y = y
 
     def createMap(self):
         # create random
         for x in range(self.field_dim[0]+1):
             self.matrix.append([])
             for y in range(self.field_dim[1]+1):
-                prob = randint(1, 100)
-                if prob <= self.forest_spawning_rate:
+                if x == 0 or x == FIELD_LENGH-1 or y == 0 or y == FIELD_HEIGHT-1:
                     self.matrix[x].append(1)
                 else:
-                    self.matrix[x].append(0)
-                self.matrix[x].append(0)
+                    prob = randint(1, 100)
+                    if prob <= self.forest_spawning_rate:
+                        self.matrix[x].append(1)
+                    elif prob <= self.forest_spawning_rate + self.item_spawning_rate:
+                        self.matrix[x].append(2)
+                    else:
+                        self.matrix[x].append(0)
+        
+        for x in range(self.field_dim[0]-1):
+            for y in range(self.field_dim[1]-1):
+                surrounding_obstacle = 0
+                plus_x_list = [1, 2, 1, 0]
+                plus_y_list = [2, 1, 0, 1]
+                for i in range(4):
+                    if self.matrix[x+plus_x_list[i]][y+plus_y_list[i]] == 1:
+                        surrounding_obstacle += 1
+                
+                # while surrounding_obstacle > 2:
+                #     coord = randint(0, 3)
+                #     if self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]] == 1:
+                #         del self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]]
+                #         surrounding_obstacle -= 1
+            
+                
+                
+        
+
+        
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:
@@ -129,6 +160,7 @@ class Game:
                         elif field > 1 and field < 100:  # item field
                             # TODO: collect item
                             field = player.id
+                            self.matrix[player.x][player.y] = player.id
                             self.matrix[old_coor[0]][old_coor[1]] = 0
                             pass
 

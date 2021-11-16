@@ -9,7 +9,7 @@ class View{
             width= 50; 
             height=50;
         }
-        if (type=='player'){ //Dimensions for human player
+        if (type=='client'){ //Dimensions for human player
             widht= 5;
             height=5;
         }
