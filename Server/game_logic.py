@@ -1,7 +1,7 @@
 from random import randint
 
-FIELD_LENGH = 50
-FIELD_HEIGHT = 50
+FIELD_LENGH = 17
+FIELD_HEIGHT = 17
 
 
 class Item:
@@ -33,19 +33,18 @@ class Game:
         self.id = id
         self.forest_spawning_rate = 8  # in procentage
         self.player_list = []
-        self.next_player_id = 100
         self.state = 0
         self.round = 0
         # field dimension 1st element = x; 2nd element = y
         self.field_dim = [FIELD_LENGH-1, FIELD_HEIGHT-1]
         self.matrix = []
         self.createMap()
-        
-    def join(self, name):
-        self.player_list.append(Player(self.next_player_id, name))
-        self.next_player_id += 1
+
+    def join(self, name, id):
+        self.player_list.append(Player(id, name))
 
     def createMap(self):
+        # create random
         for x in range(self.field_dim[0]+1):
             self.matrix.append([])
             for y in range(self.field_dim[1]+1):
@@ -54,7 +53,6 @@ class Game:
                     self.matrix[x].append(1)
                 else:
                     self.matrix[x].append(0)
-
                 self.matrix[x].append(0)
 
     def addMove(self, player_id, move_id, dir):
