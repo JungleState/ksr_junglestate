@@ -17,6 +17,10 @@ BROWN = (121, 63, 13)
 BACKGROUND = (195, 142, 90)
 GREEN = (0, 82, 33)
 
+P1 = (120, 60, 10)
+P2 = (135, 75, 30)
+P3 = (150, 90, 50)
+
 
 def view(game):
 
@@ -40,9 +44,16 @@ def view(game):
                     pygame.draw.circle(SCREEN, YELLOW,
                                        (i*40+20, j*40+20), 10)
                 elif(map[i][j]) > 99:
-                    pygame.draw.circle(SCREEN, BROWN,
-                                       (i*40+20, j*40+20), 15)
-        clock.tick(2)
+                    if map[i][j] == 100:
+                        pygame.draw.circle(SCREEN, P1,
+                                           (i*40+20, j*40+20), 15)
+                    if map[i][j] == 101:
+                        pygame.draw.circle(SCREEN, P2,
+                                           (i*40+20, j*40+20), 15)
+                    if map[i][j] == 102:
+                        pygame.draw.circle(SCREEN, P3,
+                                           (i*40+20, j*40+20), 15)
+        clock.tick(10)
         pygame.display.update()
 
 
