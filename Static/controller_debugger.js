@@ -32,6 +32,9 @@ class Controller {
     }
 
     async joinGame(playerName) {
+        if (playerName == "random") {
+            playerName = this.randomPlayerName();
+        }
         let mode = "client";
         const response = await fetch("/view/${mode}/${playerName}");
         const json = await response.json;
@@ -137,5 +140,5 @@ document.addEventListener("DOMContentLoaded", function() {
     view = new View;
     controller = new Controller;
 
-    joinGame(randomPlayerName());
+    joinGame("random");
 });
