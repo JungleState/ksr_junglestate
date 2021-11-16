@@ -31,6 +31,19 @@ class Controller {
         }
     }
 
+    async joinGame(playerName) {
+        let mode = "client";
+        const response = await fetch("/view/${mode}/${playerName}");
+        const json = await response.json;
+    }
+
+    // only for testing (probably)
+    async randomPlayerName() {
+        const response = await fetch("/uuid");
+        const json = await response.json;
+        return json.id;
+    }
+
     async keyInput(commandKey) { // send command to app.py
         // # move_id list:
         // # 0: Stay
@@ -123,4 +136,6 @@ class Controller {
 document.addEventListener("DOMContentLoaded", function() {
     view = new View;
     controller = new Controller;
+
+    joinGame(randomPlayerName());
 });
