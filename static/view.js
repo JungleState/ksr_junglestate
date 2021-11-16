@@ -3,6 +3,14 @@
 class View{
     constructor(field){
         this.field = field
+
+        this.types = {
+            0:"plain",
+            1:"jungle",
+            2:"coconut",
+            3:"banana",
+            4:"pineapple"
+        }
     }
     Showfield(type, matrix){ //show the field
         if (type=='spectator'){ //Dimensions for spectator
