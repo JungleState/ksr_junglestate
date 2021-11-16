@@ -36,3 +36,9 @@ class View{
     }
 
 }
+
+var testmatrix = [[1, 0, 0, 0],[1, 1, 0, 1],[1, 0, 1, 0], [1, 0, 1, 1]]
+var playerdict = {100: richii}
+
+const view = new View(document.getElementsByClassName("grid")[0]);
+view.Showfield(testmatrix, playerdict)
