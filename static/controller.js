@@ -1,6 +1,9 @@
+import "view"
+
 class Controller {
     constructor() {
         this.field == this.getData("field");
+        this.mode == "client";
 
         // listen for input
         window.onkeydown = (key) => {
@@ -9,7 +12,7 @@ class Controller {
 
         // field updates
         setInterval(() => {
-            View.Showfield("spectator", this.getData("field"));
+            View.Showfield(this.mode, this.getData("field"));
         }, 500);
     }
 
@@ -31,11 +34,10 @@ class Controller {
         }
     }
 
-    async joinGame(playerName) {
+    async joinGame(mode, playerName) {
         if (playerName == "random") {
             playerName = this.randomPlayerName();
         }
-        let mode = "client";
         const response = await fetch(`/view/${mode}/${playerName}`);
         const json = await response.json;
         // if name is already taken, choose random
@@ -144,5 +146,5 @@ document.addEventListener("DOMContentLoaded", function() {
     view = new View;
     controller = new Controller;
 
-    joinGame("random");
+    joinGame("client", "random"); //client||spec
 });
