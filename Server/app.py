@@ -57,11 +57,11 @@ def joinGame(mode, player_name):
         session['mode'] = mode
         session['gameId'] = gameId
 
-        return send_file('../static/junglestate.html')
+        return jsonify(ok=True)
 
     else:
         print("PLAYER NAME ALREADY IN USE")
-        abort(409) # Player name already in use
+        return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
 @app.route('/view')
@@ -99,19 +99,7 @@ def action(moveType, direction):
         abort(403)
 
 
-### only temporary ###
-@app.route('/reset')
-def reset():
-    global next_game_id
-    global player_list
-    global game_list
-
-    next_game_id = 0
-    game_list = []
-    player_list = {}
-
-    return jsonify(msg="ok")
-
+### only temporary ##
 
 @app.route('/uuid')
 def getUuid():
