@@ -33,7 +33,7 @@ def GetJSON(mode, game_id, player_id=None):
                                "items":game.GetItemDict(player_id),
                                "round":game.round}
             elif mode == "spec":#returns JSON file for spectator
-                return {"id":100, 
+                return {"id":player_id, 
                                "field":game.matrix, 
                                "state":game.state, 
                                "round":game.round,
@@ -100,7 +100,6 @@ def action(moveType, direction):
     else:
         app.logger.info("INVALID PLAYER ID")
         abort(403)
-
 
 ### only temporary ##
 
