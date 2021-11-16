@@ -32,9 +32,21 @@ class Controller {
     }
 
     async keyInput(commandKey) { // send command to app.py
-        //012
-        //345
-        //678
+        // # move_id list:
+        // # 0: Stay
+        // # 1: Move
+        // # 2: Shoot
+        // #
+        // # dir list:
+        // # -1: No direction
+        // # 0: up
+        // # 1: up right
+        // # 2: right
+        // # 3: down right
+        // # 4: down
+        // # 5: down left
+        // # 6: left
+        // # 7: up left
 
         // 8:"backspace", 9:"tab", 13:"return", 16:"shift", 17:"ctrl", 18:"alt", 19:"pausebreak", 20:"capslock", 27:"escape", 32:" ", 33:"pageup",
         // 34:"pagedown", 35:"end", 36:"home", 37:"left", 38:"up", 39:"right", 40:"down", 43:"+", 44:"printscreen", 45:"insert", 46:"delete",
@@ -50,56 +62,56 @@ class Controller {
         let direction = "none";
         switch(commandKey) {
             case 87: // w
-                type = "move";
-                direction = 1;
-                break;
-            case 65: // a
-                type = "move";
-                direction = 3;
-                break;
-            case 83: // s
-                type = "move";
-                direction = 7;
-                break;
-            case 68: // d
-                type = "move";
-                direction = 3;
-                break;
-            case 85: // u
-                type = "attack";
+                type = 1;
                 direction = 0;
                 break;
-            case 73: // i
-                type = "attack";
-                direction = 1;
-                break;
-            case 79: // o
-                type = "attack";
-                direction = 2;
-                break;
-            case 74: // j
-                type = "attack";
-                direction = 3;
-                break;
-            case 97: // l
-                type = "attack";
-                direction = 5;
-                break;
-            case 78: // n
-                type = "attack";
+            case 65: // a
+                type = 1;
                 direction = 6;
                 break;
-            case 77: // m
-                type = "attack";
+            case 83: // s
+                type = 1;
+                direction = 4;
+                break;
+            case 68: // d
+                type = 1;
+                direction = 2;
+                break;
+            case 85: // u
+                type = 2;
                 direction = 7;
                 break;
+            case 73: // i
+                type = 2;
+                direction = 0;
+                break;
+            case 79: // o
+                type = 2;
+                direction = 1;
+                break;
+            case 74: // j
+                type = 2;
+                direction = 6;
+                break;
+            case 97: // l
+                type = 2;
+                direction = 2;
+                break;
+            case 78: // n
+                type = 2;
+                direction = 5;
+                break;
+            case 77: // m
+                type = 2;
+                direction = 4;
+                break;
             case 188: // ,
-                type = "attack";
-                direction = 8;
+                type = 2;
+                direction = 3;
                 break;
             default:
-                type = "move";
-                direction = "none";
+                type = 0;
+                direction = -1;
         }
 
         const response = await fetch("/action/${type}/${direction}");
