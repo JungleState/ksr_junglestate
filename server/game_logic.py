@@ -32,6 +32,7 @@ class Game:
     def __init__(self, id):
         self.move_list = []
         self.id = id
+        self.next_player_id = 100
         self.forest_spawning_rate = 8  # in procentage
         self.item_spawning_rate = 10  # in procentage
         self.player_list = []
@@ -42,8 +43,9 @@ class Game:
         self.matrix = []
         self.createMap()
 
-    def join(self, name, id):
-        self.player_list.append(Player(id, name))
+    def join(self, name, uuid):
+        self.player_list.append(Player(uuid, self.next_player_id, name))
+        self.next_player_id += 1
         x = randint(1, FIELD_LENGH-2)
         y = randint(1, FIELD_HEIGHT-2)
         self.matrix[x][y] = id
