@@ -1,3 +1,5 @@
+import "view_debugger"
+
 class Controller {
     constructor() {
         this.field == this.getData("field");

@@ -1,4 +1,4 @@
-import "View_Spectator"
+import "view_spectator"
 
 class Controller {
     constructor() {
