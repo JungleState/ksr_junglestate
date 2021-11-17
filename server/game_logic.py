@@ -64,7 +64,7 @@ class Game:
                         self.matrix[x].append(2)
                     else:
                         self.matrix[x].append(0)
-        
+
         for x in range(self.field_dim[0]-1):
             for y in range(self.field_dim[1]-1):
                 surrounding_obstacle = 0
@@ -73,18 +73,12 @@ class Game:
                 for i in range(4):
                     if self.matrix[x+plus_x_list[i]][y+plus_y_list[i]] == 1:
                         surrounding_obstacle += 1
-                
+
                 # while surrounding_obstacle > 2:
                 #     coord = randint(0, 3)
                 #     if self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]] == 1:
                 #         del self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]]
                 #         surrounding_obstacle -= 1
-            
-                
-                
-        
-
-        
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:
@@ -198,6 +192,17 @@ class Game:
             if move[1] == 2:
                 for player in self.player_list:
                     if player.id == move[0]:
+
+                        shoot_coor = [player.x, player.y]
+
+                        if move[2] == 0:
+                            shoot_coor[1] = shoot_coor[1] - 1
+                        elif move[2] == 2:
+                            shoot_coor[0] = shoot_coor[0] + 1
+                        elif move[2] == 4:
+                            shoot_coor[1] = shoot_coor[1] + 1
+                        elif move[2] == 6:
+                            shoot_coor[0] = shoot_coor[0] - 1
                         # TODO: add shooting
                         pass
 
