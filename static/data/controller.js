@@ -1,5 +1,3 @@
-import "view"
-
 class Controller {
     constructor() {
         this.field == this.getData("field");
@@ -12,7 +10,7 @@ class Controller {
 
         // field updates
         setInterval(() => {
-            View.Showfield(this.mode, this.getData("field"));
+            View.showField(this.mode, this.getData("field"));
         }, 500);
     }
 
@@ -147,4 +145,8 @@ document.addEventListener("DOMContentLoaded", function() {
     controller = new Controller;
 
     joinGame("client", "random"); //client||spec
+
+
+    // test thingy:
+    // view.showField("spectator", [[1, 0, 0, 0],[1, 1, 0, 1],[1, 0, 1, 0], [1, 0, 1, 1]]);
 });
