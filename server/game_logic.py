@@ -12,8 +12,9 @@ class Item:
 
 
 class Player:
-    def __init__(self, id, name):
+    def __init__(self, uuid, id, name):
         self.id = id
+        self.uuid = uuid
         self.knockouts = 0
         self.hits = 0
         self.x = 0
@@ -31,6 +32,7 @@ class Game:
     def __init__(self, id):
         self.move_list = []
         self.id = id
+        self.next_player_id = 100
         self.forest_spawning_rate = 8  # in procentage
         self.item_spawning_rate = 10  # in procentage
         self.player_list = []
@@ -41,8 +43,9 @@ class Game:
         self.matrix = []
         self.createMap()
 
-    def join(self, name, id):
-        self.player_list.append(Player(id, name))
+    def join(self, name, uuid):
+        self.player_list.append(Player(uuid, self.next_player_id, name))
+        self.next_player_id += 1
         x = randint(1, FIELD_LENGH-2)
         y = randint(1, FIELD_HEIGHT-2)
         self.matrix[x][y] = id
@@ -73,12 +76,26 @@ class Game:
                 for i in range(4):
                     if self.matrix[x+plus_x_list[i]][y+plus_y_list[i]] == 1:
                         surrounding_obstacle += 1
+<<<<<<< HEAD
 
                 # while surrounding_obstacle > 2:
                 #     coord = randint(0, 3)
                 #     if self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]] == 1:
                 #         del self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]]
                 #         surrounding_obstacle -= 1
+=======
+                
+                while surrounding_obstacle > 2:
+                    coord = randint(0, 3)
+                    x_coord = x+plus_x_list[coord]
+                    y_coord = y+plus_y_list[coord]
+                    if x_coord != 0 and x_coord != self.field_dim[0] and y_coord != 0 and y_coord != self.field_dim[1]:
+                        if self.matrix[x_coord][y_coord] == 1:
+                            self.matrix[x_coord][y_coord] = 0
+                            surrounding_obstacle -= 1
+            
+        
+>>>>>>> 9d1a4bbdd119ec3629c5ee031e3378a68c92c07a
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:
