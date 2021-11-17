@@ -1,0 +1,13 @@
+body {
+    background-color: rgb(247, 255, 138);
+}
+
+.grid div {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.grid div div {
+    padding-left: 10px;
+}

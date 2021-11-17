@@ -5,10 +5,54 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JungleState</title>
-    <link rel="icon" type="image/png" href="../Static/monkey.png">
+    <link rel="icon" type="image/png" href="./data/sprites/monkey.png">
+    <script type="text/javascript" src="data/view.js"></script>
+    <script type="text/javascript" src="data/controller.js"></script>
 </head>
 <body>
     <h1>Welcome!</h1>
     <p>Fetch <br> /joinGame/&#60;Mode (spec or client)&#62;/&#60;Your player name&#62; <br> to get a player ID</p>
+    <input id="inp" type="text">
+    <label for="inp">Player Name</label>
+    <br>
+    <input  id="mode" type="checkbox">
+    <label for="mode">Spectator?</label>
+    <br>
+    <button onclick="login()">Login</button>
+    <script type="text/javascript">
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                login();
+            }
+        });
+
+        async function login() {
+
+            let name = document.getElementById('inp').value;
+            let mode = document.getElementById('mode').checked;
+
+            let modeName;
+
+            if (mode) {
+                modeName = 'spec';
+            }
+            else {
+                modeName = 'client';
+            }
+
+            let response = await fetch(`/joinGame/${modeName}/${name}`);
+            let json = await response.json();
+
+            if (json.ok) {
+                alert("OK");
+            }
+            else {
+                alert("NO");
+            }
+
+            document.getElementById('inp').value = "";
+            document.getElementById('mode').checked = false;
+        }
+    </script>
 </body>
 </html>

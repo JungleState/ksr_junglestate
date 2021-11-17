@@ -2,7 +2,6 @@ import os
 from flask import Flask, jsonify, session, abort, send_file
 from game_logic import Game
 import uuid
-import logging
 
 
 app = Flask(__name__)
