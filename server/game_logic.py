@@ -74,16 +74,15 @@ class Game:
                     if self.matrix[x+plus_x_list[i]][y+plus_y_list[i]] == 1:
                         surrounding_obstacle += 1
                 
-                # while surrounding_obstacle > 2:
-                #     coord = randint(0, 3)
-                #     if self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]] == 1:
-                #         del self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]]
-                #         surrounding_obstacle -= 1
+                while surrounding_obstacle > 2:
+                    coord = randint(0, 3)
+                    x_coord = x+plus_x_list[coord]
+                    y_coord = y+plus_y_list[coord]
+                    if x_coord != 0 and x_coord != self.field_dim[0] and y_coord != 0 and y_coord != self.field_dim[1]:
+                        if self.matrix[x_coord][y_coord] == 1:
+                            self.matrix[x_coord][y_coord] = 0
+                            surrounding_obstacle -= 1
             
-                
-                
-        
-
         
 
     def addMove(self, player_id, move_id, dir):
