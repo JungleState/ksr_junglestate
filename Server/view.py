@@ -17,9 +17,11 @@ BROWN = (121, 63, 13)
 BACKGROUND = (195, 142, 90)
 GREEN = (0, 82, 33)
 
-P1 = (120, 60, 10)
-P2 = (135, 75, 30)
-P3 = (150, 90, 50)
+P1 = (120, 50, 0)
+P2 = (120, 50, 15)
+P3 = (120, 50, 30)
+P4 = (120, 50, 45)
+P5 = (120, 50, 60)
 
 
 def view(game):
@@ -53,6 +55,12 @@ def view(game):
                     if map[i][j] == 102:
                         pygame.draw.circle(SCREEN, P3,
                                            (i*40+20, j*40+20), 15)
+                    if map[i][j] == 103:
+                        pygame.draw.circle(SCREEN, P4,
+                                           (i*40+20, j*40+20), 15)
+                    if map[i][j] == 104:
+                        pygame.draw.circle(SCREEN, P5,
+                                           (i*40+20, j*40+20), 15)
         clock.tick(10)
         pygame.display.update()
 
@@ -65,6 +73,10 @@ def doTurn(game):
     game.addMove(101, 1, r2*2)
     r3 = randint(0, 3)
     game.addMove(102, 1, r3*2)
+    r4 = randint(0, 3)
+    game.addMove(103, 1, r4*2)
+    r5 = randint(0, 3)
+    game.addMove(104, 1, r5*2)
     return game.matrix
 
 
@@ -73,4 +85,6 @@ if __name__ == "__main__":
     game.join(f'Sheran', 100)
     game.join(f'Joran', 101)
     game.join(f'Matthias', 102)
+    game.join(f'Pacifico', 103)
+    game.join(f'Philipp', 104)
     view(game)
