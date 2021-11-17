@@ -84,6 +84,3 @@ In der Matrix befinden sich nur Zahlen. Jede Zahl steht für ein Feld.
 Die Matrix ist wie ein Koordinatensystem aufgebaut, indem die Ecke links oben der Ursprung ist. Das Feld links oben in der Ecke auf unserem Spielfeld entspricht demnach dem Ursprung. 
 Jedes Feld entspricht einer ganzzahligen Koordinate.  
 Zugriff => Game.matrix[x][y]
-
-
-.
