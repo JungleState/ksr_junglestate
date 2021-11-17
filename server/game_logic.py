@@ -12,8 +12,9 @@ class Item:
 
 
 class Player:
-    def __init__(self, id, name):
+    def __init__(self, uuid, id, name):
         self.id = id
+        self.uuid = uuid
         self.knockouts = 0
         self.hits = 0
         self.x = 0
@@ -176,7 +177,10 @@ class Game:
                                                 break
 
                                     if hasp2moved:
-                                        # TODO: eliminate a player
+                                        self.player_list.remove(player)
+                                        self.matrix[old_coor[0]
+                                                    ][old_coor[1]] = 0
+                                        # TODO: remove a player
                                         pass
 
                                     else:
@@ -188,12 +192,14 @@ class Game:
                                     break
                             player.x = old_coor[0]
                             player.y = old_coor[1]
-                            # + add player damage
+                            # TODO: add player damage
 
         for move in self.move_list:  # check for shoot
             if move[1] == 2:
-                # TODO: add shooting
-                pass
+                for player in self.player_list:
+                    if player.id == move[0]:
+                        # TODO: add shooting
+                        pass
 
         self.move_list.clear()
 

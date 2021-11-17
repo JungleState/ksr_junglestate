@@ -10,6 +10,7 @@
     <script type="text/javascript" src="data/controller.js"></script>
 </head>
 <body>
+    <!-- Please delete this later it's only temporary -->
     <h1>Welcome!</h1>
     <p>Fetch <br> /joinGame/&#60;Mode (spec or client)&#62;/&#60;Your player name&#62; <br> to get a player ID</p>
     <input id="inp" type="text">
@@ -38,6 +39,10 @@
             }
             else {
                 modeName = 'client';
+            }
+
+            if (!name) {
+                return;
             }
 
             let response = await fetch(`/joinGame/${modeName}/${name}`);
