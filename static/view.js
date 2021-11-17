@@ -22,7 +22,7 @@ class View{
             height=5;
         }
         row=0
-        for (let row_element of this.field.getElementsByClassName("row")) { //needs Rows in HTML (so I get Rows)
+        for (let row_lement of this.field.getElementsByClassName("row")) { //needs Rows in HTML (so I get Rows)
             row+=1
             column=0
             for(let tile of row_element.getElementsByTagName("tile")) { //Every Tile in each Row needs to be called "tile"
