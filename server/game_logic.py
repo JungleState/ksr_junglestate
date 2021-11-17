@@ -12,8 +12,9 @@ class Item:
 
 
 class Player:
-    def __init__(self, id, name):
+    def __init__(self, uuid, id, name):
         self.id = id
+        self.uuid = uuid
         self.knockouts = 0
         self.hits = 0
         self.x = 0

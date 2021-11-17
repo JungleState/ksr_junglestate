@@ -48,7 +48,7 @@ def root():
 
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
-    if not player_name in player_list.values():
+    if not player_name in player_list.values() and not session.get('playerId'):
         app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
         newId = str(uuid.uuid4())
         player_list.update({newId:player_name})
@@ -62,7 +62,7 @@ def joinGame(mode, player_name):
         return jsonify(ok=True)
 
     else:
-        app.logger.info("PLAYER NAME ALREADY IN USE")
+        app.logger.info("PLAYER NAME ALREADY IN USE / PLAYER ALREADY LOGGED IN")
         return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
