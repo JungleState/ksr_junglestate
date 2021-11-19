@@ -83,7 +83,7 @@ class Game:
         self.field_dim = [len(self.matrix[0]), len(self.matrix)]
         
     def join(self, name, id):
-        player = Player(id, name)
+        player = Player(id, id, name)
         while True:
             x = randint(1, self.field_dim[0])
             y = randint(1, self.field_dim[1])
