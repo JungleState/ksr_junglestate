@@ -20,8 +20,9 @@ class Items:
     PINEAPPLE = Item("pineapple", "PP")
 
 class Player(Item):
-    def __init__(self, id, name):
+    def __init__(self, uuid, id, name):
         self.id = id
+        self.uuid = uuid
         self.knockouts = 0
         self.hits = 0
         self.x = 0
@@ -103,7 +104,7 @@ class Game:
         if isinstance(item, Player):
             return f"{self.player_list.index(item):02d}"
         return str(item)
-
+    
     def addMove(self, player_id, move_id, dir):
         # move_id list:
         # 0: Stay
@@ -189,7 +190,10 @@ class Game:
                                                 break
 
                                     if hasp2moved:
-                                        # TODO: eliminate a player
+                                        self.player_list.remove(player)
+                                        self.matrix[old_coor[0]
+                                                    ][old_coor[1]] = 0
+                                        # TODO: remove a player
                                         pass
 
                                     else:
@@ -201,12 +205,25 @@ class Game:
                                     break
                             player.x = old_coor[0]
                             player.y = old_coor[1]
-                            # + add player damage
+                            # TODO: add player damage
 
         for move in self.move_list:  # check for shoot
             if move[1] == 2:
-                # TODO: add shooting
-                pass
+                for player in self.player_list:
+                    if player.id == move[0]:
+
+                        shoot_coor = [player.x, player.y]
+
+                        if move[2] == 0:
+                            shoot_coor[1] = shoot_coor[1] - 1
+                        elif move[2] == 2:
+                            shoot_coor[0] = shoot_coor[0] + 1
+                        elif move[2] == 4:
+                            shoot_coor[1] = shoot_coor[1] + 1
+                        elif move[2] == 6:
+                            shoot_coor[0] = shoot_coor[0] - 1
+                        # TODO: add shooting
+                        pass
 
         self.move_list.clear()
 

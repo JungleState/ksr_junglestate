@@ -22,7 +22,7 @@ class View{
             for(let tile of row_element.getElementsByTagName("tile")) { //Every Tile in each Row needs to be called "tile"
                 column+=1;
 
-                tiletype = matrix[row][column];
+                let tiletype = matrix[row][column];
                 if(tiletype<100){ //Up to 100 are Items
                     tile.setAttribute('class', this.types[tiletype]); //adds the type from the Matrix to the tile
                 }

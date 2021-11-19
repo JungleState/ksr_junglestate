@@ -6,20 +6,20 @@ class View{
     }
     Showfield(type, matrix){ //show the field
         if (type=='spectator'){ //Dimensions for spectator
-            width= 50; 
-            height=50;
+            let width= 50; 
+            let height=50;
         }
         if (type=='client'){ //Dimensions for human player
-            widht= 5;
-            height=5;
+            let widht= 5;
+            let height=5;
         }
-        row=0
-        for (let rowe_lement of this.field.getElementsByClassName("row")) { //needs Rows in HTML (so I get Rows)
+        let row=0
+        for (let row_element of this.field.getElementsByClassName("row")) { //needs Rows in HTML (so I get Rows)
             row+=1
-            column=0
+            let column=0
             for(let tile of row_element.getElementsByTagName("tile")) { //Every Tile in each Row needs to be called "tile"
                 column+=1
-                tiletype = matrix[row][column]
+                let tiletype = matrix[row][column]
 
                 if(tiletype==0){ //probably solve this with dicts (MORE BEAUTIFUL)
                     tile.classList.add('plain')
