@@ -1,0 +1,23 @@
+
+.row{
+    display: flex;
+}
+cell{
+    display:block;
+}
+
+.plain{
+    background-color: burlywood;
+}
+.jungle{
+    background-color: darkgreen;
+}
+.coconut{
+
+}
+.banana{
+
+}
+.pineapple{
+
+}

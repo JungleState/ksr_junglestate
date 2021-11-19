@@ -6,9 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JungleState</title>
     <link rel="icon" type="image/png" href="../Static/monkey.png">
+    <link rel="stylesheet" href="Static/junglestate.css">
+    <script src="Static/View_Spectator.js" async></script>
 </head>
+
 <body>
     <h1>Welcome!</h1>
     <p>Fetch <br> /joinGame/&#60;Mode (spec or client)&#62;/&#60;Your player name&#62; <br> to get a player ID</p>
+
+    <div class="grid">
+        {%for row in range(50)%}
+            <div class="row">
+                {%for coumn in range(50)%}
+                    <cell>x</cell>
+                {%endfor%}
+            </div>
+        {% endfor %}
+            
+
+        
+    </div>
 </body>
 </html>

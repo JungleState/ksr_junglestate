@@ -1,7 +1,8 @@
 from random import randint
 
-FIELD_LENGTH = 20
-FIELD_HEIGHT = 20
+FIELD_LENGTH = 17
+FIELD_HEIGHT = 17
+
 
 class Item:
     def __init__(self, name, id):
