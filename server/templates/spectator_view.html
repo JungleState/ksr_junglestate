@@ -7,14 +7,16 @@
     <title>JungleState</title>
     <link rel="icon" type="image/png" href="../Static/monkey.png">
     <link rel="stylesheet" href="Static/junglestate.css">
-    <script src="Static/View_Spectator.js" async></script>
+    <script src="../../static/data/controller.js" async></script>
+    <script src="../../static/data/view.js" async></script>
+    <script src="../../static/data/login.js" async></script>
 </head>
 
 <body>
     <h1>Welcome!</h1>
     <p>Fetch <br> /joinGame/&#60;Mode (spec or client)&#62;/&#60;Your player name&#62; <br> to get a player ID</p>
 
-    <div class="grid">
+    <div id="grid">
         {%for row in range(50)%}
             <div class="row">
                 {%for coumn in range(50)%}
@@ -22,9 +24,6 @@
                 {%endfor%}
             </div>
         {% endfor %}
-            
-
-        
     </div>
 </body>
 </html>

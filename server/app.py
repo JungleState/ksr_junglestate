@@ -94,7 +94,7 @@ def action(moveType, direction):
             if game.id == session.get('gameId'):
                 game.addMove(playerId, moveType, direction)
 
-        return jsonify(msg="aha")
+        return jsonify(msg="move accepted")
 
     else:
         app.logger.info("INVALID PLAYER ID")
