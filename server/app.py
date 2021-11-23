@@ -14,6 +14,7 @@ player_list = {} # Dict with playerID : playerName
 
 def newGame(playerId):
     if len(game_list) == 0:
+        # 
         newId = uuid.uuid4()
         game = Game(newId)
         game.join(player_list.get(playerId), playerId)
