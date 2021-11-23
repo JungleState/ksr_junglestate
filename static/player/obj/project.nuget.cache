@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "84rwDgpvCJwQPd4KW7UIPcmXCWgkew4HFdbTAP+Rp+25QrD3vBZ87Gnl83tcXCOWZnpzKlS5i6BsmWkxgO8ywA==",
+  "dgSpecHash": "aeoinZAyhQeq3b3C4Ik04znKCz2PvltJhluSLHG5163/3yaVZcdNqzlh0WGpS9l2gwWQUtS0Ng0IdKRmMj1SFw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\static\\player\\player.csproj",
+  "projectFilePath": "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

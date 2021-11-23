@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\static\\player\\player.csproj": {}
+    "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj": {}
   },
   "projects": {
-    "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\static\\player\\player.csproj": {
+    "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\static\\player\\player.csproj",
+        "projectUniqueName": "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj",
         "projectName": "player",
-        "projectPath": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\static\\player\\player.csproj",
-        "packagesPath": "C:\\Users\\matth\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\static\\player\\obj\\",
+        "projectPath": "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj",
+        "packagesPath": "/home/phdoenni/.nuget/packages/",
+        "outputPath": "/home/phdoenni/g/ksr_junglestate/static/player/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\matth\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/phdoenni/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -54,7 +52,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.100/RuntimeIdentifierGraph.json"
         }
       }
     }
