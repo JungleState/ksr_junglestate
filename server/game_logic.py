@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, randrange
 import logging
 
 logging.getLogger().setLevel("DEBUG")
@@ -186,14 +186,43 @@ class Game:
 
     def doNextRound(self):
         for move in self.move_list:  # check for moving
-            if move[1] == 1:
+            if move[1] == "1":
                 player = self.getPlayerFromID(move[0])
                 self.executeMoving(player, move[2])
 
-        for move in self.move_list:  # check for shooting
-            if move[1] == 2:
-                player = self.getPlayerFromID(move[0])
-                self.executeShooting(player, move[2])
+        for move in self.move_list:  # check for shoot
+            if move[1] == "2":
+                for player in self.player_list:
+                    if player.id == move[0]:
+
+                        shoot_coor = [player.x, player.y]
+
+                        if move[2] == 0:
+                            shoot_coor[1] = shoot_coor[1] - 1
+                        elif move[2] == 1:
+                            shoot_coor[0] = shoot_coor[0] + 1
+                            shoot_coor[1] = shoot_coor[1] - 1
+                        elif move[2] == 2:
+                            shoot_coor[0] = shoot_coor[0] + 1
+                        elif move[2] == 3:
+                            shoot_coor[0] = shoot_coor[0] + 1
+                            shoot_coor[1] = shoot_coor[1] + 1
+                        elif move[2] == 4:
+                            shoot_coor[1] = shoot_coor[1] + 1
+                        elif move[2] == 5:
+                            shoot_coor[1] = shoot_coor[1] + 1
+                            shoot_coor[0] = shoot_coor[0] - 1
+                        elif move[2] == 6:
+                            shoot_coor[0] = shoot_coor[0] - 1
+                        elif move[2] == 7:
+                            shoot_coor[1] = shoot_coor[1] - 1
+                            shoot_coor[0] = shoot_coor[0] - 1
+
+                        # if self.matrix[shoot_coor[0]][shoot_coor[1]]
+                        # self.matrix
+
+                        # TODO: add shooting
+                        pass
 
         self.move_list.clear()
 
@@ -221,7 +250,7 @@ class Game:
         elif checkField == Items.FOREST:  # forest field
             player.lives = player.lives - 1
             if player.lives < 1:
-                self.matrix[player.x, player.y] = Items.EMPTY
+                self.matrix[player.x][player.y] = Items.EMPTY
                 self.player_list.remove(player)
 
         elif isinstance(checkField, Item) and not isinstance(checkField, Player):  # item field
@@ -230,7 +259,7 @@ class Game:
             player.x, player.y = toCoordinates[0], toCoordinates[1]
             # TODO: collect item
 
-        elif isinstance(checkField, Player):  # player field
+        elif isinstance(checkField, Player):
             player.lives = player.lives - 1
             player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
             player2.lives = player2.lives - 1
