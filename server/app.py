@@ -4,7 +4,7 @@ from game_logic import Game
 import uuid
 
 
-app = Flask(__name__, template_folder='../Static/templates')
+app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
 app.secret_key = os.urandom(16)
 
