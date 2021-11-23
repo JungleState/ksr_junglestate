@@ -1,10 +1,10 @@
 import os
-from flask import Flask, jsonify, session, abort, send_file
+from flask import Flask, jsonify, session, abort, render_template
 from game_logic import Game
 import uuid
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
 app.secret_key = os.urandom(16)
 
@@ -44,7 +44,7 @@ def GetJSON(mode, game_id, player_id=None):
 @app.route('/')
 def root():
     app.logger.debug("ROOT")
-    return send_file('../static/junglestate.html')
+    return render_template('spectator_view.html')
 
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
@@ -94,7 +94,7 @@ def action(moveType, direction):
             if game.id == session.get('gameId'):
                 game.addMove(playerId, moveType, direction)
 
-        return jsonify(msg="aha")
+        return jsonify(msg="move accepted")
 
     else:
         app.logger.info("INVALID PLAYER ID")

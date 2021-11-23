@@ -8,7 +8,7 @@ class Item:
     def __init__(self, name, id):
         self.name = name
         self.id = id
-    
+
     def __str__(self) -> str:
         return self.id
 
@@ -17,8 +17,9 @@ class Items:
     EMPTY = Item("empty", "  ")
     FOREST = Item("forest", "FF")
     COCONUT = Item("coconut", "CC")
-    BANANA = Item("coconut", "BB")
+    BANANA = Item("banana", "BB")
     PINEAPPLE = Item("pineapple", "PP")
+
 
 class Player(Item):
     def __init__(self, uuid, id, name):
@@ -30,12 +31,14 @@ class Player(Item):
         self.y = 0
         self.sight = 5  # dimension of field of view matrix, needs to be odd
         self.name = name
-        self.health = 100
+        self.lives = 3
         self.coconuts = 2
         self.points = 0
 
+
 class MapGenerator:
     """ A map generator that creates empty maps with forest all around."""
+
     def generate(self, width, height):
         matrix = []
         for y in range(height):
@@ -50,9 +53,10 @@ class MapGenerator:
 
     def border(self):
         return Items.FOREST
-    
+
     def inner(self):
         return Items.EMPTY
+
 
 class RandomGenerator(MapGenerator):
     def __init__(self, forest_spawning_rate, coconut_rate, banana_rate, pinapple_rate):
@@ -78,17 +82,19 @@ class RandomGenerator(MapGenerator):
         plus_list = [1, -1, 0, 0]
         for y in range(len(matrix)-2):
             for x in range(len(matrix[y])-2):
-                surrounding_obstacles = 0
-                for i in range(4):
-                    if matrix[y+plus_list[i]][x+plus_list[-i]].id == "FF":
-                        surrounding_obstacles += 1
-                while surrounding_obstacles > 2:
-                    i = randint(0, 3)
-                    y_coord = y+plus_list[i]
-                    x_coord = x+plus_list[-i]
-                    if y_coord != 0 and y_coord != len(matrix) and x_coord != 0 and x_coord != len(matrix[y]) and matrix[y_coord][x_coord].id == "FF":
-                        matrix[y_coord][x_coord] = super().inner()
-                        surrounding_obstacles -= 1
+                if matrix[y][x] != Items.FOREST:
+                    surrounding_obstacles = 0
+                    for i in range(4):
+                        if matrix[y+plus_list[i]][x+plus_list[-1*(i+1)]] ==  Items.FOREST:
+                            surrounding_obstacles += 1
+                    
+                    while surrounding_obstacles > 2:
+                        index = randint(0, 3)
+                        y_coord = y+plus_list[index]
+                        x_coord = x+plus_list[-1*(index+1)]
+                        if y_coord != 0 and y_coord != len(matrix) and x_coord != 0 and x_coord != len(matrix[y]) and matrix[y_coord][x_coord] == Items.FOREST:
+                            matrix[y_coord][x_coord] = super().inner()
+                            surrounding_obstacles -= 1
         return matrix
     
 
@@ -102,7 +108,7 @@ class Game:
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.generate(FIELD_LENGTH, FIELD_HEIGHT)
         self.field_dim = [len(self.matrix[0]), len(self.matrix)]
-        
+
     def join(self, name, id):
         player = Player(id, id, name)
         while True:
@@ -114,7 +120,7 @@ class Game:
                 self.matrix[y][x] = player
                 self.player_list.append(player)
                 break
-    
+
     def SerializeMatrix(self):
         rows = []
         for row in self.matrix:
@@ -125,7 +131,13 @@ class Game:
         if isinstance(item, Player):
             return f"{self.player_list.index(item):02d}"
         return str(item)
-    
+
+    def getPlayerFromID(self, player_id):
+        for player in self.player_list:
+            if player.id == player_id:
+                return player
+        return False
+
     def addMove(self, player_id, move_id, dir):
         # move_id list:
         # 0: Stay
@@ -165,68 +177,10 @@ class Game:
         return player_list
 
     def doNextRound(self):
-        for move in self.move_list:  # check for moves
+        for move in self.move_list:  # check for moving
             if move[1] == 1:
-                for player in self.player_list:
-                    if player.id == move[0]:
-
-                        old_coor = [player.x, player.y]
-
-                        if move[2] == 0:
-                            player.y = player.y - 1
-                        elif move[2] == 2:
-                            player.x = player.x + 1
-                        elif move[2] == 4:
-                            player.y = player.y + 1
-                        elif move[2] == 6:
-                            player.x = player.x - 1
-
-                        field = self.matrix[player.x][player.y]
-
-                        if field == Items.EMPTY:  # empty field
-                            self.matrix[player.x][player.y] = player
-                            self.matrix[old_coor[0]][old_coor[1]] = Items.EMPTY
-
-                        elif field == Items.FOREST:  # forest field
-                            player.x = old_coor[0]
-                            player.y = old_coor[1]
-                            # TODO: add player damage
-
-                        elif isinstance(field, Item) and not isinstance(field, Player):
-                            # TODO: collect item
-                            self.matrix[player.x][player.y] = player
-                            self.matrix[old_coor[0]][old_coor[1]] = Items.EMPTY
-                            pass
-
-                        elif isinstance(field, Player):
-                            for player2 in self.player_list:
-                                if player2.id == field:
-                                    # TODO: add player damage
-                                    # TODO: add player2 damage
-                                    hasp2moved = False
-                                    for move2 in self.move_list:
-                                        if move2[0] == player2.id:
-                                            if move2[1] == 1:
-                                                hasp2moved = True
-                                                break
-
-                                    if hasp2moved:
-                                        self.player_list.remove(player)
-                                        self.matrix[old_coor[0]
-                                                    ][old_coor[1]] = 0
-                                        # TODO: remove a player
-                                        pass
-
-                                    else:
-                                        player.x = old_coor[0]
-                                        player.y = old_coor[1]
-
-                                    # TODO: add player damage
-                                    # TODO: add player2 damage
-                                    break
-                            player.x = old_coor[0]
-                            player.y = old_coor[1]
-                            # TODO: add player damage
+                player = self.getPlayerFromID(move[0])
+                self.executeMoving(player, move[2])
 
         for move in self.move_list:  # check for shoot
             if move[1] == 2:
@@ -237,16 +191,69 @@ class Game:
 
                         if move[2] == 0:
                             shoot_coor[1] = shoot_coor[1] - 1
+                        elif move[2] == 1:
+                            shoot_coor[0] = shoot_coor[0] + 1
+                            shoot_coor[1] = shoot_coor[1] - 1
                         elif move[2] == 2:
                             shoot_coor[0] = shoot_coor[0] + 1
+                        elif move[2] == 3:
+                            shoot_coor[0] = shoot_coor[0] + 1
+                            shoot_coor[1] = shoot_coor[1] + 1
                         elif move[2] == 4:
                             shoot_coor[1] = shoot_coor[1] + 1
+                        elif move[2] == 5:
+                            shoot_coor[1] = shoot_coor[1] + 1
+                            shoot_coor[0] = shoot_coor[0] - 1
                         elif move[2] == 6:
                             shoot_coor[0] = shoot_coor[0] - 1
+                        elif move[2] == 7:
+                            shoot_coor[1] = shoot_coor[1] - 1
+                            shoot_coor[0] = shoot_coor[0] - 1
+
+                        # if self.matrix[shoot_coor[0]][shoot_coor[1]]
+                        # self.matrix
+
                         # TODO: add shooting
                         pass
 
         self.move_list.clear()
+
+    def executeMoving(self, player, dir):
+
+        toCoordinates = [player.x, player.y]
+
+        if dir == 0:
+            toCoordinates[1] = toCoordinates[1] - 1
+        elif dir == 2:
+            toCoordinates[0] = toCoordinates[0] + 1
+        elif dir == 4:
+            toCoordinates[1] = toCoordinates[1] + 1
+        elif dir == 6:
+            toCoordinates[0] = toCoordinates[0] - 1
+
+        checkField = self.matrix[toCoordinates[0]][toCoordinates[1]]
+
+        if checkField == Items.EMPTY:  # empty field
+            self.matrix[player.x, player.y] = Items.EMPTY
+            self.matrix[toCoordinates[0]][toCoordinates[1]] = player
+            player.x, player.y = toCoordinates[0], toCoordinates[1]
+
+        elif checkField == Items.FOREST:  # forest field
+            player.lives = player.lives - 1
+            if player.lives < 1:
+                self.matrix[player.x, player.y] = Items.EMPTY
+                self.player_list.remove(player)
+
+        elif isinstance(checkField, Item) and not isinstance(checkField, Player):
+            self.matrix[player.x, player.y] = Items.EMPTY
+            self.matrix[toCoordinates[0]][toCoordinates[1]] = player
+            player.x, player.y = toCoordinates[0], toCoordinates[1]
+            # TODO: collect item
+
+        elif isinstance(checkField, Player):
+            player.lives = player.lives - 1
+            player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
+            player2.lives = player2.lives - 1
 
     def GetFieldOfView(self, player_id):  # for specific player
         for player in self.player_list:
