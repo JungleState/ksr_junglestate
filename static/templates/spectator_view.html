@@ -5,16 +5,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JungleState</title>
-    <link rel="icon" type="image/png" href="../Static/monkey.png">
+    <link rel="icon" type="image/png" href="../static/monkey.png">
     <link rel="stylesheet" href="Static/junglestate.css">
-    <script src="Static/View_Spectator.js" async></script>
+    <script src="/static/data/controller.js" async></script>
+    <script src="/static/data/view.js" async></script>
+    <script src="/static/data/login.js" async></script>
 </head>
 
 <body>
-    <h1>Welcome!</h1>
-    <p>Fetch <br> /joinGame/&#60;Mode (spec or client)&#62;/&#60;Your player name&#62; <br> to get a player ID</p>
+    <h1>Welcome To JungleState</h1>
+    <label for="name">Enter Your Name: </label> 
+    <input id="name" type="text">  
+    <br>
+    <label for="mode">Are You a Spectator?</label>
+    <input  id="mode" type="checkbox">
+    <br>
+    <button onclick="login()">Login</button>
 
-    <div class="grid">
+    <div id="grid">
         {%for row in range(50)%}
             <div class="row">
                 {%for coumn in range(50)%}
@@ -22,9 +30,6 @@
                 {%endfor%}
             </div>
         {% endfor %}
-            
-
-        
     </div>
 </body>
 </html>
