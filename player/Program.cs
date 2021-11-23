@@ -29,37 +29,59 @@ namespace Player {
         }
 
         private static void move(int direction) {
-
+            
         }
 
         private static void attack(int direction) {
+            if (direction == 0 || direction == 2 || direction == 4 || direction == 6) {
+                sendCommand("attack", direction);
+            }
+            else {
+                sendCommand("")
+            }
+        }
+
+        private static void sendCommand(string move, int direction) {
 
         }
 
         private static string config() {
-            /////////YOUR/CODE/BELOW/HERE//////////
+            /////////YOUR/CONFIGS/BELOW/HERE//////////
+
             string name = "Hans Muster";
-            //////////YOUR/CODE/ABOVE/HERE//////////
+
+            //////////YOUR/CONFIGS/ABOVE/HERE//////////
             return name;
         }
-        private static void playerBehaviour() {            
-            //////////YOUR/CODE/BELOW/HERE//////////
-            // attack:  attack(DIRECTION)
-            // move:    move(DIRECTION)
-
+        private static void playerBehaviour() {        
+            // move:    move(DIRECTION)     options for DIRECTION: N [-1, 7]
+            // attack:  attack(DIRECTION)   options for DIRECTION: 0, 2, 4, 6
             // DIRECTION: integer
-            // 1 2 3
-            // 
-            
+            //    -1: No direction
+            //    0: up
+            //    1: up right
+            //    2: right
+            //    3: down right
+            //    4: down
+            //    5: down left
+            //    6: left
+            //    7: up left
+                
+            //////////YOUR/CODE/BELOW/HERE//////////
 
-
+            move(-1);
 
             //////////YOUR/CODE/ABOVE/HERE//////////
         }
 
         static async Task Main(string[] args) {
             // await getData();
-            await joinGame();
+            // await joinGame(config());
+
+
+
+
+
         }
     }
 }

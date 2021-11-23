@@ -140,13 +140,10 @@ class Controller {
 
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    view = new View;
-    controller = new Controller;
+controller = new Controller;
 
-    joinGame("client", "random"); //client||spec
+controller.joinGame("client", "random"); //client||spec
 
 
     // test thingy:
     // view.showField("spectator", [[1, 0, 0, 0],[1, 1, 0, 1],[1, 0, 1, 0], [1, 0, 1, 1]]);
-});

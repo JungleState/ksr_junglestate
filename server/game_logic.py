@@ -1,4 +1,4 @@
-from random import randint, randrange
+from random import randint
 import logging
 
 logging.getLogger().setLevel("DEBUG")
@@ -67,7 +67,7 @@ class RandomGenerator(MapGenerator):
         self.coconut_rate = coconut_rate
         self.banana_rate = banana_rate
         self.pinapple_rate = pinapple_rate
-    
+
     def inner(self):
         prob = randint(1, 100)
         if prob <= self.forest_spawning_rate:
@@ -80,36 +80,42 @@ class RandomGenerator(MapGenerator):
             return Items.PINEAPPLE
         else:
             return super().inner()
-    
+
     def purge(self, matrix):
         plus_list = [1, -1, 0, 0]
-        for y in range(len(matrix)-2):
-            for x in range(len(matrix[y])-2):
-                if matrix[y][x] != Items.FOREST:
-                    surrounding_obstacles = 0
-                    for i in range(4):
-                        if matrix[y+plus_list[i]][x+plus_list[-1*(i+1)]] ==  Items.FOREST:
-                            surrounding_obstacles += 1
-                    
-                    while surrounding_obstacles > 2:
-                        index = randint(0, 3)
-                        y_coord = y+plus_list[index]
-                        x_coord = x+plus_list[-1*(index+1)]
-                        if y_coord != 0 and y_coord != len(matrix) and x_coord != 0 and x_coord != len(matrix[y]) and matrix[y_coord][x_coord] == Items.FOREST:
-                            matrix[y_coord][x_coord] = super().inner()
-                            surrounding_obstacles -= 1
+        too_many_surrounding_obstacles = 1
+        while too_many_surrounding_obstacles > 0:
+            too_many_surrounding_obstacles = 0
+            for y in range(len(matrix)-2):
+                y += 1
+                for x in range(len(matrix[y])-2):
+                    x += 1
+                    if matrix[y][x] != Items.FOREST:
+                        surrounding_obstacles = 0
+                        for i in range(4):
+                            if matrix[y+plus_list[i]][x+plus_list[-(i+1)]] ==  Items.FOREST:
+                                surrounding_obstacles += 1
+                        if surrounding_obstacles > 2:
+                            too_many_surrounding_obstacles += 1
+                        while surrounding_obstacles > 2:
+                            index = randint(0, 3)
+                            y_coord = y+plus_list[index]
+                            x_coord = x+plus_list[-(index+1)]
+                            if y_coord != 0 and y_coord != len(matrix)-1 and x_coord != 0 and x_coord != len(matrix[y])-1 and matrix[y_coord][x_coord] == Items.FOREST:
+                                matrix[y_coord][x_coord] = super().inner()
+                                surrounding_obstacles -= 1
         return matrix
-    
+
 
 class Game:
-    def __init__(self, id, generator = RandomGenerator(50, 1, 1, 1)):
+    def __init__(self, id, generator=RandomGenerator(50, 1, 1, 1)):
         self.move_list = []
         self.id = id
         self.player_list = []
         self.state = 0
         self.round = 0
         # field dimension 1st element = x; 2nd element = y
-        self.matrix = generator.generate(FIELD_LENGTH, FIELD_HEIGHT)
+        self.matrix = generator.purge(generator.generate(FIELD_LENGTH, FIELD_HEIGHT))
         self.field_dim = [len(self.matrix[0]), len(self.matrix)]
 
     def join(self, name, id):
@@ -190,39 +196,10 @@ class Game:
                 player = self.getPlayerFromID(move[0])
                 self.executeMoving(player, move[2])
 
-        for move in self.move_list:  # check for shoot
+        for move in self.move_list:  # check for shooting
             if move[1] == "2":
-                for player in self.player_list:
-                    if player.id == move[0]:
-
-                        shoot_coor = [player.x, player.y]
-
-                        if move[2] == 0:
-                            shoot_coor[1] = shoot_coor[1] - 1
-                        elif move[2] == 1:
-                            shoot_coor[0] = shoot_coor[0] + 1
-                            shoot_coor[1] = shoot_coor[1] - 1
-                        elif move[2] == 2:
-                            shoot_coor[0] = shoot_coor[0] + 1
-                        elif move[2] == 3:
-                            shoot_coor[0] = shoot_coor[0] + 1
-                            shoot_coor[1] = shoot_coor[1] + 1
-                        elif move[2] == 4:
-                            shoot_coor[1] = shoot_coor[1] + 1
-                        elif move[2] == 5:
-                            shoot_coor[1] = shoot_coor[1] + 1
-                            shoot_coor[0] = shoot_coor[0] - 1
-                        elif move[2] == 6:
-                            shoot_coor[0] = shoot_coor[0] - 1
-                        elif move[2] == 7:
-                            shoot_coor[1] = shoot_coor[1] - 1
-                            shoot_coor[0] = shoot_coor[0] - 1
-
-                        # if self.matrix[shoot_coor[0]][shoot_coor[1]]
-                        # self.matrix
-
-                        # TODO: add shooting
-                        pass
+                player = self.getPlayerFromID(move[0])
+                self.executeShooting(player, move[2])
 
         self.move_list.clear()
 
