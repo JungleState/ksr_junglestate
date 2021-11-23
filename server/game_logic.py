@@ -8,9 +8,10 @@ class Item:
     def __init__(self, name, id):
         self.name = name
         self.id = id
-    
+
     def __str__(self) -> str:
         return self.id
+
 
 class Items:
     EMPTY = Item("empty", "  ")
@@ -18,6 +19,7 @@ class Items:
     COCONUT = Item("coconut", "CC")
     BANANA = Item("coconut", "BB")
     PINEAPPLE = Item("pineapple", "PP")
+
 
 class Player(Item):
     def __init__(self, uuid, id, name):
@@ -33,8 +35,10 @@ class Player(Item):
         self.coconuts = 2
         self.points = 0
 
+
 class MapGenerator:
     """ A map generator that creates empty maps with forest all around."""
+
     def generate(self, width, height):
         matrix = []
         for y in range(height):
@@ -49,16 +53,17 @@ class MapGenerator:
 
     def border(self):
         return Items.FOREST
-    
+
     def inner(self):
         return Items.EMPTY
+
 
 class RandomGenerator(MapGenerator):
     def __init__(self, forest_spawning_rate, coconut_rate, banana_rate):
         self.forest_spawning_rate = forest_spawning_rate
         self.coconut_rate = coconut_rate
         self.banana_rate = banana_rate
-    
+
     def inner(self):
         prob = randint(1, 100)
         if prob <= self.forest_spawning_rate:
@@ -72,7 +77,7 @@ class RandomGenerator(MapGenerator):
 
 
 class Game:
-    def __init__(self, id, generator = RandomGenerator(0, 1, 1)):
+    def __init__(self, id, generator=RandomGenerator(0, 1, 1)):
         self.move_list = []
         self.id = id
         self.player_list = []
@@ -81,7 +86,7 @@ class Game:
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.generate(FIELD_LENGTH, FIELD_HEIGHT)
         self.field_dim = [len(self.matrix[0]), len(self.matrix)]
-        
+
     def join(self, name, id):
         player = Player(id, id, name)
         while True:
@@ -93,7 +98,7 @@ class Game:
                 self.matrix[y][x] = player
                 self.player_list.append(player)
                 break
-    
+
     def SerializeMatrix(self):
         rows = []
         for row in self.matrix:
@@ -104,7 +109,7 @@ class Game:
         if isinstance(item, Player):
             return f"{self.player_list.index(item):02d}"
         return str(item)
-    
+
     def addMove(self, player_id, move_id, dir):
         # move_id list:
         # 0: Stay
