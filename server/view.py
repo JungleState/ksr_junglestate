@@ -1,6 +1,8 @@
 from random import randint
 import pygame
 import sys
+
+from pygame.constants import KEYDOWN
 import game_logic
 
 pygame.init()
@@ -16,6 +18,8 @@ YELLOW = (255, 211, 0)
 BROWN = (121, 63, 13)
 BACKGROUND = (195, 142, 90)
 GREEN = (0, 82, 33)
+RED = (255,0,0)
+ORANGE = (255,157,0)
 
 P1 = (120, 50, 0)
 P2 = (120, 50, 15)
@@ -25,42 +29,38 @@ P5 = (120, 50, 60)
 
 
 def view(game):
-
+    gen = game_logic.RandomGenerator(30, 1, 1, 1)
     clock = pygame.time.Clock()
     run = True
-
+    map = game.matrix
     while run:
+        
         for event in pygame.event.get():
             if(event.type == pygame.QUIT):
                 pygame.quit()
                 sys.exit()
+        
+            if(event.type == KEYDOWN):
+                map = gen.purge(map)
 
         SCREEN.fill(BACKGROUND)
-        map = doTurn(game)
         for i in range(len(map)):
             for j in range(len(map[i])):
-                if(map[i][j]) == 1:
+                if(map[i][j].id) == "FF":
                     pygame.draw.circle(SCREEN, GREEN,
-                                       (i*40+20, j*40+20), 20)
-                elif(map[i][j]) == 2:
+                                       (i*40+20, j*40+20), 15)
+                elif(map[i][j].id) == "BB":
                     pygame.draw.circle(SCREEN, YELLOW,
-                                       (i*40+20, j*40+20), 10)
-                elif(map[i][j]) > 99:
-                    if map[i][j] == 100:
-                        pygame.draw.circle(SCREEN, P1,
-                                           (i*40+20, j*40+20), 15)
-                    if map[i][j] == 101:
-                        pygame.draw.circle(SCREEN, P2,
-                                           (i*40+20, j*40+20), 15)
-                    if map[i][j] == 102:
-                        pygame.draw.circle(SCREEN, P3,
-                                           (i*40+20, j*40+20), 15)
-                    if map[i][j] == 103:
-                        pygame.draw.circle(SCREEN, P4,
-                                           (i*40+20, j*40+20), 15)
-                    if map[i][j] == 104:
-                        pygame.draw.circle(SCREEN, P5,
-                                           (i*40+20, j*40+20), 15)
+                                       (i*40+20, j*40+20), 15)
+                elif(map[i][j].id) == "PP":
+                    pygame.draw.circle(SCREEN, ORANGE,
+                                       (i*40+20, j*40+20), 15)
+                elif(map[i][j].id) == "CC":
+                    pygame.draw.circle(SCREEN, BROWN,
+                                     (i*40+20, j*40+20), 15)
+                elif(map[i][j].id) != "  ":
+                    pygame.draw.circle(SCREEN, RED,
+                                       (i*40+20, j*40+20), 15)
         clock.tick(10)
         pygame.display.update()
 
