@@ -66,18 +66,18 @@ def view(game):
 
 
 def doTurn(game):
-    game.doNextRound()
     r1 = randint(0, 3)
-    game.addMove(100, 1, r1*2)
+    game.addMove(100, "1", r1*2)
     r2 = randint(0, 3)
-    game.addMove(101, 1, r2*2)
+    game.addMove(101, "1", r2*2)
     r3 = randint(0, 3)
-    game.addMove(102, 1, r3*2)
+    game.addMove(102, "1", r3*2)
     r4 = randint(0, 3)
-    game.addMove(103, 1, r4*2)
+    game.addMove(103, "1", r4*2)
     r5 = randint(0, 3)
-    game.addMove(104, 1, r5*2)
-    return game.matrix
+    game.addMove(104, "1", r5*2)
+
+    game.doNextRound()
 
 
 if __name__ == "__main__":
