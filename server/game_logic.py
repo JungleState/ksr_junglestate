@@ -153,7 +153,7 @@ class Game:
         for player in self.player_list:
             player_list.append({"id": player.id,
                                 "name": player.name,
-                                "health": player.health,
+                                "health": player.lives,
                                 "knockouts": player.knockouts,
                                 "hits": player.hits,
                                 # coconuts
@@ -167,43 +167,15 @@ class Game:
                 player = self.getPlayerFromID(move[0])
                 self.executeMoving(player, move[2])
 
-        for move in self.move_list:  # check for shoot
+        for move in self.move_list:  # check for shooting
             if move[1] == 2:
-                for player in self.player_list:
-                    if player.id == move[0]:
-
-                        shoot_coor = [player.x, player.y]
-
-                        if move[2] == 0:
-                            shoot_coor[1] = shoot_coor[1] - 1
-                        elif move[2] == 1:
-                            shoot_coor[0] = shoot_coor[0] + 1
-                            shoot_coor[1] = shoot_coor[1] - 1
-                        elif move[2] == 2:
-                            shoot_coor[0] = shoot_coor[0] + 1
-                        elif move[2] == 3:
-                            shoot_coor[0] = shoot_coor[0] + 1
-                            shoot_coor[1] = shoot_coor[1] + 1
-                        elif move[2] == 4:
-                            shoot_coor[1] = shoot_coor[1] + 1
-                        elif move[2] == 5:
-                            shoot_coor[1] = shoot_coor[1] + 1
-                            shoot_coor[0] = shoot_coor[0] - 1
-                        elif move[2] == 6:
-                            shoot_coor[0] = shoot_coor[0] - 1
-                        elif move[2] == 7:
-                            shoot_coor[1] = shoot_coor[1] - 1
-                            shoot_coor[0] = shoot_coor[0] - 1
-
-                        # if self.matrix[shoot_coor[0]][shoot_coor[1]]
-                        # self.matrix
-
-                        # TODO: add shooting
-                        pass
+                player = self.getPlayerFromID(move[0])
+                self.executeShooting(player, move[2])
 
         self.move_list.clear()
 
     def executeMoving(self, player, dir):
+        logging.debug(f"Moving player {player.id} in direction {dir}!")
 
         toCoordinates = [player.x, player.y]
 
@@ -229,16 +201,48 @@ class Game:
                 self.matrix[player.x, player.y] = Items.EMPTY
                 self.player_list.remove(player)
 
-        elif isinstance(checkField, Item) and not isinstance(checkField, Player):
+        elif isinstance(checkField, Item) and not isinstance(checkField, Player):  # item field
             self.matrix[player.x, player.y] = Items.EMPTY
             self.matrix[toCoordinates[0]][toCoordinates[1]] = player
             player.x, player.y = toCoordinates[0], toCoordinates[1]
             # TODO: collect item
 
-        elif isinstance(checkField, Player):
+        elif isinstance(checkField, Player):  # player field
             player.lives = player.lives - 1
             player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
             player2.lives = player2.lives - 1
+
+    def executeShooting(self, player, dir):
+
+        toCoordinates = [player.x, player.y]
+
+        if dir == 0:
+            toCoordinates[1] = toCoordinates[1] - 1
+        elif dir == 1:
+            toCoordinates[0] = toCoordinates[0] + 1
+            toCoordinates[1] = toCoordinates[1] - 1
+        elif dir == 2:
+            toCoordinates[0] = toCoordinates[0] + 1
+        elif dir == 3:
+            toCoordinates[0] = toCoordinates[0] + 1
+            toCoordinates[1] = toCoordinates[1] + 1
+        elif dir == 4:
+            toCoordinates[1] = toCoordinates[1] + 1
+        elif dir == 5:
+            toCoordinates[1] = toCoordinates[1] + 1
+            toCoordinates[0] = toCoordinates[0] - 1
+        elif dir == 6:
+            toCoordinates[0] = toCoordinates[0] - 1
+        elif dir == 7:
+            toCoordinates[1] = toCoordinates[1] - 1
+            toCoordinates[0] = toCoordinates[0] - 1
+
+        checkField = self.matrix[toCoordinates[0]][toCoordinates[1]]
+
+        if isinstance(checkField, Player):  # player field
+            player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
+            player2.lives = player2.lives - 1
+            print(f'Player: {player2.uuid} hit')
 
     def GetFieldOfView(self, player_id):  # for specific player
         for player in self.player_list:
