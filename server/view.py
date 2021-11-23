@@ -18,8 +18,8 @@ YELLOW = (255, 211, 0)
 BROWN = (121, 63, 13)
 BACKGROUND = (195, 142, 90)
 GREEN = (0, 82, 33)
-RED = (255,0,0)
-ORANGE = (255,157,0)
+RED = (255, 0, 0)
+ORANGE = (255, 157, 0)
 
 P1 = (120, 50, 0)
 P2 = (120, 50, 15)
@@ -34,12 +34,12 @@ def view(game):
     run = True
     map = game.matrix
     while run:
-        
+
         for event in pygame.event.get():
             if(event.type == pygame.QUIT):
                 pygame.quit()
                 sys.exit()
-        
+
             if(event.type == KEYDOWN):
                 map = gen.purge(map)
 
@@ -57,7 +57,7 @@ def view(game):
                                        (i*40+20, j*40+20), 15)
                 elif(map[i][j].id) == "CC":
                     pygame.draw.circle(SCREEN, BROWN,
-                                     (i*40+20, j*40+20), 15)
+                                       (i*40+20, j*40+20), 15)
                 elif(map[i][j].id) != "  ":
                     pygame.draw.circle(SCREEN, RED,
                                        (i*40+20, j*40+20), 15)
@@ -87,4 +87,5 @@ if __name__ == "__main__":
     game.join(f'Matthias', 102)
     game.join(f'Pacifico', 103)
     game.join(f'Philipp', 104)
-    view(game)
+
+    doTurn(game)

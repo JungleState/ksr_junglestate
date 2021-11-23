@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-from random import randint, randrange
-=======
 from random import randint
 import logging
 
 logging.getLogger().setLevel("DEBUG")
->>>>>>> f162a1fcf3a46a7f657ad6998d845f4ef0678033
 
 FIELD_LENGTH = 17
 FIELD_HEIGHT = 17
@@ -71,7 +67,7 @@ class RandomGenerator(MapGenerator):
         self.coconut_rate = coconut_rate
         self.banana_rate = banana_rate
         self.pinapple_rate = pinapple_rate
-    
+
     def inner(self):
         prob = randint(1, 100)
         if prob <= self.forest_spawning_rate:
@@ -84,7 +80,7 @@ class RandomGenerator(MapGenerator):
             return Items.PINEAPPLE
         else:
             return super().inner()
-    
+
     def purge(self, matrix):
         plus_list = [1, -1, 0, 0]
         for y in range(len(matrix)-2):
@@ -92,9 +88,9 @@ class RandomGenerator(MapGenerator):
                 if matrix[y][x] != Items.FOREST:
                     surrounding_obstacles = 0
                     for i in range(4):
-                        if matrix[y+plus_list[i]][x+plus_list[-1*(i+1)]] ==  Items.FOREST:
+                        if matrix[y+plus_list[i]][x+plus_list[-1*(i+1)]] == Items.FOREST:
                             surrounding_obstacles += 1
-                    
+
                     while surrounding_obstacles > 2:
                         index = randint(0, 3)
                         y_coord = y+plus_list[index]
@@ -103,10 +99,10 @@ class RandomGenerator(MapGenerator):
                             matrix[y_coord][x_coord] = super().inner()
                             surrounding_obstacles -= 1
         return matrix
-    
+
 
 class Game:
-    def __init__(self, id, generator = RandomGenerator(50, 1, 1, 1)):
+    def __init__(self, id, generator=RandomGenerator(50, 1, 1, 1)):
         self.move_list = []
         self.id = id
         self.player_list = []
@@ -218,7 +214,7 @@ class Game:
         checkField = self.matrix[toCoordinates[0]][toCoordinates[1]]
 
         if checkField == Items.EMPTY:  # empty field
-            self.matrix[player.x, player.y] = Items.EMPTY
+            self.matrix[player.x][player.y] = Items.EMPTY
             self.matrix[toCoordinates[0]][toCoordinates[1]] = player
             player.x, player.y = toCoordinates[0], toCoordinates[1]
 
@@ -229,7 +225,7 @@ class Game:
                 self.player_list.remove(player)
 
         elif isinstance(checkField, Item) and not isinstance(checkField, Player):  # item field
-            self.matrix[player.x, player.y] = Items.EMPTY
+            self.matrix[player.x][player.y] = Items.EMPTY
             self.matrix[toCoordinates[0]][toCoordinates[1]] = player
             player.x, player.y = toCoordinates[0], toCoordinates[1]
             # TODO: collect item
@@ -313,4 +309,3 @@ class Game:
                     item_dict[f'{item.name}'] = item.count
                 return item_dict
         return []
- 
