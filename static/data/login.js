@@ -6,7 +6,7 @@ document.addEventListener("keydown", function(event) {
 
 async function login() {
 
-    let name = document.getElementById('inp').value;
+    let name = document.getElementById('name').value;
     let mode = document.getElementById('mode').checked;
 
     let modeName;
@@ -29,9 +29,9 @@ async function login() {
         alert("OK");
     }
     else {
-        alert("NO");
+        alert("Player Name Already Used / Already logged in");
     }
 
-    document.getElementById('inp').value = "";
+    document.getElementById('name').value = "";
     document.getElementById('mode').checked = false;
 }
