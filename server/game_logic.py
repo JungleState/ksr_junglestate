@@ -204,6 +204,7 @@ class Game:
         self.move_list.clear()
 
     def executeMoving(self, player, dir):
+        logging.debug(f"Moving player {player.id} in direction {dir}!")
 
         toCoordinates = [player.x, player.y]
 
