@@ -18,6 +18,17 @@ namespace Player {
             var json = await stringTask;
 
             Console.WriteLine(json);
+
+
+
+
+
+
+
+
+
+
+
         }
         private static async Task getData() {
             var stringTask = client.GetStringAsync("http://localhost:5500/view");
@@ -26,22 +37,50 @@ namespace Player {
             Console.WriteLine(json);
 
 
+
+
+
+
+
+
+
+
         }
 
         private static void move(int direction) {
-            
+            if (direction == 0 || direction == 2 || direction == 4 || direction == 6) {
+                sendCommand(1, direction);
+            }
+            else {
+                sendCommand(0, -1);
+            }
         }
 
         private static void attack(int direction) {
-            if (direction == 0 || direction == 2 || direction == 4 || direction == 6) {
-                sendCommand("attack", direction);
+            if (direction >= 0 && direction <= 7) {
+                sendCommand(2, direction);
             }
             else {
-                sendCommand("")
+                sendCommand(0, -1);
             }
         }
 
-        private static void sendCommand(string move, int direction) {
+        private static void sendCommand(int type, int direction) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         }
 
@@ -54,8 +93,8 @@ namespace Player {
             return name;
         }
         private static void playerBehaviour() {        
-            // move:    move(DIRECTION)     options for DIRECTION: N [-1, 7]
-            // attack:  attack(DIRECTION)   options for DIRECTION: 0, 2, 4, 6
+            // attack:  attack(DIRECTION)   options for DIRECTION: [0, 7]
+            // move:    move(DIRECTION)     options for DIRECTION: -1, 0, 2, 4, 6
             // DIRECTION: integer
             //    -1: No direction
             //    0: up
@@ -77,6 +116,11 @@ namespace Player {
         static async Task Main(string[] args) {
             // await getData();
             // await joinGame(config());
+
+
+
+
+
 
 
 
