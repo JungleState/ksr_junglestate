@@ -248,21 +248,24 @@ class Game:
             player.x, player.y = toCoordinates[0], toCoordinates[1]
 
         elif checkField == Items.FOREST:  # forest field
-            player.lives = player.lives - 1
-            if player.lives < 1:
-                self.matrix[player.x][player.y] = Items.EMPTY
-                self.player_list.remove(player)
+            self.handlePlayerDamage(player)
 
-        elif isinstance(checkField, Item) and not isinstance(checkField, Player):
+        elif isinstance(checkField, Player):
+            self.handlePlayerDamage(player)
+            player2 = checkField
+            self.handlePlayerDamage(player2)
+
+        elif isinstance(checkField, Item):
             self.matrix[player.x][player.y] = Items.EMPTY
             self.matrix[toCoordinates[0]][toCoordinates[1]] = player
             player.x, player.y = toCoordinates[0], toCoordinates[1]
             # TODO: collect item
 
-        elif isinstance(checkField, Player):
-            player.lives = player.lives - 1
-            player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
-            player2.lives = player2.lives - 1
+    def handlePlayerDamage(self, player):
+        player.lives -= 1  # TODO custom damage depending on situation
+        if player.lives < 1:
+            self.matrix[player.x][player.y] = Items.EMPTY
+            self.player_list.remove(player)
 
     def executeShooting(self, player, dir):
         logging.debug(f"Shooting player {player.id} in direction {dir}!")
