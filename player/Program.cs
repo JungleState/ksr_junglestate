@@ -6,17 +6,24 @@ using System.Net.Http.Headers;
 //     - Download C# extension
 //     - Download NET: https://dotnet.microsoft.com/download
 //     - Open Terminal
-//     - Move into "player" folder: "cd static/player/"
+//     - Move into "player" folder: "cd player"
 //     - Run: "dotnet run"
 
 namespace Player {
     class Program {
         private static readonly HttpClient client = new HttpClient();
 
+        private static async Task joinGame() {
+            
+        }
         private static async Task getData() {
-
+            // get the json (strings)
             var stringTask = client.GetStringAsync("http://localhost:5000/view");
-            var msg = await stringTask;
+            var json = await stringTask;
+
+            Console.WriteLine(json);
+
+            // get data from string
         }
 
 
