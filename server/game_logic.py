@@ -153,7 +153,7 @@ class Game:
         for player in self.player_list:
             player_list.append({"id": player.id,
                                 "name": player.name,
-                                "health": player.health,
+                                "health": player.lives,
                                 "knockouts": player.knockouts,
                                 "hits": player.hits,
                                 # coconuts
