@@ -1,7 +1,11 @@
+<<<<<<< HEAD
+from random import randint, randrange
+=======
 from random import randint
 import logging
 
 logging.getLogger().setLevel("DEBUG")
+>>>>>>> f162a1fcf3a46a7f657ad6998d845f4ef0678033
 
 FIELD_LENGTH = 17
 FIELD_HEIGHT = 17
@@ -62,11 +66,12 @@ class MapGenerator:
 
 
 class RandomGenerator(MapGenerator):
-    def __init__(self, forest_spawning_rate, coconut_rate, banana_rate):
+    def __init__(self, forest_spawning_rate, coconut_rate, banana_rate, pinapple_rate):
         self.forest_spawning_rate = forest_spawning_rate
         self.coconut_rate = coconut_rate
         self.banana_rate = banana_rate
-
+        self.pinapple_rate = pinapple_rate
+    
     def inner(self):
         prob = randint(1, 100)
         if prob <= self.forest_spawning_rate:
@@ -75,12 +80,33 @@ class RandomGenerator(MapGenerator):
             return Items.COCONUT
         elif prob <= self.forest_spawning_rate + self.coconut_rate + self.banana_rate:
             return Items.BANANA
+        elif prob <= self.forest_spawning_rate + self.coconut_rate + self.banana_rate + self.pinapple_rate:
+            return Items.PINEAPPLE
         else:
             return super().inner()
-
+    
+    def purge(self, matrix):
+        plus_list = [1, -1, 0, 0]
+        for y in range(len(matrix)-2):
+            for x in range(len(matrix[y])-2):
+                if matrix[y][x] != Items.FOREST:
+                    surrounding_obstacles = 0
+                    for i in range(4):
+                        if matrix[y+plus_list[i]][x+plus_list[-1*(i+1)]] ==  Items.FOREST:
+                            surrounding_obstacles += 1
+                    
+                    while surrounding_obstacles > 2:
+                        index = randint(0, 3)
+                        y_coord = y+plus_list[index]
+                        x_coord = x+plus_list[-1*(index+1)]
+                        if y_coord != 0 and y_coord != len(matrix) and x_coord != 0 and x_coord != len(matrix[y]) and matrix[y_coord][x_coord] == Items.FOREST:
+                            matrix[y_coord][x_coord] = super().inner()
+                            surrounding_obstacles -= 1
+        return matrix
+    
 
 class Game:
-    def __init__(self, id, generator=RandomGenerator(0, 1, 1)):
+    def __init__(self, id, generator = RandomGenerator(50, 1, 1, 1)):
         self.move_list = []
         self.id = id
         self.player_list = []
@@ -94,8 +120,8 @@ class Game:
         logging.debug(f"Player {id} joined as {name}")
         player = Player(id, id, name)
         while True:
-            x = randint(1, self.field_dim[0])
-            y = randint(1, self.field_dim[1])
+            x = randint(1, self.field_dim[0]-1)
+            y = randint(1, self.field_dim[1]-1)
             if self.matrix[y][x] == Items.EMPTY:
                 player.x = x
                 player.y = y
@@ -287,3 +313,4 @@ class Game:
                     item_dict[f'{item.name}'] = item.count
                 return item_dict
         return []
+ 
