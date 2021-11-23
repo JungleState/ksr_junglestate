@@ -1,4 +1,7 @@
 from random import randint
+import logging
+
+logging.getLogger().setLevel("DEBUG")
 
 FIELD_LENGTH = 17
 FIELD_HEIGHT = 17
@@ -88,6 +91,7 @@ class Game:
         self.field_dim = [len(self.matrix[0]), len(self.matrix)]
 
     def join(self, name, id):
+        logging.debug(f"Player {id} joined as {name}")
         player = Player(id, id, name)
         while True:
             x = randint(1, self.field_dim[0])
@@ -134,10 +138,13 @@ class Game:
         # 7: up left
         for move in self.move_list:
             if move[0] == player_id:
+                logging.debug(f"Rejecting move from Player {player_id} who already moved.")
                 return False
 
+        logging.debug(f"Adding move from {player_id}.")
         self.move_list.append([player_id, move_id, dir])
         if len(self.move_list) == len(self.player_list):
+            logging.debug(f"All players moved - next round!")
             self.doNextRound()
         return True
 
@@ -146,7 +153,7 @@ class Game:
         for player in self.player_list:
             player_list.append({"id": player.id,
                                 "name": player.name,
-                                "health": player.health,
+                                "health": player.lives,
                                 "knockouts": player.knockouts,
                                 "hits": player.hits,
                                 # coconuts
@@ -168,6 +175,7 @@ class Game:
         self.move_list.clear()
 
     def executeMoving(self, player, dir):
+        logging.debug(f"Moving player {player.id} in direction {dir}!")
 
         toCoordinates = [player.x, player.y]
 
