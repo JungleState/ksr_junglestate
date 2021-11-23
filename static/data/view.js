@@ -12,36 +12,32 @@ class View{
             4:"pineapple"
         }
     }
-    showField(type, matrix){ //show the field
-        let width;
-        let height;
-        if (type == 'spectator'){ //Dimensions for spectator
-            width = 50; 
-            height =50;
-        }
-        if (type == 'client'){ //Dimensions for human player
-            widht = 5;
-            height = 5;
-        }
-        let row = 0
+    Showfield(type, matrix){ //show the field //probably +playerdict (if we manage it in here)
+        //The Matrix needs to be the same Dimensions as the given field of HTML Elements.   
+        //Dimensions are set by the field automatically:
+
+        let row=0
         for (let row_element of this.field.getElementsByClassName("row")) { //needs Rows in HTML (so I get Rows)
-            row += 1
-            let column = 0
+            row+=1;
+            let column=0;
             for(let tile of row_element.getElementsByTagName("tile")) { //Every Tile in each Row needs to be called "tile"
-                column += 1
-                let tiletype = matrix[row][column]
+                column+=1;
 
-                if(tiletype == 0){ //probably solve this with dicts (MORE BEAUTIFUL)
-                    tile.classList.add('plain')
+                let tiletype = matrix[row][column];
+
+                if(tiletype<100){ //Up to 100 are Items
+                    tile.setAttribute('class', this.types[tiletype]); //adds the type from the Matrix to the tile
                 }
-                if(tiletype == 1){
-                    tile.classList.add('jungle')
+                else{ //over 100 are the players
+                    //tile.setAttribute('name', playerdict[tiletype-100]); ---- probably later or manage somewhere else
+                    tile.setAttribute('name', "player");
                 }
-
-
+                
             }
         }
 
     }
 
 }
+
+
