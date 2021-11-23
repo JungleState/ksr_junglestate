@@ -13,22 +13,43 @@ namespace Player {
     class Program {
         private static readonly HttpClient client = new HttpClient();
 
-        private static async Task joinGame() {
-            
+        private static async Task joinGame(string name) {
+            var stringTask = client.GetStringAsync("http://localhost:5500/joinGame/client/"+name);
+            var json = await stringTask;
+
+            Console.WriteLine(json);
         }
         private static async Task getData() {
-            // get the json (strings)
-            var stringTask = client.GetStringAsync("http://localhost:5000/view");
+            var stringTask = client.GetStringAsync("http://localhost:5500/view");
             var json = await stringTask;
 
             Console.WriteLine(json);
 
-            // get data from string
+
         }
 
+        private static void move(int direction) {
 
+        }
+
+        private static void attack(int direction) {
+
+        }
+
+        private static string config() {
+            /////////YOUR/CODE/BELOW/HERE//////////
+            string name = "Hans Muster";
+            //////////YOUR/CODE/ABOVE/HERE//////////
+            return name;
+        }
         private static void playerBehaviour() {            
             //////////YOUR/CODE/BELOW/HERE//////////
+            // attack:  attack(DIRECTION)
+            // move:    move(DIRECTION)
+
+            // DIRECTION: integer
+            // 1 2 3
+            // 
             
 
 
@@ -37,7 +58,8 @@ namespace Player {
         }
 
         static async Task Main(string[] args) {
-            await getData();
+            // await getData();
+            await joinGame();
         }
     }
 }

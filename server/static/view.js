@@ -18,10 +18,9 @@ class View{
 
         let row=0
         for (let row_element of this.field.getElementsByClassName("row")) { //needs Rows in HTML (so I get Rows)
-            row+=1;
             let column=0;
-            for(let tile of row_element.getElementsByTagName("tile")) { //Every Tile in each Row needs to be called "tile"
-                column+=1;
+
+            for(let tile of row_element.getElementsByTagName("cell")) { //Every Tile in each Row needs to be called "tile"
 
                 let tiletype = matrix[row][column];
 
@@ -32,15 +31,24 @@ class View{
                     //tile.setAttribute('name', playerdict[tiletype-100]); ---- probably later or manage somewhere else
                     tile.setAttribute('name', "player");
                 }
+                column+=1;
                 
             }
+            row+=1;
         }
 
     }
 
 }
 
-var testmatrix = [[1, 0, 0, 0, 1],[1, 1, 0, 1, 1],[1, 0, 1, 0, 1], [1, 0, 1, 1, 1], [1, 1, 1, 1, 1]]
+function test(){
+    var testmatrix =   [[1, 0, 0, 0, 1],
+                        [1, 1, 0, 1, 1],
+                        [1, 0, 1, 0, 1], 
+                        [1, 0, 1, 1, 1], 
+                        [1, 1, 1, 1, 0]]
 
-const view = new View(document.getElementById("grid"));
-view.Showfield(testmatrix)
+    const view = new View(document.getElementById("grid"));
+    view.Showfield(testmatrix);
+
+}
