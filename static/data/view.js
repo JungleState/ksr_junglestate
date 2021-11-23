@@ -12,7 +12,7 @@ class View{
             4:"pineapple"
         }
     }
-    Showfield(type, matrix){ //show the field //probably +playerdict (if we manage it in here)
+    Showfield(matrix){ //show the field //probably +playerdict (if we manage it in here)
         //The Matrix needs to be the same Dimensions as the given field of HTML Elements.   
         //Dimensions are set by the field automatically:
 
@@ -40,4 +40,7 @@ class View{
 
 }
 
+var testmatrix = [[1, 0, 0, 0, 1],[1, 1, 0, 1, 1],[1, 0, 1, 0, 1], [1, 0, 1, 1, 1], [1, 1, 1, 1, 1]]
 
+const view = new View(document.getElementById("grid"));
+view.Showfield(testmatrix)
