@@ -1,4 +1,4 @@
-from random import randint, randrange
+from random import randint
 import logging
 
 logging.getLogger().setLevel("DEBUG")
@@ -83,21 +83,27 @@ class RandomGenerator(MapGenerator):
 
     def purge(self, matrix):
         plus_list = [1, -1, 0, 0]
-        for y in range(len(matrix)-2):
-            for x in range(len(matrix[y])-2):
-                if matrix[y][x] != Items.FOREST:
-                    surrounding_obstacles = 0
-                    for i in range(4):
-                        if matrix[y+plus_list[i]][x+plus_list[-1*(i+1)]] == Items.FOREST:
-                            surrounding_obstacles += 1
-
-                    while surrounding_obstacles > 2:
-                        index = randint(0, 3)
-                        y_coord = y+plus_list[index]
-                        x_coord = x+plus_list[-1*(index+1)]
-                        if y_coord != 0 and y_coord != len(matrix) and x_coord != 0 and x_coord != len(matrix[y]) and matrix[y_coord][x_coord] == Items.FOREST:
-                            matrix[y_coord][x_coord] = super().inner()
-                            surrounding_obstacles -= 1
+        too_many_surrounding_obstacles = 1
+        while too_many_surrounding_obstacles > 0:
+            too_many_surrounding_obstacles = 0
+            for y in range(len(matrix)-2):
+                y += 1
+                for x in range(len(matrix[y])-2):
+                    x += 1
+                    if matrix[y][x] != Items.FOREST:
+                        surrounding_obstacles = 0
+                        for i in range(4):
+                            if matrix[y+plus_list[i]][x+plus_list[-(i+1)]] ==  Items.FOREST:
+                                surrounding_obstacles += 1
+                        if surrounding_obstacles > 2:
+                            too_many_surrounding_obstacles += 1
+                        while surrounding_obstacles > 2:
+                            index = randint(0, 3)
+                            y_coord = y+plus_list[index]
+                            x_coord = x+plus_list[-(index+1)]
+                            if y_coord != 0 and y_coord != len(matrix)-1 and x_coord != 0 and x_coord != len(matrix[y])-1 and matrix[y_coord][x_coord] == Items.FOREST:
+                                matrix[y_coord][x_coord] = super().inner()
+                                surrounding_obstacles -= 1
         return matrix
 
 
@@ -109,7 +115,7 @@ class Game:
         self.state = 0
         self.round = 0
         # field dimension 1st element = x; 2nd element = y
-        self.matrix = generator.generate(FIELD_LENGTH, FIELD_HEIGHT)
+        self.matrix = generator.purge(generator.generate(FIELD_LENGTH, FIELD_HEIGHT))
         self.field_dim = [len(self.matrix[0]), len(self.matrix)]
 
     def join(self, name, id):
@@ -219,21 +225,24 @@ class Game:
             player.x, player.y = toCoordinates[0], toCoordinates[1]
 
         elif checkField == Items.FOREST:  # forest field
-            player.lives = player.lives - 1
-            if player.lives < 1:
-                self.matrix[player.x][player.y] = Items.EMPTY
-                self.player_list.remove(player)
+            self.handlePlayerDamage(player)
 
-        elif isinstance(checkField, Item) and not isinstance(checkField, Player):  # item field
+        elif isinstance(checkField, Player):
+            self.handlePlayerDamage(player)
+            player2 = checkField
+            self.handlePlayerDamage(player2)
+
+        elif isinstance(checkField, Item):
             self.matrix[player.x][player.y] = Items.EMPTY
             self.matrix[toCoordinates[0]][toCoordinates[1]] = player
             player.x, player.y = toCoordinates[0], toCoordinates[1]
             # TODO: collect item
 
-        elif isinstance(checkField, Player):
-            player.lives = player.lives - 1
-            player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
-            player2.lives = player2.lives - 1
+    def handlePlayerDamage(self, player):
+        player.lives -= 1  # TODO custom damage depending on situation
+        if player.lives < 1:
+            self.matrix[player.x][player.y] = Items.EMPTY
+            self.player_list.remove(player)
 
     def executeShooting(self, player, dir):
         logging.debug(f"Shooting player {player.id} in direction {dir}!")
@@ -309,3 +318,4 @@ class Game:
                     item_dict[f'{item.name}'] = item.count
                 return item_dict
         return []
+ 
