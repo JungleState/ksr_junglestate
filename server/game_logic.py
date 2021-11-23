@@ -76,14 +76,12 @@ class Game:
                 for i in range(4):
                     if self.matrix[x+plus_x_list[i]][y+plus_y_list[i]] == 1:
                         surrounding_obstacle += 1
-<<<<<<< HEAD
 
                 # while surrounding_obstacle > 2:
                 #     coord = randint(0, 3)
                 #     if self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]] == 1:
                 #         del self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]]
                 #         surrounding_obstacle -= 1
-=======
                 
                 while surrounding_obstacle > 2:
                     coord = randint(0, 3)
@@ -95,7 +93,6 @@ class Game:
                             surrounding_obstacle -= 1
             
         
->>>>>>> 9d1a4bbdd119ec3629c5ee031e3378a68c92c07a
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:
