@@ -190,39 +190,10 @@ class Game:
                 player = self.getPlayerFromID(move[0])
                 self.executeMoving(player, move[2])
 
-        for move in self.move_list:  # check for shoot
+        for move in self.move_list:  # check for shooting
             if move[1] == "2":
-                for player in self.player_list:
-                    if player.id == move[0]:
-
-                        shoot_coor = [player.x, player.y]
-
-                        if move[2] == 0:
-                            shoot_coor[1] = shoot_coor[1] - 1
-                        elif move[2] == 1:
-                            shoot_coor[0] = shoot_coor[0] + 1
-                            shoot_coor[1] = shoot_coor[1] - 1
-                        elif move[2] == 2:
-                            shoot_coor[0] = shoot_coor[0] + 1
-                        elif move[2] == 3:
-                            shoot_coor[0] = shoot_coor[0] + 1
-                            shoot_coor[1] = shoot_coor[1] + 1
-                        elif move[2] == 4:
-                            shoot_coor[1] = shoot_coor[1] + 1
-                        elif move[2] == 5:
-                            shoot_coor[1] = shoot_coor[1] + 1
-                            shoot_coor[0] = shoot_coor[0] - 1
-                        elif move[2] == 6:
-                            shoot_coor[0] = shoot_coor[0] - 1
-                        elif move[2] == 7:
-                            shoot_coor[1] = shoot_coor[1] - 1
-                            shoot_coor[0] = shoot_coor[0] - 1
-
-                        # if self.matrix[shoot_coor[0]][shoot_coor[1]]
-                        # self.matrix
-
-                        # TODO: add shooting
-                        pass
+                player = self.getPlayerFromID(move[0])
+                self.executeShooting(player, move[2])
 
         self.move_list.clear()
 
