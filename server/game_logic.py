@@ -138,7 +138,8 @@ class Game:
         # 7: up left
         for move in self.move_list:
             if move[0] == player_id:
-                logging.debug(f"Rejecting move from Player {player_id} who already moved.")
+                logging.debug(
+                    f"Rejecting move from Player {player_id} who already moved.")
                 return False
 
         logging.debug(f"Adding move from {player_id}.")
@@ -213,6 +214,7 @@ class Game:
             player2.lives = player2.lives - 1
 
     def executeShooting(self, player, dir):
+        logging.debug(f"Shooting player {player.id} in direction {dir}!")
 
         toCoordinates = [player.x, player.y]
 
@@ -242,7 +244,7 @@ class Game:
         if isinstance(checkField, Player):  # player field
             player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
             player2.lives = player2.lives - 1
-            print(f'Player: {player2.uuid} hit')
+            logging.debug(f'Player {player2.uuid} hit')
 
     def GetFieldOfView(self, player_id):  # for specific player
         for player in self.player_list:
