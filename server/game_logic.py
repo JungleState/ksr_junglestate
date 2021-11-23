@@ -67,7 +67,7 @@ class RandomGenerator(MapGenerator):
         self.coconut_rate = coconut_rate
         self.banana_rate = banana_rate
         self.pinapple_rate = pinapple_rate
-    
+
     def inner(self):
         prob = randint(1, 100)
         if prob <= self.forest_spawning_rate:
@@ -80,7 +80,7 @@ class RandomGenerator(MapGenerator):
             return Items.PINEAPPLE
         else:
             return super().inner()
-    
+
     def purge(self, matrix):
         plus_list = [1, -1, 0, 0]
         too_many_surrounding_obstacles = 1
@@ -105,10 +105,10 @@ class RandomGenerator(MapGenerator):
                                 matrix[y_coord][x_coord] = super().inner()
                                 surrounding_obstacles -= 1
         return matrix
-    
+
 
 class Game:
-    def __init__(self, id, generator = RandomGenerator(50, 1, 1, 1)):
+    def __init__(self, id, generator=RandomGenerator(50, 1, 1, 1)):
         self.move_list = []
         self.id = id
         self.player_list = []
@@ -166,7 +166,8 @@ class Game:
         # 7: up left
         for move in self.move_list:
             if move[0] == player_id:
-                logging.debug(f"Rejecting move from Player {player_id} who already moved.")
+                logging.debug(
+                    f"Rejecting move from Player {player_id} who already moved.")
                 return False
 
         logging.debug(f"Adding move from {player_id}.")
@@ -191,12 +192,12 @@ class Game:
 
     def doNextRound(self):
         for move in self.move_list:  # check for moving
-            if move[1] == 1:
+            if move[1] == "1":
                 player = self.getPlayerFromID(move[0])
                 self.executeMoving(player, move[2])
 
         for move in self.move_list:  # check for shooting
-            if move[1] == 2:
+            if move[1] == "2":
                 player = self.getPlayerFromID(move[0])
                 self.executeShooting(player, move[2])
 
@@ -219,28 +220,29 @@ class Game:
         checkField = self.matrix[toCoordinates[0]][toCoordinates[1]]
 
         if checkField == Items.EMPTY:  # empty field
-            self.matrix[player.x, player.y] = Items.EMPTY
+            self.matrix[player.x][player.y] = Items.EMPTY
             self.matrix[toCoordinates[0]][toCoordinates[1]] = player
             player.x, player.y = toCoordinates[0], toCoordinates[1]
 
         elif checkField == Items.FOREST:  # forest field
             player.lives = player.lives - 1
             if player.lives < 1:
-                self.matrix[player.x, player.y] = Items.EMPTY
+                self.matrix[player.x][player.y] = Items.EMPTY
                 self.player_list.remove(player)
 
         elif isinstance(checkField, Item) and not isinstance(checkField, Player):  # item field
-            self.matrix[player.x, player.y] = Items.EMPTY
+            self.matrix[player.x][player.y] = Items.EMPTY
             self.matrix[toCoordinates[0]][toCoordinates[1]] = player
             player.x, player.y = toCoordinates[0], toCoordinates[1]
             # TODO: collect item
 
-        elif isinstance(checkField, Player):  # player field
+        elif isinstance(checkField, Player):
             player.lives = player.lives - 1
             player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
             player2.lives = player2.lives - 1
 
     def executeShooting(self, player, dir):
+        logging.debug(f"Shooting player {player.id} in direction {dir}!")
 
         toCoordinates = [player.x, player.y]
 
@@ -270,7 +272,7 @@ class Game:
         if isinstance(checkField, Player):  # player field
             player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
             player2.lives = player2.lives - 1
-            print(f'Player: {player2.uuid} hit')
+            logging.debug(f'Player {player2.uuid} hit')
 
     def GetFieldOfView(self, player_id):  # for specific player
         for player in self.player_list:
