@@ -1,17 +1,25 @@
 from random import randint
 
-FIELD_LENGH = 17
+FIELD_LENGTH = 17
 FIELD_HEIGHT = 17
 
 
 class Item:
     def __init__(self, name, id):
         self.name = name
-        self.count = 0
         self.id = id
+    
+    def __str__(self) -> str:
+        return self.id
 
+class Items:
+    EMPTY = Item("empty", "  ")
+    FOREST = Item("forest", "FF")
+    COCONUT = Item("coconut", "CC")
+    BANANA = Item("coconut", "BB")
+    PINEAPPLE = Item("pineapple", "PP")
 
-class Player:
+class Player(Item):
     def __init__(self, uuid, id, name):
         self.id = id
         self.uuid = uuid
@@ -22,78 +30,81 @@ class Player:
         self.sight = 5  # dimension of field of view matrix, needs to be odd
         self.name = name
         self.health = 100
-        self.item_list = [Item("coconuts", 2),
-                          Item("bananas", 3),
-                          Item("pinapples", 4)]
+        self.coconuts = 2
         self.points = 0
+
+class MapGenerator:
+    """ A map generator that creates empty maps with forest all around."""
+    def generate(self, width, height):
+        matrix = []
+        for y in range(height):
+            row = []
+            matrix.append(row)
+            for x in range(width):
+                if y == 0 or y == height - 1 or x == 0 or x == width - 1:
+                    row.append(self.border())
+                else:
+                    row.append(self.inner())
+        return matrix
+
+    def border(self):
+        return Items.FOREST
+    
+    def inner(self):
+        return Items.EMPTY
+
+class RandomGenerator(MapGenerator):
+    def __init__(self, forest_spawning_rate, coconut_rate, banana_rate):
+        self.forest_spawning_rate = forest_spawning_rate
+        self.coconut_rate = coconut_rate
+        self.banana_rate = banana_rate
+    
+    def inner(self):
+        prob = randint(1, 100)
+        if prob <= self.forest_spawning_rate:
+            return Items.FOREST
+        elif prob <= self.forest_spawning_rate + self.coconut_rate:
+            return Items.COCONUT
+        elif prob <= self.forest_spawning_rate + self.coconut_rate + self.banana_rate:
+            return Items.BANANA
+        else:
+            return super().inner()
 
 
 class Game:
-    def __init__(self, id):
+    def __init__(self, id, generator = RandomGenerator(0, 1, 1)):
         self.move_list = []
         self.id = id
-        self.next_player_id = 100
-        self.forest_spawning_rate = 8  # in procentage
-        self.item_spawning_rate = 10  # in procentage
         self.player_list = []
         self.state = 0
         self.round = 0
         # field dimension 1st element = x; 2nd element = y
-        self.field_dim = [FIELD_LENGH-1, FIELD_HEIGHT-1]
-        self.matrix = []
-        self.createMap()
-
-    def join(self, name, uuid):
-        self.player_list.append(Player(uuid, self.next_player_id, name))
-        self.next_player_id += 1
-        x = randint(1, FIELD_LENGH-2)
-        y = randint(1, FIELD_HEIGHT-2)
-        self.matrix[x][y] = id
-        self.player_list[len(self.player_list)-1].x = x
-        self.player_list[len(self.player_list)-1].y = y
-
-    def createMap(self):
-        # create random
-        for x in range(self.field_dim[0]+1):
-            self.matrix.append([])
-            for y in range(self.field_dim[1]+1):
-                if x == 0 or x == FIELD_LENGH-1 or y == 0 or y == FIELD_HEIGHT-1:
-                    self.matrix[x].append(1)
-                else:
-                    prob = randint(1, 100)
-                    if prob <= self.forest_spawning_rate:
-                        self.matrix[x].append(1)
-                    elif prob <= self.forest_spawning_rate + self.item_spawning_rate:
-                        self.matrix[x].append(2)
-                    else:
-                        self.matrix[x].append(0)
-
-        for x in range(self.field_dim[0]-1):
-            for y in range(self.field_dim[1]-1):
-                surrounding_obstacle = 0
-                plus_x_list = [1, 2, 1, 0]
-                plus_y_list = [2, 1, 0, 1]
-                for i in range(4):
-                    if self.matrix[x+plus_x_list[i]][y+plus_y_list[i]] == 1:
-                        surrounding_obstacle += 1
-
-                # while surrounding_obstacle > 2:
-                #     coord = randint(0, 3)
-                #     if self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]] == 1:
-                #         del self.matrix[x+plus_x_list[coord]][y+plus_y_list[coord]]
-                #         surrounding_obstacle -= 1
-                
-                while surrounding_obstacle > 2:
-                    coord = randint(0, 3)
-                    x_coord = x+plus_x_list[coord]
-                    y_coord = y+plus_y_list[coord]
-                    if x_coord != 0 and x_coord != self.field_dim[0] and y_coord != 0 and y_coord != self.field_dim[1]:
-                        if self.matrix[x_coord][y_coord] == 1:
-                            self.matrix[x_coord][y_coord] = 0
-                            surrounding_obstacle -= 1
-            
+        self.matrix = generator.generate(FIELD_LENGTH, FIELD_HEIGHT)
+        self.field_dim = [len(self.matrix[0]), len(self.matrix)]
         
+    def join(self, name, id):
+        player = Player(id, id, name)
+        while True:
+            x = randint(1, self.field_dim[0])
+            y = randint(1, self.field_dim[1])
+            if self.matrix[y][x] == Items.EMPTY:
+                player.x = x
+                player.y = y
+                self.matrix[y][x] = player
+                self.player_list.append(player)
+                break
+    
+    def SerializeMatrix(self):
+        rows = []
+        for row in self.matrix:
+            rows.append("".join([self.SerializeItem(item) for item in row]))
+        return rows
 
+    def SerializeItem(self, item):
+        if isinstance(item, Player):
+            return f"{self.player_list.index(item):02d}"
+        return str(item)
+    
     def addMove(self, player_id, move_id, dir):
         # move_id list:
         # 0: Stay
@@ -128,11 +139,7 @@ class Game:
                                 "knockouts": player.knockouts,
                                 "hits": player.hits,
                                 # coconuts
-                                "coconuts": player.item_list[0].count,
-                                # bananas
-                                "bananas": player.item_list[1].count,
-                                # pinapples
-                                "pinapples": player.item_list[2].count,
+                                "coconuts": player.coconuts,
                                 "points": player.points})
         return player_list
 
@@ -155,24 +162,22 @@ class Game:
 
                         field = self.matrix[player.x][player.y]
 
-                        if field == 0:  # empty field
-                            self.matrix[player.x][player.y] = player.id
-                            self.matrix[old_coor[0]
-                                        ][old_coor[1]] = 0
+                        if field == Items.EMPTY:  # empty field
+                            self.matrix[player.x][player.y] = player
+                            self.matrix[old_coor[0]][old_coor[1]] = Items.EMPTY
 
-                        elif field == 1:  # forrest field
+                        elif field == Items.FOREST:  # forest field
                             player.x = old_coor[0]
                             player.y = old_coor[1]
                             # TODO: add player damage
 
-                        elif field > 1 and field < 100:  # item field
+                        elif isinstance(field, Item) and not isinstance(field, Player):
                             # TODO: collect item
-                            field = player.id
-                            self.matrix[player.x][player.y] = player.id
-                            self.matrix[old_coor[0]][old_coor[1]] = 0
+                            self.matrix[player.x][player.y] = player
+                            self.matrix[old_coor[0]][old_coor[1]] = Items.EMPTY
                             pass
 
-                        elif field > 99:
+                        elif isinstance(field, Player):
                             for player2 in self.player_list:
                                 if player2.id == field:
                                     # TODO: add player damage
