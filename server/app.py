@@ -29,7 +29,9 @@ def GetJSON(mode, game_id, player_id=None):
             app.logger.info(f"Found game {game_id} for player {player_id}")
             if mode == "client":#returns JSON file for client
                 return {"field_of_view":game.GetFieldOfView(player_id),
-                               "items":game.GetItemDict(player_id),
+                               "coconuts":game.GetPlayerVar(player_id, "CC"),
+                               "lives":game.GetPlayerVar(player_id, "lives"),
+                               "points":game.GetPlayerVar(player_id, "P"),
                                "round":game.round}
             elif mode == "spec":#returns JSON file for spectator
                 return {"id":player_id, 

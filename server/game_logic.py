@@ -93,7 +93,7 @@ class RandomGenerator(MapGenerator):
                     if matrix[y][x] != Items.FOREST:
                         surrounding_obstacles = 0
                         for i in range(4):
-                            if matrix[y+plus_list[i]][x+plus_list[-(i+1)]] ==  Items.FOREST:
+                            if matrix[y+plus_list[i]][x+plus_list[-(i+1)]] == Items.FOREST:
                                 surrounding_obstacles += 1
                         if surrounding_obstacles > 2:
                             too_many_surrounding_obstacles += 1
@@ -108,14 +108,15 @@ class RandomGenerator(MapGenerator):
 
 
 class Game:
-    def __init__(self, id, generator=RandomGenerator(5, 1, 1, 1)):
+    def __init__(self, id, generator=RandomGenerator(20, 1, 1, 1)):
         self.move_list = []
         self.id = id
         self.player_list = []
         self.state = 0
         self.round = 0
         # field dimension 1st element = x; 2nd element = y
-        self.matrix = generator.purge(generator.generate(FIELD_LENGTH, FIELD_HEIGHT))
+        self.matrix = generator.purge(
+            generator.generate(FIELD_LENGTH, FIELD_HEIGHT))
         self.field_dim = [len(self.matrix[0]), len(self.matrix)]
 
     def join(self, name, id):
@@ -166,9 +167,12 @@ class Game:
         # 7: up left
         for move in self.move_list:
             if move[0] == player_id:
-                logging.debug(
-                    f"Rejecting move from Player {player_id} who already moved.")
+                #DEBUG : logging.debug(f"Rejecting move from Player {player_id} who already moved.")
                 return False
+
+        if self.getPlayerFromID(player_id) == False:
+            #DEBUG : logging.debug(f"Rejecting move from Player {player_id} who is dead.")
+            return False
 
         logging.debug(f"Adding move from {player_id}.")
         self.move_list.append([player_id, move_id, dir])
@@ -318,11 +322,11 @@ class Game:
                     field_of_view_matrix.append([])
                     for y in range(sight_y):
                         field_of_view_matrix[x].append(
-                            self.matrix[x+player.x-point_of_player_in_sight_matrix[0]][y+player.y-point_of_player_in_sight_matrix[1]])
+                            self.matrix[x+player.x-point_of_player_in_sight_matrix[0]][y+player.y-point_of_player_in_sight_matrix[1]].id)
                 return field_of_view_matrix
         return []
 
-    def GetItemDict(self, player_id):  # for specific player
+    def GetPlayerVar(self, player_id, var):  # for specific player
         for player in self.player_list:
             if player.id == player_id:
                 item_dict = {}
@@ -330,4 +334,3 @@ class Game:
                 #     item_dict[f'{item.name}'] = item.count
                 return item_dict
         return []
- 
