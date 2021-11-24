@@ -108,7 +108,7 @@ class RandomGenerator(MapGenerator):
 
 
 class Game:
-    def __init__(self, id, generator=RandomGenerator(50, 1, 1, 1)):
+    def __init__(self, id, generator=RandomGenerator(5, 1, 1, 1)):
         self.move_list = []
         self.id = id
         self.player_list = []
@@ -124,10 +124,10 @@ class Game:
         while True:
             x = randint(1, self.field_dim[0]-1)
             y = randint(1, self.field_dim[1]-1)
-            if self.matrix[y][x] == Items.EMPTY:
+            if self.getElementAt(x, y) == Items.EMPTY:
                 player.x = x
                 player.y = y
-                self.matrix[y][x] = player
+                self.setElementAt(x, y, player)
                 self.player_list.append(player)
                 break
 
@@ -203,6 +203,18 @@ class Game:
 
         self.move_list.clear()
 
+    def getElementAt(self, x, y):
+        return self.matrix[y][x]
+
+    def getElementAt(self, coords):
+        return self.matrix[coords[1]][coords[0]]
+
+    def setElementAt(self, x, y, item):
+        self.matrix[y][x] = item
+
+    def setElementAt(self, coords, item):
+        self.matrix[coords[1]][coords[0]] = item
+
     def executeMoving(self, player, dir):
         logging.debug(f"Moving player {player.id} in direction {dir}!")
 
@@ -217,11 +229,11 @@ class Game:
         elif dir == 6:
             toCoordinates[0] = toCoordinates[0] - 1
 
-        checkField = self.matrix[toCoordinates[0]][toCoordinates[1]]
+        checkField = self.getElementAt(toCoordinates)
 
         if checkField == Items.EMPTY:  # empty field
-            self.matrix[player.x][player.y] = Items.EMPTY
-            self.matrix[toCoordinates[0]][toCoordinates[1]] = player
+            self.setElement(player.x, player.y, Items.EMPTY)
+            self.setElement(toCoordinates, player)
             player.x, player.y = toCoordinates[0], toCoordinates[1]
 
         elif checkField == Items.FOREST:  # forest field
@@ -233,15 +245,15 @@ class Game:
             self.handlePlayerDamage(player2)
 
         elif isinstance(checkField, Item):
-            self.matrix[player.x][player.y] = Items.EMPTY
-            self.matrix[toCoordinates[0]][toCoordinates[1]] = player
+            self.setElementAt(player.x, player.y, Items.EMPTY)
+            self.setElementAt(toCoordinates, player)
             player.x, player.y = toCoordinates[0], toCoordinates[1]
             # TODO: collect item
 
     def handlePlayerDamage(self, player):
         player.lives -= 1  # TODO custom damage depending on situation
         if player.lives < 1:
-            self.matrix[player.x][player.y] = Items.EMPTY
+            self.setElementAt(player.x, player.y, Items.EMPTY)
             self.player_list.remove(player)
 
     def executeShooting(self, player, dir):
@@ -270,10 +282,10 @@ class Game:
             toCoordinates[1] = toCoordinates[1] - 1
             toCoordinates[0] = toCoordinates[0] - 1
 
-        checkField = self.matrix[toCoordinates[0]][toCoordinates[1]]
+        checkField = self.getElementAt(toCoordinates)
 
         if isinstance(checkField, Player):  # player field
-            player2 = self.matrix[toCoordinates[0]][toCoordinates[1]]
+            player2 = checkField
             player2.lives = player2.lives - 1
             logging.debug(f'Player {player2.uuid} hit')
 
@@ -314,8 +326,8 @@ class Game:
         for player in self.player_list:
             if player.id == player_id:
                 item_dict = {}
-                for item in player.item_list:
-                    item_dict[f'{item.name}'] = item.count
+                # for item in player.item_list:
+                #     item_dict[f'{item.name}'] = item.count
                 return item_dict
         return []
  
