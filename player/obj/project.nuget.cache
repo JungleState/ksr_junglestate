@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "aeoinZAyhQeq3b3C4Ik04znKCz2PvltJhluSLHG5163/3yaVZcdNqzlh0WGpS9l2gwWQUtS0Ng0IdKRmMj1SFw==",
+  "dgSpecHash": "LJBLzpqS11hQ8Xfs/YQxhOKM9ynxODpZeNrmsCTiNb2PjDQDFMLgzRQ0b5oGz/dSlY0Ke/+frjtCB3/FbQQE0w==",
   "success": true,
-  "projectFilePath": "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/home/phdoenni/g/ksr_junglestate/player/player.csproj",
+  "expectedPackageFiles": [
+    "/home/phdoenni/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
   "logs": []
 }
