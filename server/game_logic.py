@@ -306,16 +306,17 @@ class Game:
                     field_of_view_matrix.append([])
                     for y in range(sight_y):
                         field_of_view_matrix[x].append(
-                            self.matrix[x+player.x-point_of_player_in_sight_matrix[0]][y+player.y-point_of_player_in_sight_matrix[1]])
+                            self.matrix[x+player.x-point_of_player_in_sight_matrix[0]][y+player.y-point_of_player_in_sight_matrix[1]].id)
                 return field_of_view_matrix
         return []
 
-    def GetItemDict(self, player_id):  # for specific player
+    def GetPlayerVar(self, player_id, var):  # for specific player
         for player in self.player_list:
             if player.id == player_id:
-                item_dict = {}
-                for item in player.item_list:
-                    item_dict[f'{item.name}'] = item.count
-                return item_dict
-        return []
+                if var == "CC":
+                    return player.coconuts
+                elif var == "lives":
+                    return player.lives
+                elif var == "P":
+                    return player.points
  
