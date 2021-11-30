@@ -87,7 +87,7 @@ def view():
         abort(403) # Invalid player id
 
 # Input
-@app.route('/action/<string:moveType>/<int:direction>')
+@app.route('/action/<int:moveType>/<int:direction>')
 def action(moveType, direction):
     playerId = session.get('playerId')
     # Check if player is valid
