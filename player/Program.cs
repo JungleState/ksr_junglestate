@@ -133,7 +133,15 @@ string name = "Hans Muster";
 
 
 
-move(-1);
+Random random = new Random();
+int decision = random.Next(0, 2);
+
+if (decision == 0){
+    move(-1);
+}
+else {
+    dontMove();
+}
 
 
 
@@ -155,7 +163,7 @@ move(-1);
 
 
 
-private static void sampleMethod() {
+private static void dontMove() {
     move(-1);
 }
 
