@@ -1,5 +1,6 @@
 import os
-from flask import Flask, jsonify, session, abort, render_template
+from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
+from werkzeug.utils import redirect
 from game_logic import Game
 import uuid
 
@@ -40,13 +41,25 @@ def GetJSON(mode, game_id, player_id=None):
                                "round":game.round,
                                "player_list":game.GetPlayerListForJSON()}
 
+def isLoggedIn():
+    playerId=session.get('playerId')
+    return playerId in player_list.keys()
+    
+
 
 ### JSON ENDPOINTS ###
 
 @app.route('/')
 def root():
     app.logger.debug("ROOT")
-    return render_template('spectator_view.html', dimension=10)
+    if not isLoggedIn():
+        return redirect(url_for('login'))
+    else:
+        return render_template('view.html', dimension=10) #need something to set dimensions right (spec != client)
+        
+@app.route('/login')
+def login():
+    return render_template('login.html') 
 
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
@@ -62,6 +75,7 @@ def joinGame(mode, player_name):
         session['gameId'] = gameId
 
         return jsonify(ok=True)
+    
 
     else:
         app.logger.info("PLAYER NAME ALREADY IN USE / PLAYER ALREADY LOGGED IN")
