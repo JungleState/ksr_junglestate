@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <h1>Welcome To JungleState</h1>
+    <h1>Welcome To JungleState </h1>
     <label for="name">Enter Your Name: </label> 
     <input id="name" type="text">  
     <br>
@@ -24,9 +24,9 @@
     <button onclick="test()">Test</button>
 
     <div id="grid">
-        {%for row in range(5)%}
+        {%for row in range( dimension )%} <!-- the dimension variable comes directly from app.py-->
             <div class="row">
-                {%for coumn in range(5)%}
+                {%for coumn in range( dimension )%}
                     <cell>x</cell>
                 {%endfor%}
             </div>

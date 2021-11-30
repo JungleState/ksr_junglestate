@@ -46,7 +46,7 @@ def GetJSON(mode, game_id, player_id=None):
 @app.route('/')
 def root():
     app.logger.debug("ROOT")
-    return render_template('spectator_view.html')
+    return render_template('spectator_view.html', dimension=10)
 
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
@@ -87,7 +87,7 @@ def view():
         abort(403) # Invalid player id
 
 # Input
-@app.route('/action/<string:moveType>/<int:direction>')
+@app.route('/action/<int:moveType>/<int:direction>')
 def action(moveType, direction):
     playerId = session.get('playerId')
     # Check if player is valid

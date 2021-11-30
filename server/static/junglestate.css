@@ -18,27 +18,14 @@ cell {
     background-color: darkgreen;
 }
 .coconut{
-
+    background-color: rgb(70, 39, 13);
 }
 .banana{
-
-}
-.pineapple{
-
-}
-cell[data-type="FF"] {
-    background-color: darkgreen;
-}
-cell[data-type="CC"] {
-    background-color: brown;
-}
-cell[data-type="BB"] {
     background-color: yellow;
 }
-cell[data-type="PP"] {
+.pineapple{
     background-color: orange;
 }
-cell[data-type="  "] {
-    background-color: burlywood;
+[name=player]{
+    background-color: black;
 }
-
