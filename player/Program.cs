@@ -21,7 +21,14 @@ namespace Player {
 
             if (data.ok == false) {
                 Console.WriteLine("Connection to game failed!");
-                Console.WriteLine("Your name is already being used. Change name and try again.");
+                Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
+            }
+            else {
+                bool running = true;
+                while (running) {
+                    getData();
+                    Thread.Sleep(500);
+                }
             }
         }
         private static async Task getData() {
@@ -58,13 +65,24 @@ namespace Player {
         }
 
         private static string configs() {
+
             /////////YOUR/CONFIGS/BELOW/HERE//////////
+
+
+
+
 
             string name = "Hans Muster";
 
+
+
+
+
             //////////YOUR/CONFIGS/ABOVE/HERE//////////
+
             return name;
         }
+        
         private static void playerBehaviour(string field) {        
             // attack:  attack(DIRECTION)   options for DIRECTION: [0, 7]
             // move:    move(DIRECTION)     options for DIRECTION: -1, 0, 2, 4, 6
@@ -83,24 +101,28 @@ namespace Player {
                 
             //////////YOUR/CODE/BELOW/HERE//////////
 
+
+
+
+
             move(-1);
+
+
+
+
 
             //////////YOUR/CODE/ABOVE/HERE//////////
         }
 
         static async Task Main(string[] args) {
-            await getData();
-            // await joinGame(configs());
+            await joinGame(configs());
 
 
 
 
 
-
-
-
-
-
+            // // Testing Area
+            // await getData();
         }
     }
 }
