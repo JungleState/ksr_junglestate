@@ -2,8 +2,13 @@
 .row{
     display: flex;
 }
-cell{
+cell {
     display:block;
+    width:50px;
+    aspect-ratio: 1/1;
+    background-color: khaki;
+    text-align: center;
+    line-height: 50px;
 }
 
 .plain{
@@ -21,3 +26,19 @@ cell{
 .pineapple{
 
 }
+cell[data-type="FF"] {
+    background-color: darkgreen;
+}
+cell[data-type="CC"] {
+    background-color: brown;
+}
+cell[data-type="BB"] {
+    background-color: yellow;
+}
+cell[data-type="PP"] {
+    background-color: orange;
+}
+cell[data-type="  "] {
+    background-color: burlywood;
+}
+

@@ -5,13 +5,51 @@ class View{
         this.field = field
 
         this.types = {
-            0:"plain",
-            1:"jungle",
-            2:"coconut",
-            3:"banana",
-            4:"pineapple"
+            "  ":"plain",
+            "FF":"jungle",
+            "CC":"coconut",
+            "BB":"banana",
+            "PP":"pineapple"
         }
     }
+
+    getClassName(twoCharacterCode) {
+        if (twoCharacterCode in this.types) {
+            return this.types[twoCharacterCode];
+        }
+        return "player";
+    }
+
+    async updateSpectator() {
+        let response = await fetch(`/view`);
+        if (response.ok) {
+            let json = await response.json();
+            this.ShowStringField(json.field);
+        }
+    }
+
+    ShowStringField(field) {
+        const rows = this.field.getElementsByClassName('row');
+        console.assert(rows.length == field.length, "Expected same number of rows");
+        for (let r = 0; r <= rows.length; r++) {
+            const viewRow = rows[r];
+            const modelRow = field[r];
+            const viewCells = viewRow.getElementsByTagName('cell');
+            const cellCount = viewCells.length;
+            console.assert(cellCount == modelRow.length / 2, "Expected same number of cells");
+            for (let c = 0; c < cellCount; c++) {
+                const cellContent = modelRow.slice(2*c, 2*c+2);
+                const className = getClassName(cellContent)
+                const viewCell = viewCells[c];
+                // TODO: remove cell content
+                viewCell.innerHTML = cellContent;
+                viewCell.setAttribute("data-type", cellContent);
+            }
+
+        }
+
+    }
+
     Showfield(matrix){ //show the field //probably +playerdict (if we manage it in here)
         //The Matrix needs to be the same Dimensions as the given field of HTML Elements.   
         //Dimensions are set by the field automatically:
