@@ -41,7 +41,6 @@ class Player(Item):
 
 class MapGenerator:
     """ A map generator that creates empty maps with forest all around."""
-
     def generate(self, width, height):
         matrix = []
         for y in range(height):
@@ -105,7 +104,6 @@ class RandomGenerator(MapGenerator):
                                 matrix[y_coord][x_coord] = super().inner()
                                 surrounding_obstacles -= 1
         return matrix
-
 
 class Game:
     def __init__(self, id, generator=RandomGenerator(20, 1, 1, 1)):
@@ -292,39 +290,43 @@ class Game:
             player2 = checkField
             player2.lives = player2.lives - 1
             logging.debug(f'Player {player2.uuid} hit')
+    
+    def getFOV(self, player):
+        field_of_view_matrix = []
+        # checks for vision disability ecause of field border/ detects point of player in view matrix
+        sight_x = player.sight
+        sight_y = player.sight
+        point_of_player_in_sight_matrix = [
+            int(player.sight/2), int(player.sight/2)]
+
+        if player.x < int(player.sight/2):
+            sight_x -= int(player.sight/2) - player.x
+            point_of_player_in_sight_matrix[0] -= player.sight - sight_x
+        if player.x > self.field_dim[0] - int(player.sight/2):
+            sight_x -= int(player.sight/2) - \
+                self.field_dim[0] + player.x
+
+        if player.y < int(player.sight/2):
+            sight_y -= int(player.sight/2) - player.y
+            point_of_player_in_sight_matrix[1] -= player.sight - sight_y
+        if player.y > self.field_dim[1] - int(player.sight/2):
+            sight_y -= int(player.sight/2) - \
+                self.field_dim[1] + player.y
+
+        # makes matrix
+        for y in range(sight_y):
+            field_of_view_matrix.append("")
+            for x in range(sight_x):
+                final_y = y+player.y-point_of_player_in_sight_matrix[1]
+                final_x = x+player.x-point_of_player_in_sight_matrix[0]
+                field_of_view_matrix[y] += self.matrix[final_y][final_x].id
+
+        return field_of_view_matrix
 
     def GetFieldOfView(self, player_id):  # for specific player
         for player in self.player_list:
             if player.id == player_id:
-                field_of_view_matrix = []
-                # checks for vision disability ecause of field border/ detects point of player in view matrix
-                sight_x = player.sight
-                sight_y = player.sight
-                point_of_player_in_sight_matrix = [
-                    int(player.sight/2), int(player.sight/2)]
-
-                if player.x < int(player.sight/2):
-                    sight_x -= int(player.sight/2) - player.x
-                    point_of_player_in_sight_matrix[0] -= player.sight - sight_x
-                if player.x > self.field_dim[0] - int(player.sight/2):
-                    sight_x -= int(player.sight/2) - \
-                        self.field_dim[0] + player.x
-
-                if player.y < int(player.sight/2):
-                    sight_y -= int(player.sight/2) - player.y
-                    point_of_player_in_sight_matrix[1] -= player.sight - sight_y
-                if player.y > self.field_dim[1] - int(player.sight/2):
-                    sight_y -= int(player.sight/2) - \
-                        self.field_dim[1] + player.y
-
-                # makes matrix
-                for x in range(sight_x):
-                    field_of_view_matrix.append([])
-                    for y in range(sight_y):
-                        field_of_view_matrix[x].append(
-                            self.matrix[x+player.x-point_of_player_in_sight_matrix[0]][y+player.y-point_of_player_in_sight_matrix[1]].id)
-                return field_of_view_matrix
-        return []
+                return self.getFOV(player)
 
     def GetPlayerVar(self, player_id, var):  # for specific player
         for player in self.player_list:
