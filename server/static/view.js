@@ -42,11 +42,11 @@ class View{
 }
 
 function test(){
-    var testfield =     ["FFFFFFFF",
-                        ["FFBBBBBB"],
-                        ["  BB  BB"], 
-                        ["  CC  CC"], 
-                        ["BB      "]]
+    var testfield =    ["FFFFFFFFFFFFFFFF",
+                        "FFBBBBBB",
+                        "  BB  BB", 
+                        "  CC  CC", 
+                        "BB      "]
 
     const view = new View(document.getElementById("grid"));
     view.Showfield(testfield);
