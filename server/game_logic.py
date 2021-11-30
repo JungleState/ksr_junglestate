@@ -117,7 +117,7 @@ class Game:
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
             generator.generate(FIELD_LENGTH, FIELD_HEIGHT))
-        self.field_dim = [len(self.matrix[0]), len(self.matrix)]
+        self.field_dim = [FIELD_LENGTH, FIELD_HEIGHT]
 
     def join(self, name, id):
         logging.debug(f"Player {id} joined as {name}")
@@ -210,14 +210,14 @@ class Game:
     def getElementAt(self, x, y):
         return self.matrix[y][x]
 
-    def getElementAt(self, coords):
-        return self.matrix[coords[1]][coords[0]]
+    def getElementAtCoords(self, coords):
+        return self.getElementAt(coords[0], coords[1])
 
     def setElementAt(self, x, y, item):
         self.matrix[y][x] = item
 
-    def setElementAt(self, coords, item):
-        self.matrix[coords[1]][coords[0]] = item
+    def setElementAtCoords(self, coords, item):
+        self.setElementAt(coords[0], coords[1], item)
 
     def executeMoving(self, player, dir):
         logging.debug(f"Moving player {player.id} in direction {dir}!")
@@ -233,7 +233,7 @@ class Game:
         elif dir == 6:
             toCoordinates[0] = toCoordinates[0] - 1
 
-        checkField = self.getElementAt(toCoordinates)
+        checkField = self.getElementAtCoords(toCoordinates)
 
         if checkField == Items.EMPTY:  # empty field
             self.setElement(player.x, player.y, Items.EMPTY)
@@ -250,7 +250,7 @@ class Game:
 
         elif isinstance(checkField, Item):
             self.setElementAt(player.x, player.y, Items.EMPTY)
-            self.setElementAt(toCoordinates, player)
+            self.setElementAtCoords(toCoordinates, player)
             player.x, player.y = toCoordinates[0], toCoordinates[1]
             # TODO: collect item
 
@@ -286,7 +286,7 @@ class Game:
             toCoordinates[1] = toCoordinates[1] - 1
             toCoordinates[0] = toCoordinates[0] - 1
 
-        checkField = self.getElementAt(toCoordinates)
+        checkField = self.getElementAtCoords(toCoordinates)
 
         if isinstance(checkField, Player):  # player field
             player2 = checkField
