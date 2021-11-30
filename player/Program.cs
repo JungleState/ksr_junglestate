@@ -15,14 +15,12 @@ namespace Player {
         private static async Task joinGame(string name) {
             var stringTask = client.GetStringAsync("http://localhost:5500/joinGame/client/"+name);
             var json = await stringTask;
-            if (json == null) {
-                dynamic data = JsonConvert.DeserializeObject(json);
+            dynamic? data = JsonConvert.DeserializeObject(json);
 
-                // Console.WriteLine(json);
-
+            if (data != null){
                 if (data.ok == false) {
-                    Console.WriteLine("Connection to game failed!");
-                    Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
+                Console.WriteLine("Connection to game failed!");
+                Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
                 }
                 else {
                     bool running = true;
@@ -30,21 +28,23 @@ namespace Player {
                         await getData();
                         Thread.Sleep(500);
                     }
-                }
+                }   
             }
             else {
-                Console.WriteLine("Connection to game failed!");
-                Console.WriteLine("Problem assumption: Server response = null.");
-            }            
+                Console.WriteLine("ERROR: data is null");
+            }
         }
         private static async Task getData() {
             var stringTask = client.GetStringAsync("http://localhost:5500/view");
             var json = await stringTask;
-            dynamic data = JsonConvert.DeserializeObject(json);
+            dynamic? data = JsonConvert.DeserializeObject(json);
 
-            Console.WriteLine(json);
-
-            playerBehaviour(data.field);
+            if (data != null) {
+                playerBehaviour(data.field);
+            }
+            else {
+                Console.WriteLine("ERROR: data is null");
+            }
         }
 
         private static void move(int direction) {

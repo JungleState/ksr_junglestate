@@ -2,8 +2,13 @@
 .row{
     display: flex;
 }
-cell{
+cell {
     display:block;
+    width:50px;
+    aspect-ratio: 1/1;
+    background-color: khaki;
+    text-align: center;
+    line-height: 50px;
 }
 
 .plain{
