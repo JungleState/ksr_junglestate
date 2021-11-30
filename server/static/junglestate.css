@@ -21,3 +21,6 @@ cell{
 .pineapple{
     background-color: orange;
 }
+[name=player]{
+    background-color: black;
+}
