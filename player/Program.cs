@@ -32,7 +32,7 @@ namespace Player {
             }
             else {
                 Console.WriteLine("ERROR: data is null");
-            }                 
+            }
         }
         private static async Task getData() {
             var stringTask = client.GetStringAsync("http://localhost:5500/view");
