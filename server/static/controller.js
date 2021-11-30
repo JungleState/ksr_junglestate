@@ -1,5 +1,6 @@
 class Controller {
     constructor() {
+        // basic definitions
         this.field == this.getData("field");
         this.mode == "client";
 
@@ -14,7 +15,8 @@ class Controller {
         }, 500);
     }
 
-    async getData(info) { // get certain info from app.py
+    async getData(info) {
+        // get certain info from app.py
         const response = await fetch("/view");
         const json = await response.json;
 
@@ -27,25 +29,31 @@ class Controller {
     }
 
     async joinGame(mode, playerName) {
+        // check if user gave a name to character
         if (playerName == "random") {
             playerName = this.randomPlayerName();
         }
+
+        // join the game in defined mode (spec or client)
         const response = await fetch(`/joinGame/${mode}/${playerName}`);
         const json = await response.json;
+
         // if name is already taken, choose random
         if (json.ok == false) {
             this.joinGame(this.randomPlayerName());
         }
     }
 
-    // only for testing (probably)
     async randomPlayerName() {
+        // Ask an uuid from server tö be used as name
         const response = await fetch("/uuid");
         const json = await response.json;
         return json.id;
     }
 
-    async keyInput(commandKey) { // send command to app.py
+    async keyInput(commandKey) {
+        // send command to app.py depending on pressed key
+        
         // # move_id list:
         // # 0: Stay
         // # 1: Move
@@ -134,10 +142,12 @@ class Controller {
 
 }
 
+
+
+// configurations
+MODE = "client" // client||spec
+NAME = "random" // "random" will result in random name
+
+// create an Controller and join a game
 controller = new Controller;
-
-controller.joinGame("client", "random"); //client||spec
-
-
-    // test thingy:
-    // view.showField("spectator", [[1, 0, 0, 0],[1, 1, 0, 1],[1, 0, 1, 0], [1, 0, 1, 1]]);
+controller.joinGame("client", "random");
