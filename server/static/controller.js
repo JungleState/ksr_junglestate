@@ -21,12 +21,6 @@ class Controller {
         switch(info) {
             case "field":
                 return json.field;
-            case "state":
-                return json.state;
-            case "round":
-                return json.round;
-            case "player_list":
-                return json.player_list;
             default:
                 return "error";
         }

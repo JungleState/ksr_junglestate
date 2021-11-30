@@ -236,8 +236,8 @@ class Game:
         checkField = self.getElementAtCoords(toCoordinates)
 
         if checkField == Items.EMPTY:  # empty field
-            self.setElement(player.x, player.y, Items.EMPTY)
-            self.setElement(toCoordinates, player)
+            self.setElementAt(player.x, player.y, Items.EMPTY)
+            self.setElementAtCoords(toCoordinates, player)
             player.x, player.y = toCoordinates[0], toCoordinates[1]
 
         elif checkField == Items.FOREST:  # forest field
