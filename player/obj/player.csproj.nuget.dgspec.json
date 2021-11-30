@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj": {}
+    "/home/phdoenni/g/ksr_junglestate/player/player.csproj": {}
   },
   "projects": {
-    "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj": {
+    "/home/phdoenni/g/ksr_junglestate/player/player.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj",
+        "projectUniqueName": "/home/phdoenni/g/ksr_junglestate/player/player.csproj",
         "projectName": "player",
-        "projectPath": "/home/phdoenni/g/ksr_junglestate/static/player/player.csproj",
+        "projectPath": "/home/phdoenni/g/ksr_junglestate/player/player.csproj",
         "packagesPath": "/home/phdoenni/.nuget/packages/",
-        "outputPath": "/home/phdoenni/g/ksr_junglestate/static/player/obj/",
+        "outputPath": "/home/phdoenni/g/ksr_junglestate/player/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/phdoenni/.nuget/NuGet/NuGet.Config"
@@ -37,6 +37,12 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
