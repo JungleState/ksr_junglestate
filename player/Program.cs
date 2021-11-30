@@ -15,21 +15,27 @@ namespace Player {
         private static async Task joinGame(string name) {
             var stringTask = client.GetStringAsync("http://localhost:5500/joinGame/client/"+name);
             var json = await stringTask;
-            dynamic data = JsonConvert.DeserializeObject(json);
+            if (json == null) {
+                dynamic data = JsonConvert.DeserializeObject(json);
 
-            // Console.WriteLine(json);
+                // Console.WriteLine(json);
 
-            if (data.ok == false) {
-                Console.WriteLine("Connection to game failed!");
-                Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
-            }
-            else {
-                bool running = true;
-                while (running) {
-                    getData();
-                    Thread.Sleep(500);
+                if (data.ok == false) {
+                    Console.WriteLine("Connection to game failed!");
+                    Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
+                }
+                else {
+                    bool running = true;
+                    while (running) {
+                        await getData();
+                        Thread.Sleep(500);
+                    }
                 }
             }
+            else {
+                Console.WriteLine("Connection to game failed!");
+                Console.WriteLine("Problem assumption: Server response = null.");
+            }            
         }
         private static async Task getData() {
             var stringTask = client.GetStringAsync("http://localhost:5500/view");
