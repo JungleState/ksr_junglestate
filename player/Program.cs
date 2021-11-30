@@ -82,7 +82,7 @@ namespace Player {
 
             return name;
         }
-        
+
         private static void playerBehaviour(string field) {        
             // attack:  attack(DIRECTION)   options for DIRECTION: [0, 7]
             // move:    move(DIRECTION)     options for DIRECTION: -1, 0, 2, 4, 6
@@ -116,13 +116,6 @@ namespace Player {
 
         static async Task Main(string[] args) {
             await joinGame(configs());
-
-
-
-
-
-            // // Testing Area
-            // await getData();
         }
     }
 }
