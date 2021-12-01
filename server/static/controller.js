@@ -149,15 +149,6 @@ MODE = "client" // client||spec
 NAME = "random" // "random" will result in random name
 
 // create an Controller and join a game
-<<<<<<< HEAD
 view = new View();
-controller = new Controller();
-controller.joinGame(MODE, NAME);
-=======
 controller = new Controller;
-<<<<<<< HEAD
-controller.joinGame("client", "random");
-=======
 controller.joinGame(MODE, NAME);
->>>>>>> e579dabc1ad87c98a91883ed4b2976b9c9da4611
->>>>>>> 8ed00ea63f43b11c1c6cbc8c2129dfa2aff0155d
