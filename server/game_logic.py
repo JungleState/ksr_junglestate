@@ -220,13 +220,13 @@ class Game:
         toCoordinates = [player.x, player.y]
 
         if dir == 0:
-            toCoordinates[1] = toCoordinates[1] - 1
+            toCoordinates[0] -= 1
         elif dir == 2:
-            toCoordinates[0] = toCoordinates[0] + 1
+            toCoordinates[1] += 1
         elif dir == 4:
-            toCoordinates[1] = toCoordinates[1] + 1
+            toCoordinates[0] += 1
         elif dir == 6:
-            toCoordinates[0] = toCoordinates[0] - 1
+            toCoordinates[1] -= 1
 
         checkField = self.getElementAtCoords(toCoordinates)
 
@@ -235,8 +235,8 @@ class Game:
             self.setElementAtCoords(toCoordinates, player)
             player.x, player.y = toCoordinates[0], toCoordinates[1]
 
-        elif checkField == Items.FOREST:  # forest field
-            self.handlePlayerDamage(player)
+        # elif checkField == Items.FOREST:  # forest field
+        #     self.handlePlayerDamage(player)
 
         elif isinstance(checkField, Player):
             self.handlePlayerDamage(player)
@@ -244,10 +244,23 @@ class Game:
             self.handlePlayerDamage(player2)
 
         elif isinstance(checkField, Item):
-            self.setElementAt(player.x, player.y, Items.EMPTY)
-            self.setElementAtCoords(toCoordinates, player)
-            player.x, player.y = toCoordinates[0], toCoordinates[1]
-            # TODO: collect item
+            if checkField == Items.PINEAPPLE:
+                player.points += 50
+
+            elif checkField == Items.BANANA:
+                if player.lives < 3:
+                    player.lives += 1
+                else:
+                    player.points += 25
+                    
+            elif checkField == Items.COCONUT:
+                if player.coconuts < 3:
+                    player.coconuts += 1
+            if checkField != Items.FOREST:
+                self.setElementAt(player.x, player.y, Items.EMPTY)
+                self.setElementAtCoords(toCoordinates, player)
+                player.x, player.y = toCoordinates[0], toCoordinates[1]
+            
 
     def handlePlayerDamage(self, player):
         player.lives -= 1  # TODO custom damage depending on situation
