@@ -11,7 +11,7 @@ class Controller {
 
         // field updates
         setInterval(() => {
-            View.Showfield(this.getData("field"));
+            view.Showfield(this.getData("field"));
         }, 500);
     }
 
@@ -149,5 +149,6 @@ MODE = "client" // client||spec
 NAME = "random" // "random" will result in random name
 
 // create an Controller and join a game
-controller = new Controller;
+view = new View();
+controller = new Controller();
 controller.joinGame(MODE, NAME);
