@@ -28,28 +28,28 @@ class Controller {
         }
     }
 
-    async joinGame(mode, playerName) {
-        // check if user gave a name to character
-        if (playerName == "random") {
-            playerName = this.randomPlayerName();
-        }
+    // async joinGame(mode, playerName) {
+    //     // check if user gave a name to character
+    //     if (playerName == "random") {
+    //         playerName = this.randomPlayerName();
+    //     }
 
-        // join the game in defined mode (spec or client)
-        const response = await fetch(`/joinGame/${mode}/${playerName}`);
-        const json = await response.json;
+    //     // join the game in defined mode (spec or client)
+    //     const response = await fetch(`/joinGame/${mode}/${playerName}`);
+    //     const json = await response.json;
 
-        // if name is already taken, choose random
-        if (json.ok == false) {
-            this.joinGame(this.randomPlayerName());
-        }
-    }
+    //     // if name is already taken, choose random
+    //     if (json.ok == false) {
+    //         this.joinGame(this.randomPlayerName());
+    //     }
+    // }
 
-    async randomPlayerName() {
-        // Ask an uuid from server tö be used as name
-        const response = await fetch("/uuid");
-        const json = await response.json;
-        return json.id;
-    }
+    // async randomPlayerName() {
+    //     // Ask an uuid from server tö be used as name
+    //     const response = await fetch("/uuid");
+    //     const json = await response.json;
+    //     return json.id;
+    // }
 
     async keyInput(commandKey) {
         // send command to app.py depending on pressed key
@@ -144,11 +144,10 @@ class Controller {
 
 
 
-// configurations
-MODE = "client" // client||spec
-NAME = "random" // "random" will result in random name
+// // configurations
+// MODE = "client" // client||spec
+// NAME = "random" // "random" will result in random name
 
 // create an Controller and join a game
-view = new View();
-controller = new Controller;
-controller.joinGame(MODE, NAME);
+let view = new View();
+let controller = new Controller();
