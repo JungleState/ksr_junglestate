@@ -13,10 +13,12 @@ next_game_id = 0
 game_list = []
 player_list = {} # Dict with playerID : playerName
 
+FIELD = (20, 30)
+
 def newGame(playerId):
     if len(game_list) == 0:
         newId = uuid.uuid4()
-        game = Game(newId)
+        game = Game(newId, FIELD)
         game.join(player_list.get(playerId), playerId)
         game_list.append(game)
         return game.id
