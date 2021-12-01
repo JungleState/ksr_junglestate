@@ -10,7 +10,7 @@ class Controller {
         }
 
         // field updates
-        setInterval(() => {
+        setInterval(async () => {
             let field = await this.getData("field");
             view.Showfield(field);
         }, 500);
