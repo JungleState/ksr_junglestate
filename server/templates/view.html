@@ -15,9 +15,9 @@
     <button onclick="test()">Test</button>
 
     <div id="grid">
-        {%for row in range( dimension )%} <!-- the dimension variable comes directly from app.py-->
+        {%for row in range( dimension_y )%} <!-- the dimension variable comes directly from app.py-->
             <div class="row">
-                {%for coumn in range( dimension )%}
+                {%for coumn in range( dimension_x )%}
                     <cell>x</cell>
                 {%endfor%}
             </div>

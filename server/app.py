@@ -1,6 +1,5 @@
 import os
 from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
-from werkzeug.utils import redirect
 from game_logic import Game
 import uuid
 
@@ -13,10 +12,12 @@ next_game_id = 0
 game_list = []
 player_list = {} # Dict with playerID : playerName
 
+FIELD = (20, 30)
+
 def newGame(playerId):
     if len(game_list) == 0:
         newId = uuid.uuid4()
-        game = Game(newId)
+        game = Game(newId, FIELD)
         game.join(player_list.get(playerId), playerId)
         game_list.append(game)
         return game.id
@@ -55,7 +56,12 @@ def root():
     if not isLoggedIn():
         return redirect(url_for('login'))
     else:
-        return render_template('view.html', dimension=10) #need something to set dimensions right (spec != client)
+        dimension = None
+        if session.get('mode') == 'spec':
+            dimension = (5, 5)
+        elif session.get('mode') == 'client':
+            dimension = FIELD
+        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1]) #need something to set dimensions right (spec != client)
         
 @app.route('/login')
 def login():

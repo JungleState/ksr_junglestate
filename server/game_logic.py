@@ -3,10 +3,6 @@ import logging
 
 logging.getLogger().setLevel("DEBUG")
 
-FIELD_LENGTH = 17
-FIELD_HEIGHT = 17
-
-
 class Item:
     def __init__(self, name, id):
         self.name = name
@@ -106,16 +102,17 @@ class RandomGenerator(MapGenerator):
         return matrix
 
 class Game:
-    def __init__(self, id, generator=RandomGenerator(20, 1, 1, 1)):
+    def __init__(self, id, field_dimensions, generator=RandomGenerator(20, 1, 1, 1)):
         self.move_list = []
         self.id = id
         self.player_list = []
         self.state = 0
         self.round = 0
+        (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
-            generator.generate(FIELD_LENGTH, FIELD_HEIGHT))
-        self.field_dim = [FIELD_LENGTH, FIELD_HEIGHT]
+            generator.generate(self.field_lengh, self.field_height))
+        self.field_dim = [self.field_lengh, self.field_height]
 
     def join(self, name, id):
         logging.debug(f"Player {id} joined as {name}")
