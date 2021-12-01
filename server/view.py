@@ -45,13 +45,15 @@ def view(game):
             break
 
         elif keys[pygame.K_w]:
-            doSpecificTurn(game, 0)
+            doSpecificTurn(game, "1", 0)
         elif keys[pygame.K_s]:
-            doSpecificTurn(game, 4)
+            doSpecificTurn(game, "1", 4)
         elif keys[pygame.K_a]:
-            doSpecificTurn(game, 6)
+            doSpecificTurn(game, "1", 6)
         elif keys[pygame.K_d]:
-            doSpecificTurn(game, 2)
+            doSpecificTurn(game, "1", 2)
+        elif keys[pygame.K_k]:
+            doSpecificTurn(game, "2", 0)
 
         SCREEN.fill(BACKGROUND)
         for i in range(len(map)):
@@ -72,13 +74,14 @@ def view(game):
                     pygame.draw.circle(SCREEN, RED,
                                        (i*40+20, j*40+20), 15)
         print(f"{game.player_list[0].lives}, {game.player_list[0].coconuts}, {game.player_list[0].points}")
+        print(f"{game.player_list[1].lives}")
         pygame.time.delay(100)
         pygame.display.flip()
         pygame.display.update()
     pygame.quit()
 
-def doSpecificTurn(game, move):
-    game.addMove(100, "1", move)
+def doSpecificTurn(game, move, dir):
+    game.addMove(100, move, dir)
     game.doNextRound()
 
 def doTurn(game):
