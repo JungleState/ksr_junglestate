@@ -57,9 +57,9 @@ def root():
         return redirect(url_for('login'))
     else:
         dimension = None
-        if session.get('mode') == 'spec':
+        if session.get('mode') == 'client':
             dimension = (5, 5)
-        elif session.get('mode') == 'client':
+        elif session.get('mode') == 'spec':
             dimension = FIELD
         return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1]) #need something to set dimensions right (spec != client)
         
@@ -90,9 +90,8 @@ def joinGame(mode, player_name):
 # View - Server knows if the request comes from a spectator or a player
 @app.route('/view')
 def view():
-    playerId = session.get('playerId')
-    # Check if player is valid
-    if playerId in player_list.keys():
+    if isLoggedIn():
+        playerId = session.get('playerId')
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
@@ -109,9 +108,8 @@ def view():
 # Input
 @app.route('/action/<int:moveType>/<int:direction>')
 def action(moveType, direction):
-    playerId = session.get('playerId')
-    # Check if player is valid
-    if playerId in player_list.keys():
+    if isLoggedIn():
+        playerId = session.get('playerId')
         for game in game_list:
             if game.id == session.get('gameId'):
                 game.addMove(playerId, moveType, direction)
