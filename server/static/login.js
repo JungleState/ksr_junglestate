@@ -26,7 +26,7 @@ async function login() {
     let json = await response.json();
 
     if (json.ok) {
-        alert("OK");
+        window.location.replace('/')
     }
     else {
         alert("Player Name Already Used / Already logged in");

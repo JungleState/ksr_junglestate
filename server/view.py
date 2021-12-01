@@ -29,7 +29,6 @@ P5 = (120, 50, 60)
 
 
 def view(game):
-    gen = game_logic.RandomGenerator(30, 1, 1, 1)
     clock = pygame.time.Clock()
     run = True
     map = game.matrix
@@ -39,9 +38,6 @@ def view(game):
             if(event.type == pygame.QUIT):
                 pygame.quit()
                 sys.exit()
-
-            if(event.type == KEYDOWN):
-                map = gen.purge(map)
 
         SCREEN.fill(BACKGROUND)
         for i in range(len(map)):
@@ -61,31 +57,34 @@ def view(game):
                 elif(map[i][j].id) != "  ":
                     pygame.draw.circle(SCREEN, RED,
                                        (i*40+20, j*40+20), 15)
-        clock.tick(10)
+        clock.tick(1)
         pygame.display.update()
+
+        doTurn(game)
 
 
 def doTurn(game):
-    game.doNextRound()
     r1 = randint(0, 3)
-    game.addMove(100, 1, r1*2)
+    game.addMove(100, "1", r1*2)
     r2 = randint(0, 3)
-    game.addMove(101, 1, r2*2)
+    game.addMove(101, "1", r2*2)
     r3 = randint(0, 3)
-    game.addMove(102, 1, r3*2)
+    game.addMove(102, "1", r3*2)
     r4 = randint(0, 3)
-    game.addMove(103, 1, r4*2)
+    game.addMove(103, "1", r4*2)
     r5 = randint(0, 3)
-    game.addMove(104, 1, r5*2)
-    return game.matrix
+    game.addMove(104, "1", r5*2)
+
+    game.doNextRound()
 
 
 if __name__ == "__main__":
     game = game_logic.Game(1)
     game.join(f'Sheran', 100)
     game.join(f'Joran', 101)
+
     game.join(f'Matthias', 102)
     game.join(f'Pacifico', 103)
     game.join(f'Philipp', 104)
 
-    doTurn(game)
+    view(game)

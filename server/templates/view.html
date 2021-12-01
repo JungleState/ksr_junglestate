@@ -9,23 +9,15 @@
     <link rel="stylesheet" href="static/junglestate.css">
     <script src="static/controller.js" async></script>
     <script src="static/view.js" async></script>
-    <script src="static/login.js" async></script>
 </head>
 
 <body>
-    <h1>Welcome To JungleState</h1>
-    <label for="name">Enter Your Name: </label> 
-    <input id="name" type="text">  
-    <br>
-    <label for="mode">Are You a Spectator?</label>
-    <input  id="mode" type="checkbox">
-    <br>
-    <button onclick="login()">Login</button>
+    <button onclick="test()">Test</button>
 
     <div id="grid">
-        {%for row in range(5)%}
+        {%for row in range( dimension )%} <!-- the dimension variable comes directly from app.py-->
             <div class="row">
-                {%for coumn in range(5)%}
+                {%for coumn in range( dimension )%}
                     <cell>x</cell>
                 {%endfor%}
             </div>

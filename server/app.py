@@ -1,5 +1,6 @@
 import os
-from flask import Flask, jsonify, session, abort, render_template
+from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
+from werkzeug.utils import redirect
 from game_logic import Game
 import uuid
 
@@ -29,7 +30,9 @@ def GetJSON(mode, game_id, player_id=None):
             app.logger.info(f"Found game {game_id} for player {player_id}")
             if mode == "client":#returns JSON file for client
                 return {"field_of_view":game.GetFieldOfView(player_id),
-                               "items":game.GetItemDict(player_id),
+                               "coconuts":game.GetPlayerVar(player_id, "CC"),
+                               "lives":game.GetPlayerVar(player_id, "lives"),
+                               "points":game.GetPlayerVar(player_id, "P"),
                                "round":game.round}
             elif mode == "spec":#returns JSON file for spectator
                 return {"id":player_id, 
@@ -38,13 +41,25 @@ def GetJSON(mode, game_id, player_id=None):
                                "round":game.round,
                                "player_list":game.GetPlayerListForJSON()}
 
+def isLoggedIn():
+    playerId=session.get('playerId')
+    return playerId in player_list.keys()
+    
+
 
 ### JSON ENDPOINTS ###
 
 @app.route('/')
 def root():
     app.logger.debug("ROOT")
-    return render_template('spectator_view.html')
+    if not isLoggedIn():
+        return redirect(url_for('login'))
+    else:
+        return render_template('view.html', dimension=10) #need something to set dimensions right (spec != client)
+        
+@app.route('/login')
+def login():
+    return render_template('login.html') 
 
 @app.route('/joinGame/<string:mode>/<player_name>')
 def joinGame(mode, player_name):
@@ -60,6 +75,7 @@ def joinGame(mode, player_name):
         session['gameId'] = gameId
 
         return jsonify(ok=True)
+    
 
     else:
         app.logger.info("PLAYER NAME ALREADY IN USE / PLAYER ALREADY LOGGED IN")
@@ -85,7 +101,7 @@ def view():
         abort(403) # Invalid player id
 
 # Input
-@app.route('/action/<string:moveType>/<int:direction>')
+@app.route('/action/<int:moveType>/<int:direction>')
 def action(moveType, direction):
     playerId = session.get('playerId')
     # Check if player is valid
