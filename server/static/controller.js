@@ -1,13 +1,21 @@
 class Controller {
     constructor(view) {
+<<<<<<< HEAD
+=======
+        // basic definitions
+        this.field == this.getData("field");
+        this.mode == "client";
+
+>>>>>>> fb4807728e794f50da391c29d7f86ed00f242140
         // listen for input
         window.onkeydown = (key) => {
             this.keyInput(key.keyCode);
         }
 
         // field updates
-        setInterval(() => {
-            view.Showfield(this.getData("field"));
+        setInterval(async () => {
+            let field = await this.getData("field");
+            view.Showfield(field);
         }, 500);
     }
 
