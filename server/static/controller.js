@@ -1,9 +1,5 @@
 class Controller {
-    constructor() {
-        // basic definitions
-        this.field == this.getData("field");
-        this.mode == "client";
-
+    constructor(view) {
         // listen for input
         window.onkeydown = (key) => {
             this.keyInput(key.keyCode);
@@ -18,7 +14,7 @@ class Controller {
     async getData(info) {
         // get certain info from app.py
         const response = await fetch("/view");
-        const json = await response.json;
+        const json = await response.json();
 
         switch(info) {
             case "field":
@@ -114,14 +110,12 @@ class Controller {
         }
 
         const response = await fetch(`/action/${type}/${direction}`);
-        const json = await response.json;
+        const json = await response.json();
     }
-
 }
-
 
 // create an Controller and join a game
 document.addEventListener("DOMContentLoaded", function(event){
     let view = new View(document.getElementById("grid"));
-    let controller = new Controller();
+    let controller = new Controller(view);
 });
