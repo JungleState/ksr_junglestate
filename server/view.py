@@ -27,9 +27,10 @@ P3 = (120, 50, 30)
 P4 = (120, 50, 45)
 P5 = (120, 50, 60)
 
+FIELD = (17, 17)
+
 
 def view(game):
-    clock = pygame.time.Clock()
     run = True
     map = game.matrix
     while run:
@@ -38,6 +39,19 @@ def view(game):
             if(event.type == pygame.QUIT):
                 pygame.quit()
                 sys.exit()
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            break
+
+        elif keys[pygame.K_w]:
+            doSpecificTurn(game, 0)
+        elif keys[pygame.K_s]:
+            doSpecificTurn(game, 4)
+        elif keys[pygame.K_a]:
+            doSpecificTurn(game, 6)
+        elif keys[pygame.K_d]:
+            doSpecificTurn(game, 2)
 
         SCREEN.fill(BACKGROUND)
         for i in range(len(map)):
@@ -57,11 +71,15 @@ def view(game):
                 elif(map[i][j].id) != "  ":
                     pygame.draw.circle(SCREEN, RED,
                                        (i*40+20, j*40+20), 15)
-        clock.tick(1)
+        print(f"{game.player_list[0].lives}, {game.player_list[0].coconuts}, {game.player_list[0].points}")
+        pygame.time.delay(100)
+        pygame.display.flip()
         pygame.display.update()
+    pygame.quit()
 
-        doTurn(game)
-
+def doSpecificTurn(game, move):
+    game.addMove(100, "1", move)
+    game.doNextRound()
 
 def doTurn(game):
     r1 = randint(0, 3)
@@ -79,12 +97,7 @@ def doTurn(game):
 
 
 if __name__ == "__main__":
-    game = game_logic.Game(1)
-    game.join(f'Sheran', 100)
-    game.join(f'Joran', 101)
-
-    game.join(f'Matthias', 102)
-    game.join(f'Pacifico', 103)
-    game.join(f'Philipp', 104)
-
+    game = game_logic.Game(1, FIELD)
+    game.join(f'Pacifico', 100)
+    game.join("Phillip", 101)
     view(game)

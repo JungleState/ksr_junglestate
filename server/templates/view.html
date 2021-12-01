@@ -7,8 +7,8 @@
     <title>JungleState</title>
     <link rel="icon" type="image/png" href="static/sprites/monkey.png">
     <link rel="stylesheet" href="static/view.css">
-    <script src="static/controller.js" async></script>
     <script src="static/view.js" async></script>
+    <script src="static/controller.js" async></script>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
         {%for row in range( dimension_y )%} <!-- the dimension variable comes directly from app.py-->
             <div class="row">
                 {%for coumn in range( dimension_x )%}
-                    <cell>x</cell>
+                    <cell> </cell>
                 {%endfor%}
             </div>
         {% endfor %}
