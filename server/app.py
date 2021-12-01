@@ -1,6 +1,5 @@
 import os
 from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
-from werkzeug.utils import redirect
 from game_logic import Game
 import uuid
 
@@ -57,8 +56,12 @@ def root():
     if not isLoggedIn():
         return redirect(url_for('login'))
     else:
-        dimension = 10
-        return render_template('view.html', dimension_x=dimension, dimension_y=100) #need something to set dimensions right (spec != client)
+        dimension = None
+        if session.get('mode') == 'spec':
+            dimension = (5, 5)
+        elif session.get('mode') == 'client':
+            dimension = FIELD
+        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1]) #need something to set dimensions right (spec != client)
         
 @app.route('/login')
 def login():
