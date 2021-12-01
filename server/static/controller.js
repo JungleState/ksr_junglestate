@@ -28,29 +28,6 @@ class Controller {
         }
     }
 
-    // async joinGame(mode, playerName) {
-    //     // check if user gave a name to character
-    //     if (playerName == "random") {
-    //         playerName = this.randomPlayerName();
-    //     }
-
-    //     // join the game in defined mode (spec or client)
-    //     const response = await fetch(`/joinGame/${mode}/${playerName}`);
-    //     const json = await response.json;
-
-    //     // if name is already taken, choose random
-    //     if (json.ok == false) {
-    //         this.joinGame(this.randomPlayerName());
-    //     }
-    // }
-
-    // async randomPlayerName() {
-    //     // Ask an uuid from server tö be used as name
-    //     const response = await fetch("/uuid");
-    //     const json = await response.json;
-    //     return json.id;
-    // }
-
     async keyInput(commandKey) {
         // send command to app.py depending on pressed key
         
@@ -143,11 +120,8 @@ class Controller {
 }
 
 
-
-// // configurations
-// MODE = "client" // client||spec
-// NAME = "random" // "random" will result in random name
-
 // create an Controller and join a game
-let view = new View(document.getElementById("grid"));
-let controller = new Controller();
+document.addEventListener("DOMContentLoaded", function(event){
+    let view = new View(document.getElementById("grid"));
+    let controller = new Controller();
+});
