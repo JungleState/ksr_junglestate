@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JungleState</title>
+    <link rel="icon" type="image/png" href="static/sprites/monkey.png">
+    <link rel="stylesheet" href="static/junglestate.css">
+    <script src="static/controller.js" async></script>
+    <script src="static/view.js" async></script>
+</head>
+
+<body>
+    <button onclick="test()">Test</button>
+
+    <div id="grid">
+        {%for row in range( dimension )%} <!-- the dimension variable comes directly from app.py-->
+            <div class="row">
+                {%for coumn in range( dimension )%}
+                    <cell>x</cell>
+                {%endfor%}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
