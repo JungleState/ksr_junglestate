@@ -1,6 +1,5 @@
 import os
 from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
-from werkzeug.utils import redirect
 from game_logic import Game
 import uuid
 
@@ -13,10 +12,12 @@ next_game_id = 0
 game_list = []
 player_list = {} # Dict with playerID : playerName
 
+FIELD = (20, 30)
+
 def newGame(playerId):
     if len(game_list) == 0:
         newId = uuid.uuid4()
-        game = Game(newId)
+        game = Game(newId, FIELD)
         game.join(player_list.get(playerId), playerId)
         game_list.append(game)
         return game.id
@@ -55,8 +56,12 @@ def root():
     if not isLoggedIn():
         return redirect(url_for('login'))
     else:
-        dimension = 10
-        return render_template('view.html', dimension=dimension) #need something to set dimensions right (spec != client)
+        dimension = None
+        if session.get('mode') == 'client':
+            dimension = (5, 5)
+        elif session.get('mode') == 'spec':
+            dimension = FIELD
+        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1]) #need something to set dimensions right (spec != client)
         
 @app.route('/login')
 def login():
@@ -85,9 +90,8 @@ def joinGame(mode, player_name):
 # View - Server knows if the request comes from a spectator or a player
 @app.route('/view')
 def view():
-    playerId = session.get('playerId')
-    # Check if player is valid
-    if playerId in player_list.keys():
+    if isLoggedIn():
+        playerId = session.get('playerId')
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
@@ -104,9 +108,8 @@ def view():
 # Input
 @app.route('/action/<int:moveType>/<int:direction>')
 def action(moveType, direction):
-    playerId = session.get('playerId')
-    # Check if player is valid
-    if playerId in player_list.keys():
+    if isLoggedIn():
+        playerId = session.get('playerId')
         for game in game_list:
             if game.id == session.get('gameId'):
                 game.addMove(playerId, moveType, direction)
