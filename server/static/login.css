@@ -2,12 +2,14 @@ body {
     text-align: center;
     margin-left: 35%;
     margin-right: 35%;
+    background-color: rgb(41, 97, 9);
 }
 
 .title {
     border-color: saddlebrown;
     border-width: thick;
     border: solid;
+    background-color: yellow;
     
     
 }
@@ -17,6 +19,7 @@ body {
     border-top: transparent;
     padding-top: 5%;
     padding-bottom: 5%;
+    background-color: rgb(199, 151, 75);
     
 }
 
