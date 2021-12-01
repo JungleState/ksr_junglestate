@@ -4,9 +4,12 @@
 }
 cell {
     display:block;
-    width:50px;
+    width: 100%; /* 100% of the grids width*/
     aspect-ratio: 1/1;
     background-color: khaki;
+}
+#grid {
+    width: min(90vw, 90vh); /* fits to the smaller component (Normally height) */
 }
 
 .plain{
