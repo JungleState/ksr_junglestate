@@ -38,7 +38,6 @@ class View{
         }
 
     }
-
 }
 
 function test(){
@@ -50,5 +49,4 @@ function test(){
 
     const view = new View(document.getElementById("grid"));
     view.Showfield(testfield);
-
 }

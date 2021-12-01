@@ -30,7 +30,7 @@ def GetJSON(mode, game_id, player_id=None):
         if game.id == game_id:
             app.logger.info(f"Found game {game_id} for player {player_id}")
             if mode == "client":#returns JSON file for client
-                return {"field_of_view":game.GetFieldOfView(player_id),
+                return {"field":game.GetFieldOfView(player_id),
                                "coconuts":game.GetPlayerVar(player_id, "CC"),
                                "lives":game.GetPlayerVar(player_id, "lives"),
                                "points":game.GetPlayerVar(player_id, "P"),

@@ -1,10 +1,22 @@
 body {
-
     text-align: center;
+    margin-left: 35%;
+    margin-right: 35%;
 }
 
-h1 {
+.title {
     border-color: saddlebrown;
     border-width: thick;
+    border: solid;
+    
+    
+}
+
+.login {
+    border: solid;
+    border-top: transparent;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    
 }
 
