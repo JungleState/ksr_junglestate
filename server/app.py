@@ -12,7 +12,7 @@ next_game_id = 0
 game_list = []
 player_list = {} # Dict with playerID : playerName
 
-FIELD = (20, 30)
+FIELD = (30, 20)
 
 def newGame(playerId):
     if len(game_list) == 0:
