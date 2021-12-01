@@ -1,13 +1,48 @@
 body {
     background-color: rgb(247, 255, 138);
+    display: flex;
+    flex
+
 }
 
+
+/* #collumn {
+    flex: 70%;
+} */
+
+.grid {
+    flex-flow: 70px;
+    border: solid 2px;
+}
+
+.infos {
+    flex-flow: 30%;
+    padding-left: 10%;
+    padding-right: 10%;
+    
+}
+
+.infos h1 {
+    border: solid 2px;
+
+    
+}
+.infos h2 {
+    margin-left: auto;
+    margin-right: auto;
+}
 .grid div {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    background-color: seagreen;
+    flex: 50%;
+    padding-bottom: 0%;
+    padding-top: 0%;    
 }
 
 .grid div div {
-    padding-left: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border: solid 1px;
 }
