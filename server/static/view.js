@@ -1,8 +1,8 @@
 // get endpoints and manage view
 
 class View{
-    constructor(){
-        this.field = document.getElementById("grid");
+    constructor(grid){
+        this.field = grid;
 
         this.types = {
             "  ":"plain",

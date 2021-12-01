@@ -149,5 +149,5 @@ class Controller {
 // NAME = "random" // "random" will result in random name
 
 // create an Controller and join a game
-let view = new View();
+let view = new View(document.getElementById("grid"));
 let controller = new Controller();
