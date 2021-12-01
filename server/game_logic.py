@@ -274,31 +274,31 @@ class Game:
         toCoordinates = [player.x, player.y]
 
         if dir == 0:
-            toCoordinates[1] = toCoordinates[1] - 1
+            toCoordinates[0] -= 1
         elif dir == 1:
-            toCoordinates[0] = toCoordinates[0] + 1
-            toCoordinates[1] = toCoordinates[1] - 1
+            toCoordinates[1] += 1
+            toCoordinates[0] -= 1
         elif dir == 2:
-            toCoordinates[0] = toCoordinates[0] + 1
+            toCoordinates[1] += 1
         elif dir == 3:
-            toCoordinates[0] = toCoordinates[0] + 1
-            toCoordinates[1] = toCoordinates[1] + 1
+            toCoordinates[1] += 1
+            toCoordinates[0] += 1
         elif dir == 4:
-            toCoordinates[1] = toCoordinates[1] + 1
+            toCoordinates[0] += 1
         elif dir == 5:
-            toCoordinates[1] = toCoordinates[1] + 1
-            toCoordinates[0] = toCoordinates[0] - 1
+            toCoordinates[0] += 1
+            toCoordinates[1] -= 1
         elif dir == 6:
-            toCoordinates[0] = toCoordinates[0] - 1
+            toCoordinates[1] -= 1
         elif dir == 7:
-            toCoordinates[1] = toCoordinates[1] - 1
-            toCoordinates[0] = toCoordinates[0] - 1
+            toCoordinates[0] -= 1
+            toCoordinates[1] -= 1
 
         checkField = self.getElementAtCoords(toCoordinates)
 
         if isinstance(checkField, Player):  # player field
             player2 = checkField
-            player2.lives = player2.lives - 1
+            player2.lives -= 1
             logging.debug(f'Player {player2.uuid} hit')
     
     def getFOV(self, player):
