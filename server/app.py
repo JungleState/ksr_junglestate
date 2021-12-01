@@ -55,7 +55,8 @@ def root():
     if not isLoggedIn():
         return redirect(url_for('login'))
     else:
-        return render_template('view.html', dimension=10) #need something to set dimensions right (spec != client)
+        dimension = 10
+        return render_template('view.html', dimension_x=dimension, dimension_y=10) #need something to set dimensions right (spec != client)
         
 @app.route('/login')
 def login():

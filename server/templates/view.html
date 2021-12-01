@@ -7,17 +7,17 @@
     <title>JungleState</title>
     <link rel="icon" type="image/png" href="static/sprites/monkey.png">
     <link rel="stylesheet" href="static/junglestate.css">
-    <script src="static/controller.js" async></script>
     <script src="static/view.js" async></script>
+    <script src="static/controller.js" async></script>
 </head>
 
 <body>
     <button onclick="test()">Test</button>
 
     <div id="grid">
-        {%for row in range( dimension )%} <!-- the dimension variable comes directly from app.py-->
+        {%for row in range( dimension_x )%} <!-- the dimension variable comes directly from app.py-->
             <div class="row">
-                {%for coumn in range( dimension )%}
+                {%for coumn in range( dimension_y )%}
                     <cell>x</cell>
                 {%endfor%}
             </div>
