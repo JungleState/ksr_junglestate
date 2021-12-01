@@ -61,7 +61,7 @@ def root():
             dimension = (5, 5)
         elif session.get('mode') == 'spec':
             dimension = FIELD
-        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1]) #need something to set dimensions right (spec != client)
+        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1])
         
 @app.route('/login')
 def login():
@@ -77,6 +77,7 @@ def joinGame(mode, player_name):
         gameId = newGame(newId)
 
         session['playerId'] = newId
+        session['name'] = player_name
         session['mode'] = mode
         session['gameId'] = gameId
 
