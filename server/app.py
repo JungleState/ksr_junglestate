@@ -14,15 +14,17 @@ player_list = {} # Dict with playerID : playerName
 
 FIELD = (30, 20)
 
-def newGame(playerId):
+def newGame(playerId, mode):
     if len(game_list) == 0:
         newId = uuid.uuid4()
         game = Game(newId, FIELD)
-        game.join(player_list.get(playerId), playerId)
+        if mode == 'client':
+            game.join(player_list.get(playerId), playerId)
         game_list.append(game)
         return game.id
     else:
-        game_list[-1].join(player_list.get(playerId), playerId)
+        if mode == 'client':
+            game_list[-1].join(player_list.get(playerId), playerId)
         return game_list[-1].id
 
 def GetJSON(mode, game_id, player_id=None):
@@ -74,9 +76,13 @@ def joinGame(mode, player_name):
     if not player_name in player_list.values() and not session.get('playerId'):
         app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
         newId = str(uuid.uuid4())
-        player_list.update({newId:player_name})
 
-        gameId = newGame(newId)
+        if mode == 'client':
+            player_list.update({newId:player_name})
+        elif mode == 'spec':
+            player_list.update({newId:newId})
+
+        gameId = newGame(newId, mode)
 
         session['playerId'] = newId
         session['mode'] = mode
@@ -89,7 +95,7 @@ def joinGame(mode, player_name):
         return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
-@app.route('/view', methods=['POST'])
+@app.route('/view')
 def view():
     if isLoggedIn():
         playerId = session.get('playerId')
@@ -110,24 +116,21 @@ def view():
 @app.route('/action/<moveType>/<direction>', methods=['POST'])
 def action(moveType, direction):
     if isLoggedIn():
-        playerId = session.get('playerId')
-        for game in game_list:
-            if game.id == session.get('gameId'):
-                game.addMove(playerId, int(moveType), int(direction))
+        if session.get('mode') == 'client':
+            playerId = session.get('playerId')
+            for game in game_list:
+                if game.id == session.get('gameId'):
+                    game.addMove(playerId, int(moveType), int(direction))
 
-        return jsonify(msg="move accepted")
+            return jsonify(msg="move accepted")
+        
+        else:
+            app.logger.info("Action error: spectator is not allowed to move")
+            return jsonify(msg="move not permitted")
 
     else:
         app.logger.info("Action error: invalid player id")
         abort(403)
-
-### only temporary ##
-
-@app.route('/uuid')
-def getUuid():
-    return jsonify(id=uuid.uuid4())
-
-### ###
 
 
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 from random import randint
 import logging
 
+from pygame.constants import APPFOCUSMOUSE
+
 logging.getLogger().setLevel("DEBUG")
 
 class Item:
@@ -82,10 +84,10 @@ class RandomGenerator(MapGenerator):
         too_many_surrounding_obstacles = 1
         while too_many_surrounding_obstacles > 0:
             too_many_surrounding_obstacles = 0
-            for y in range(len(matrix)-2):
-                y += 1
-                for x in range(len(matrix[y])-2):
-                    x += 1
+            for y in range(len(matrix)-SIGHT*2):
+                y += SIGHT
+                for x in range(len(matrix[y])-SIGHT*2):
+                    x += SIGHT
                     if matrix[y][x] != Items.FOREST:
                         surrounding_obstacles = 0
                         for i in range(4):
@@ -97,7 +99,7 @@ class RandomGenerator(MapGenerator):
                             index = randint(0, 3)
                             y_coord = y+plus_list[index]
                             x_coord = x+plus_list[-(index+1)]
-                            if y_coord != 0 and y_coord != len(matrix)-1 and x_coord != 0 and x_coord != len(matrix[y])-1 and matrix[y_coord][x_coord] == Items.FOREST:
+                            if y_coord > SIGHT-1 and y_coord < len(matrix)-SIGHT and x_coord > SIGHT-1 and x_coord < len(matrix[y])-SIGHT and matrix[y_coord][x_coord] == Items.FOREST:
                                 matrix[y_coord][x_coord] = super().inner()
                                 surrounding_obstacles -= 1
         return matrix
@@ -109,6 +111,7 @@ class Game:
         self.player_list = []
         self.state = 0
         self.round = 0
+        self.safed_items_list= []
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
@@ -119,8 +122,8 @@ class Game:
         logging.debug(f"Player {id} joined as {name}")
         player = Player(id, id, name)
         while True:
-            x = randint(1, self.field_dim[0]-1)
-            y = randint(1, self.field_dim[1]-1)
+            x = randint(1, self.field_dim[0]-SIGHT)
+            y = randint(1, self.field_dim[1]-SIGHT)
             if self.getElementAt(x, y) == Items.EMPTY:
                 player.x = x
                 player.y = y
@@ -144,6 +147,21 @@ class Game:
             if player.id == player_id:
                 return player
         return False
+
+    def kickPlayer(self, player_name):
+        "gets player name, kicks player"
+        for player in self.player_list:
+            if player.name == player_name:
+                coconut_in_this_cell = False
+                for safed_item in self.safed_items_list:
+                    if [player.x, player.y] == safed_item[1]:
+                        coconut_in_this_cell = True
+                        self.setElementAt(player.x, player.y, Items.COCONUT)
+                        del self.safed_items_list[self.safed_items_list.index(safed_item)]
+                        break
+                if not coconut_in_this_cell:
+                    self.setElementAt(player.x, player.y, Items.EMPTY)
+                del self.player_list[self.player_list.index(player)]
 
     def addMove(self, player_id, move_id, dir):
         # move_id list:
@@ -208,6 +226,14 @@ class Game:
                 index = self.player_list.index(player)
                 del self.player_list[index]
 
+        for safed_item in self.safed_items_list:
+            if safed_item[2] != self.round:#Item is from previous round round
+                if self.getElementAtCoords(safed_item[1]) == Items.EMPTY:
+                    self.setElementAtCoords(safed_item[1], safed_item[0])
+                elif isinstance(self.getElementAtCoords(safed_item[1]), Player) == False:
+                    del self.safed_items_list[self.safed_items_list.index(safed_item)]
+        self.round += 1
+
     def getElementAt(self, x, y):
         return self.matrix[y][x]
 
@@ -260,13 +286,25 @@ class Game:
                     player.points += 25
                     
             elif checkField == Items.COCONUT:
+                print(player.coconuts)
                 if player.coconuts < 3:
                     player.coconuts += 1
-            if checkField != Items.FOREST:
+                    for safed_item in self.safed_items_list:
+                        if safed_item[1] == toCoordinates:
+                            index = self.safed_items_list.index(safed_item)
+                            del self.safed_items_list[index]
+                            break
+                else:
+                    safed_item_in_safed_items_list = False
+                    for safed_item in self.safed_items_list:
+                        if safed_item[0] == toCoordinates:
+                            safed_item_in_safed_items_list = True
+                    if not safed_item_in_safed_items_list:
+                        self.safed_items_list.append((Items.COCONUT, toCoordinates, self.round))
+            if checkField != Items.FOREST:  # empty field
                 self.setElementAt(player.x, player.y, Items.EMPTY)
                 self.setElementAtCoords(toCoordinates, player)
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
-            
 
     def handlePlayerDamage(self, player):
         player.lives -= 1  # TODO custom damage depending on situation
@@ -306,6 +344,8 @@ class Game:
             player2 = checkField
             player2.lives -= 1
             logging.debug(f'Player {player2.uuid} hit')
+
+        player.coconuts -= 1
     
     def getFOV(self, player):
         field_of_view_matrix = []
