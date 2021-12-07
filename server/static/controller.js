@@ -14,7 +14,7 @@ class Controller {
 
     async getData(info) {
         // get certain info from app.py
-        const response = await fetch("/view", { method: 'POST' });
+        const response = await fetch("/view");
         const json = await response.json();
 
         switch(info) {
