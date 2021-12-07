@@ -52,10 +52,12 @@ def isLoggedIn():
 
 @app.route('/')
 def root():
-    app.logger.debug("ROOT")
+    app.logger.debug("Request for root")
     if not isLoggedIn():
+        app.logger.debug("Redirecting to 'login'")
         return redirect(url_for('login'))
     else:
+        app.logger.debug("Returning 'view'")
         dimension = None
         if session.get('mode') == 'client':
             dimension = (5, 5)
@@ -83,7 +85,7 @@ def joinGame(mode, player_name):
         return jsonify(ok=True)
     
     else:
-        app.logger.info("PLAYER NAME ALREADY IN USE / PLAYER ALREADY LOGGED IN")
+        app.logger.info("Join Game invalid: player name already in use / already logged in")
         return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
@@ -94,14 +96,14 @@ def view():
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
-                app.logger.debug(f"VIEW: RETURN JSON FOR '{player_list.get(playerId)}' (Mode: {session.get('mode')})")
+                app.logger.debug(f"return view for '{player_list.get(playerId)}' (mode: {session.get('mode')})")
                 return jsonify(GetJSON(session.get('mode'), gameId, playerId))
 
-        app.logger.info("ERROR: GAME NOT AVAILABLE")
+        app.logger.info("View error: game not available")
         abort(410) # Game not available
 
     else:
-        app.logger.info("INVALID PLAYER ID")
+        app.logger.info("view error: invalid player id")
         abort(403) # Invalid player id
 
 # Input
@@ -116,7 +118,7 @@ def action(moveType, direction):
         return jsonify(msg="move accepted")
 
     else:
-        app.logger.info("INVALID PLAYER ID")
+        app.logger.info("Action error: invalid player id")
         abort(403)
 
 ### only temporary ##
