@@ -29,7 +29,7 @@ class View{
                 }
                 else{ //numbers are players
                     //tile.setAttribute('name', playerdict[charcode]); ---- probably later or manage somewhere else
-                    tile.setAttribute('name', "player");
+                    tile.setAttribute('class', "player");
                 }
                 column+=2; //because every 
                 

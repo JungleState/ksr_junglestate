@@ -11,6 +11,7 @@ class Item:
     def __str__(self) -> str:
         return self.id
 
+SIGHT = 2
 
 class Items:
     EMPTY = Item("empty", "  ")
@@ -28,7 +29,7 @@ class Player(Item):
         self.hits = 0
         self.x = 0
         self.y = 0
-        self.sight = 5  # dimension of field of view matrix, needs to be odd
+        self.sight = SIGHT * 2 + 1  # dimension of field of view matrix, needs to be odd
         self.name = name
         self.lives = 3
         self.coconuts = 2
@@ -43,7 +44,7 @@ class MapGenerator:
             row = []
             matrix.append(row)
             for x in range(width):
-                if y == 0 or y == height - 1 or x == 0 or x == width - 1:
+                if y < SIGHT or y >= height - SIGHT or x < SIGHT or x >= width - SIGHT:
                     row.append(self.border())
                 else:
                     row.append(self.inner())
@@ -192,12 +193,12 @@ class Game:
 
     def doNextRound(self):
         for move in self.move_list:  # check for moving
-            if move[1] == "1":
+            if move[1] == 1:
                 player = self.getPlayerFromID(move[0])
                 self.executeMoving(player, move[2])
 
         for move in self.move_list:  # check for shooting
-            if move[1] == "2":
+            if move[1] == 2:
                 player = self.getPlayerFromID(move[0])
                 self.executeShooting(player, move[2])
 
@@ -334,25 +335,10 @@ class Game:
     
     def getFOV(self, player):
         field_of_view_matrix = []
-        # checks for vision disability ecause of field border/ detects point of player in view matrix
         sight_x = player.sight
         sight_y = player.sight
         point_of_player_in_sight_matrix = [
             int(player.sight/2), int(player.sight/2)]
-
-        if player.x < int(player.sight/2):
-            sight_x -= int(player.sight/2) - player.x
-            point_of_player_in_sight_matrix[0] -= player.sight - sight_x
-        if player.x > self.field_dim[0] - int(player.sight/2):
-            sight_x -= int(player.sight/2) - \
-                self.field_dim[0] + player.x
-
-        if player.y < int(player.sight/2):
-            sight_y -= int(player.sight/2) - player.y
-            point_of_player_in_sight_matrix[1] -= player.sight - sight_y
-        if player.y > self.field_dim[1] - int(player.sight/2):
-            sight_y -= int(player.sight/2) - \
-                self.field_dim[1] + player.y
 
         # makes matrix
         for y in range(sight_y):
@@ -360,7 +346,7 @@ class Game:
             for x in range(sight_x):
                 final_y = y+player.y-point_of_player_in_sight_matrix[1]
                 final_x = x+player.x-point_of_player_in_sight_matrix[0]
-                field_of_view_matrix[y] += self.matrix[final_y][final_x].id
+                field_of_view_matrix[y] += self.SerializeItem(self.getElementAt(final_x, final_y))
 
         return field_of_view_matrix
 
