@@ -132,14 +132,6 @@ def action(moveType, direction):
         app.logger.info("Action error: invalid player id")
         abort(403)
 
-### only temporary ##
-
-@app.route('/uuid')
-def getUuid():
-    return jsonify(id=uuid.uuid4())
-
-### ###
-
 
 if __name__ == '__main__':
     app.run(port=5500)
