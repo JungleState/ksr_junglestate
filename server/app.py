@@ -67,7 +67,7 @@ def root():
 def login():
     return render_template('login.html') 
 
-@app.route('/joinGame/<string:mode>/<player_name>')
+@app.route('/joinGame/<string:mode>/<string:player_name>')
 def joinGame(mode, player_name):
     if not player_name in player_list.values() and not session.get('playerId'):
         app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
@@ -77,13 +77,11 @@ def joinGame(mode, player_name):
         gameId = newGame(newId)
 
         session['playerId'] = newId
-        session['name'] = player_name
         session['mode'] = mode
         session['gameId'] = gameId
 
         return jsonify(ok=True)
     
-
     else:
         app.logger.info("PLAYER NAME ALREADY IN USE / PLAYER ALREADY LOGGED IN")
         return jsonify(ok=False)
@@ -107,13 +105,13 @@ def view():
         abort(403) # Invalid player id
 
 # Input
-@app.route('/action/<int:moveType>/<int:direction>')
+@app.route('/action/<moveType>/<direction>')
 def action(moveType, direction):
     if isLoggedIn():
         playerId = session.get('playerId')
         for game in game_list:
             if game.id == session.get('gameId'):
-                game.addMove(playerId, moveType, direction)
+                game.addMove(playerId, int(moveType), int(direction))
 
         return jsonify(msg="move accepted")
 
