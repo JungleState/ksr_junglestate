@@ -45,15 +45,15 @@ def view(game):
             break
 
         elif keys[pygame.K_w]:
-            doSpecificTurn(game, "1", 0)
+            doSpecificTurn(game, 1, 0)
         elif keys[pygame.K_s]:
-            doSpecificTurn(game, "1", 4)
+            doSpecificTurn(game, 1, 4)
         elif keys[pygame.K_a]:
-            doSpecificTurn(game, "1", 6)
+            doSpecificTurn(game, 1, 6)
         elif keys[pygame.K_d]:
-            doSpecificTurn(game, "1", 2)
+            doSpecificTurn(game, 1, 2)
         elif keys[pygame.K_k]:
-            doSpecificTurn(game, "2", 0)
+            doSpecificTurn(game, 2, 0)
 
         SCREEN.fill(BACKGROUND)
         for i in range(len(map)):
@@ -80,6 +80,7 @@ def view(game):
 
 def doSpecificTurn(game, move, dir):
     game.addMove(100, move, dir)
+    game.addMove(101, 1, 0)
     game.doNextRound()
 
 def doTurn(game):

@@ -82,10 +82,10 @@ class RandomGenerator(MapGenerator):
         too_many_surrounding_obstacles = 1
         while too_many_surrounding_obstacles > 0:
             too_many_surrounding_obstacles = 0
-            for y in range(len(matrix)-2):
-                y += 1
-                for x in range(len(matrix[y])-2):
-                    x += 1
+            for y in range(len(matrix)-SIGHT*2):
+                y += SIGHT
+                for x in range(len(matrix[y])-SIGHT*2):
+                    x += SIGHT
                     if matrix[y][x] != Items.FOREST:
                         surrounding_obstacles = 0
                         for i in range(4):
@@ -97,7 +97,7 @@ class RandomGenerator(MapGenerator):
                             index = randint(0, 3)
                             y_coord = y+plus_list[index]
                             x_coord = x+plus_list[-(index+1)]
-                            if y_coord != 0 and y_coord != len(matrix)-1 and x_coord != 0 and x_coord != len(matrix[y])-1 and matrix[y_coord][x_coord] == Items.FOREST:
+                            if y_coord > SIGHT-1 and y_coord < len(matrix)-SIGHT and x_coord > SIGHT-1 and x_coord < len(matrix[y])-SIGHT and matrix[y_coord][x_coord] == Items.FOREST:
                                 matrix[y_coord][x_coord] = super().inner()
                                 surrounding_obstacles -= 1
         return matrix
@@ -120,8 +120,8 @@ class Game:
         logging.debug(f"Player {id} joined as {name}")
         player = Player(id, id, name)
         while True:
-            x = randint(1, self.field_dim[0]-1)
-            y = randint(1, self.field_dim[1]-1)
+            x = randint(1, self.field_dim[0]-SIGHT)
+            y = randint(1, self.field_dim[1]-SIGHT)
             if self.getElementAt(x, y) == Items.EMPTY:
                 player.x = x
                 player.y = y
@@ -286,11 +286,10 @@ class Game:
                             safed_item_in_safed_items_list = True
                     if not safed_item_in_safed_items_list:
                         self.safed_items_list.append((Items.COCONUT, toCoordinates, self.round))
-            if checkField != Items.FOREST:
+            if checkField != Items.FOREST:  # empty field
                 self.setElementAt(player.x, player.y, Items.EMPTY)
                 self.setElementAtCoords(toCoordinates, player)
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
-            
 
     def handlePlayerDamage(self, player):
         player.lives -= 1  # TODO custom damage depending on situation
