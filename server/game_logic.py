@@ -1,8 +1,6 @@
 from random import randint
 import logging
 
-from pygame.constants import APPFOCUSMOUSE
-
 logging.getLogger().setLevel("DEBUG")
 
 class Item:
@@ -14,6 +12,17 @@ class Item:
         return self.id
 
 SIGHT = 2
+
+class Rules:
+    class Scores:
+        KNOCK_OUT = 25
+        HIT = 10
+        PINEAPPLE = 50
+        BANANA = 25
+    class Damage:
+        COCONUT = 1
+        FOREST = 1
+        PLAYER = 1
 
 class Items:
     EMPTY = Item("empty", "  ")
@@ -267,23 +276,23 @@ class Game:
             self.setElementAtCoords(toCoordinates, player)
             player.x, player.y = toCoordinates[0], toCoordinates[1]
 
-        # elif checkField == Items.FOREST:  # forest field
-        #     self.handlePlayerDamage(player)
+        elif checkField == Items.FOREST:  # forest field
+            self.handlePlayerDamage(player, Rules.Damage.FOREST)
 
         elif isinstance(checkField, Player):
-            self.handlePlayerDamage(player)
+            self.handlePlayerDamage(player, Rules.Damage.PLAYER)
             player2 = checkField
-            self.handlePlayerDamage(player2)
+            self.handlePlayerDamage(player2, Rules.Damage.PLAYER)
 
         elif isinstance(checkField, Item):
             if checkField == Items.PINEAPPLE:
-                player.points += 50
+                    self.handleScore(player, Rules.Scores.PINEAPPLE)
 
             elif checkField == Items.BANANA:
                 if player.lives < 3:
                     player.lives += 1
                 else:
-                    player.points += 25
+                    self.handleScore(player, Rules.Scores.BANANA)
                     
             elif checkField == Items.COCONUT:
                 print(player.coconuts)
@@ -306,11 +315,21 @@ class Game:
                 self.setElementAtCoords(toCoordinates, player)
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
 
-    def handlePlayerDamage(self, player):
-        player.lives -= 1  # TODO custom damage depending on situation
+    def handlePlayerDamage(self, player, damage = 1):
+        """Inflicts damage on the given player and returns True if the player is knocked out."""
+        logging.debug(f'Player {player.uuid} is hurting {damage}')
+        player.lives -= damage
         if player.lives < 1:
+            logging.debug(f'Player {player.uuid} is knocked out - sleep well!')
             self.setElementAt(player.x, player.y, Items.EMPTY)
             self.player_list.remove(player)
+            return True
+        return False
+
+    def handleScore(self, player, score = 0):
+        """Changes the given player's score."""
+        logging.debug(f'Player {player.uuid} scored {score}')
+        player.points += score
 
     def executeShooting(self, player, dir):
         logging.debug(f"Shooting player {player.id} in direction {dir}!")
@@ -342,8 +361,11 @@ class Game:
 
         if isinstance(checkField, Player):  # player field
             player2 = checkField
-            player2.lives -= 1
             logging.debug(f'Player {player2.uuid} hit')
+            if self.handlePlayerDamage(player2, Rules.Damage.COCONUT):
+                self.handleScore(player, Rules.Scores.KNOCK_OUT)
+            else:
+                self.handleScore(player, Rules.Scores.HIT)
 
         player.coconuts -= 1
     
