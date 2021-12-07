@@ -74,7 +74,6 @@ def view(game):
                     pygame.draw.circle(SCREEN, RED,
                                        (i*40+20, j*40+20), 15)
         print(f"{game.player_list[0].lives}, {game.player_list[0].coconuts}, {game.player_list[0].points}")
-        print(f"{game.player_list[1].lives}")
         pygame.time.delay(100)
         pygame.display.flip()
         pygame.display.update()

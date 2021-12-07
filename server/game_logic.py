@@ -201,6 +201,11 @@ class Game:
                 self.executeShooting(player, move[2])
 
         self.move_list.clear()
+        for player in self.player_list:
+            if player.lives <= 0:
+                self.setElementAt(player.x, player.y, Items.EMPTY)
+                index = self.player_list.index(player)
+                del self.player_list[index]
 
     def getElementAt(self, x, y):
         return self.matrix[y][x]
