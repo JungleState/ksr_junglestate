@@ -115,16 +115,21 @@ def view():
 # Input
 @app.route('/action/<moveType>/<direction>', methods=['POST'])
 def action(moveType, direction):
-    if isLoggedIn() and session.get('mode') == 'client':
-        playerId = session.get('playerId')
-        for game in game_list:
-            if game.id == session.get('gameId'):
-                game.addMove(playerId, int(moveType), int(direction))
+    if isLoggedIn():
+        if session.get('mode') == 'client':
+            playerId = session.get('playerId')
+            for game in game_list:
+                if game.id == session.get('gameId'):
+                    game.addMove(playerId, int(moveType), int(direction))
 
-        return jsonify(msg="move accepted")
+            return jsonify(msg="move accepted")
+        
+        else:
+            app.logger.info("Action error: spectator is not allowed to move")
+            return jsonify(msg="move not permitted")
 
     else:
-        app.logger.info("Action error: invalid player id / wrong mode")
+        app.logger.info("Action error: invalid player id")
         abort(403)
 
 ### only temporary ##
