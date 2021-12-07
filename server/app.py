@@ -76,7 +76,7 @@ def joinGame(mode, player_name):
         newId = str(uuid.uuid4())
         player_list.update({newId:player_name})
 
-        gameId = newGame(newId)
+        gameId = newGame(newId, mode)
 
         session['playerId'] = newId
         session['mode'] = mode
@@ -89,7 +89,7 @@ def joinGame(mode, player_name):
         return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
-@app.route('/view', methods=['POST'])
+@app.route('/view')
 def view():
     if isLoggedIn():
         playerId = session.get('playerId')
@@ -109,7 +109,7 @@ def view():
 # Input
 @app.route('/action/<moveType>/<direction>', methods=['POST'])
 def action(moveType, direction):
-    if isLoggedIn():
+    if isLoggedIn() and session.get('mode') == 'client':
         playerId = session.get('playerId')
         for game in game_list:
             if game.id == session.get('gameId'):
@@ -118,7 +118,7 @@ def action(moveType, direction):
         return jsonify(msg="move accepted")
 
     else:
-        app.logger.info("Action error: invalid player id")
+        app.logger.info("Action error: invalid player id / wrong mode")
         abort(403)
 
 ### only temporary ##
