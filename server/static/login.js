@@ -21,7 +21,7 @@ async function login() {
         return;
     }
 
-    let response = await fetch(`/joinGame/${modeName}/${name}`);
+    let response = await fetch(`/joinGame/${modeName}/${name}`, { method: 'POST' });
     let json = await response.json();
 
     if (json.ok) {
