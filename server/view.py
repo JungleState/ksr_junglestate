@@ -60,19 +60,19 @@ def view(game):
             for j in range(len(map[i])):
                 if(map[i][j].id) == "FF":
                     pygame.draw.circle(SCREEN, GREEN,
-                                       (i*40+20, j*40+20), 15)
+                                       (j*40+20, i*40+20), 15)
                 elif(map[i][j].id) == "BB":
                     pygame.draw.circle(SCREEN, YELLOW,
-                                       (i*40+20, j*40+20), 15)
+                                       (j*40+20, i*40+20), 15)
                 elif(map[i][j].id) == "PP":
                     pygame.draw.circle(SCREEN, ORANGE,
-                                       (i*40+20, j*40+20), 15)
+                                       (j*40+20, i*40+20), 15)
                 elif(map[i][j].id) == "CC":
                     pygame.draw.circle(SCREEN, BROWN,
-                                       (i*40+20, j*40+20), 15)
+                                       (j*40+20, i*40+20), 15)
                 elif(map[i][j].id) != "  ":
                     pygame.draw.circle(SCREEN, RED,
-                                       (i*40+20, j*40+20), 15)
+                                       (j*40+20, i*40+20), 15)
         print(f"{game.player_list[0].lives}, {game.player_list[0].coconuts}, {game.player_list[0].points}")
         pygame.time.delay(100)
         pygame.display.flip()
