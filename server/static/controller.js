@@ -115,8 +115,9 @@ class Controller {
     }
 }
 
-// create an Controller and join a game
-document.addEventListener("DOMContentLoaded", function(event){
+function startController() {
     let view = new View(document.getElementById("grid"));
     let controller = new Controller(view);
-});
+}
+// create an Controller and join a game
+startController();
