@@ -11,6 +11,7 @@ class Item:
     def __str__(self) -> str:
         return self.id
 
+SIGHT = 2
 
 class Items:
     EMPTY = Item("empty", "  ")
@@ -28,7 +29,7 @@ class Player(Item):
         self.hits = 0
         self.x = 0
         self.y = 0
-        self.sight = 5  # dimension of field of view matrix, needs to be odd
+        self.sight = SIGHT * 2 + 1  # dimension of field of view matrix, needs to be odd
         self.name = name
         self.lives = 3
         self.coconuts = 2
@@ -43,7 +44,7 @@ class MapGenerator:
             row = []
             matrix.append(row)
             for x in range(width):
-                if y == 0 or y == height - 1 or x == 0 or x == width - 1:
+                if y < SIGHT or y >= height - SIGHT or x < SIGHT or x >= width - SIGHT:
                     row.append(self.border())
                 else:
                     row.append(self.inner())
