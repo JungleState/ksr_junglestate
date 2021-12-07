@@ -1,6 +1,8 @@
 from random import randint
 import logging
 
+from pygame.constants import APPFOCUSMOUSE
+
 logging.getLogger().setLevel("DEBUG")
 
 class Item:
@@ -146,6 +148,21 @@ class Game:
                 return player
         return False
 
+    def kickPlayer(self, player_name):
+        "gets player name, kicks player"
+        for player in self.player_list:
+            if player.name == player_name:
+                coconut_in_this_cell = False
+                for safed_item in self.safed_items_list:
+                    if [player.x, player.y] == safed_item[1]:
+                        coconut_in_this_cell = True
+                        self.setElementAt(player.x, player.y, Items.COCONUT)
+                        del self.safed_items_list[self.safed_items_list.index(safed_item)]
+                        break
+                if not coconut_in_this_cell:
+                    self.setElementAt(player.x, player.y, Items.EMPTY)
+                del self.player_list[self.player_list.index(player)]
+
     def addMove(self, player_id, move_id, dir):
         # move_id list:
         # 0: Stay
@@ -272,11 +289,9 @@ class Game:
                 print(player.coconuts)
                 if player.coconuts < 3:
                     player.coconuts += 1
-                    print(self.safed_items_list)
                     for safed_item in self.safed_items_list:
                         if safed_item[1] == toCoordinates:
                             index = self.safed_items_list.index(safed_item)
-                            print(index)
                             del self.safed_items_list[index]
                             break
                 else:
