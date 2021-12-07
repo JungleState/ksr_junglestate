@@ -309,25 +309,10 @@ class Game:
     
     def getFOV(self, player):
         field_of_view_matrix = []
-        # checks for vision disability because of field border/ detects point of player in view matrix
         sight_x = player.sight
         sight_y = player.sight
         point_of_player_in_sight_matrix = [
             int(player.sight/2), int(player.sight/2)]
-
-        if player.x < int(player.sight/2):
-            sight_x -= int(player.sight/2) - player.x
-            point_of_player_in_sight_matrix[0] -= player.sight - sight_x
-        if player.x > self.field_dim[0] - int(player.sight/2):
-            sight_x -= int(player.sight/2) - \
-                self.field_dim[0] + player.x
-
-        if player.y < int(player.sight/2):
-            sight_y -= int(player.sight/2) - player.y
-            point_of_player_in_sight_matrix[1] -= player.sight - sight_y
-        if player.y > self.field_dim[1] - int(player.sight/2):
-            sight_y -= int(player.sight/2) - \
-                self.field_dim[1] + player.y
 
         # makes matrix
         for y in range(sight_y):
