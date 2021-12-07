@@ -6,14 +6,14 @@ cell {
     display:block;
     width: 100%; /* 100% of the grids width*/
     aspect-ratio: 1/1;
-    background-color: khaki;
+    background-color: burlywood;
 }
 #grid {
     width: min(90vw, 90vh); /* fits to the smaller component (Normally height) */
 }
 
 .plain{
-    background-color: burlywood;
+    background-color: burlywood; /* add textures */
 }
 .jungle{
     background-color: rgb(3, 61, 3);
@@ -28,5 +28,6 @@ cell {
     background-color: orange;
 }
 .player{
-background-color: black;
+    background-image: url(sprites/monkey.png);
+    background-size: contain;
 }
