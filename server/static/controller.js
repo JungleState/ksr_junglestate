@@ -119,5 +119,11 @@ function startController() {
     let view = new View(document.getElementById("grid"));
     let controller = new Controller(view);
 }
-// create an Controller and join a game
-startController();
+
+if (document.readyState === "complete") {
+    startController();
+} else {
+    document.addEventListener('DOMContentLoaded', function() {
+        startController();
+    });   
+}
