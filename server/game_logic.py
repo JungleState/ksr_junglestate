@@ -308,7 +308,7 @@ class Game:
     
     def getFOV(self, player):
         field_of_view_matrix = []
-        # checks for vision disability ecause of field border/ detects point of player in view matrix
+        # checks for vision disability because of field border/ detects point of player in view matrix
         sight_x = player.sight
         sight_y = player.sight
         point_of_player_in_sight_matrix = [
@@ -334,7 +334,7 @@ class Game:
             for x in range(sight_x):
                 final_y = y+player.y-point_of_player_in_sight_matrix[1]
                 final_x = x+player.x-point_of_player_in_sight_matrix[0]
-                field_of_view_matrix[y] += self.matrix[final_y][final_x].id
+                field_of_view_matrix[y] += self.SerializeItem(self.getElementAt(final_x, final_y))
 
         return field_of_view_matrix
 
