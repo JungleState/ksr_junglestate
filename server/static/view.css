@@ -25,9 +25,10 @@ cell {
     background-color: yellow;
 }
 .pineapple{
-    background-color: orange;
+    background-image: url(sprites/pineapple.png);
+    background-size: cover;
 }
 .player{
     background-image: url(sprites/monkey.png);
-    background-size: contain;
+    background-size: cover;
 }
