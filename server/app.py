@@ -14,15 +14,17 @@ player_list = {} # Dict with playerID : playerName
 
 FIELD = (30, 20)
 
-def newGame(playerId):
+def newGame(playerId, mode):
     if len(game_list) == 0:
         newId = uuid.uuid4()
         game = Game(newId, FIELD)
-        game.join(player_list.get(playerId), playerId)
+        if mode == 'client':
+            game.join(player_list.get(playerId), playerId)
         game_list.append(game)
         return game.id
     else:
-        game_list[-1].join(player_list.get(playerId), playerId)
+        if mode == 'client':
+            game_list[-1].join(player_list.get(playerId), playerId)
         return game_list[-1].id
 
 def GetJSON(mode, game_id, player_id=None):
@@ -74,7 +76,11 @@ def joinGame(mode, player_name):
     if not player_name in player_list.values() and not session.get('playerId'):
         app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
         newId = str(uuid.uuid4())
-        player_list.update({newId:player_name})
+
+        if mode == 'client':
+            player_list.update({newId:player_name})
+        elif mode == 'spec':
+            player_list.update({newId:newId})
 
         gameId = newGame(newId, mode)
 
