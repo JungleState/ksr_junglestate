@@ -225,13 +225,13 @@ class Game:
         toCoordinates = [player.x, player.y]
 
         if dir == 0:
-            toCoordinates[0] -= 1
-        elif dir == 2:
-            toCoordinates[1] += 1
-        elif dir == 4:
-            toCoordinates[0] += 1
-        elif dir == 6:
             toCoordinates[1] -= 1
+        elif dir == 2:
+            toCoordinates[0] += 1
+        elif dir == 4:
+            toCoordinates[1] += 1
+        elif dir == 6:
+            toCoordinates[0] -= 1
 
         checkField = self.getElementAtCoords(toCoordinates)
 
@@ -279,25 +279,25 @@ class Game:
         toCoordinates = [player.x, player.y]
 
         if dir == 0:
-            toCoordinates[0] -= 1
+            toCoordinates[1] -= 1
         elif dir == 1:
-            toCoordinates[1] += 1
-            toCoordinates[0] -= 1
+            toCoordinates[0] += 1
+            toCoordinates[1] -= 1
         elif dir == 2:
-            toCoordinates[1] += 1
+            toCoordinates[0] += 1
         elif dir == 3:
+            toCoordinates[0] += 1
             toCoordinates[1] += 1
-            toCoordinates[0] += 1
         elif dir == 4:
-            toCoordinates[0] += 1
+            toCoordinates[1] += 1
         elif dir == 5:
-            toCoordinates[0] += 1
-            toCoordinates[1] -= 1
-        elif dir == 6:
-            toCoordinates[1] -= 1
-        elif dir == 7:
+            toCoordinates[1] += 1
             toCoordinates[0] -= 1
+        elif dir == 6:
+            toCoordinates[0] -= 1
+        elif dir == 7:
             toCoordinates[1] -= 1
+            toCoordinates[0] -= 1
 
         checkField = self.getElementAtCoords(toCoordinates)
 
