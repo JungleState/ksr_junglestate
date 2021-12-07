@@ -11,6 +11,7 @@ class Item:
     def __str__(self) -> str:
         return self.id
 
+SIGHT = 2
 
 class Items:
     EMPTY = Item("empty", "  ")
@@ -28,7 +29,7 @@ class Player(Item):
         self.hits = 0
         self.x = 0
         self.y = 0
-        self.sight = 5  # dimension of field of view matrix, needs to be odd
+        self.sight = SIGHT * 2 + 1  # dimension of field of view matrix, needs to be odd
         self.name = name
         self.lives = 3
         self.coconuts = 2
@@ -43,7 +44,7 @@ class MapGenerator:
             row = []
             matrix.append(row)
             for x in range(width):
-                if y == 0 or y == height - 1 or x == 0 or x == width - 1:
+                if y < SIGHT or y >= height - SIGHT or x < SIGHT or x >= width - SIGHT:
                     row.append(self.border())
                 else:
                     row.append(self.inner())
@@ -108,6 +109,7 @@ class Game:
         self.player_list = []
         self.state = 0
         self.round = 0
+        self.safed_items_list= []
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
@@ -207,6 +209,14 @@ class Game:
                 index = self.player_list.index(player)
                 del self.player_list[index]
 
+        for safed_item in self.safed_items_list:
+            if safed_item[2] != self.round:#Item is from previous round round
+                if self.getElementAtCoords(safed_item[1]) == Items.EMPTY:
+                    self.setElementAtCoords(safed_item[1], safed_item[0])
+                elif isinstance(self.getElementAtCoords(safed_item[1]), Player) == False:
+                    del self.safed_items_list[self.safed_items_list.index(safed_item)]
+        self.round += 1
+
     def getElementAt(self, x, y):
         return self.matrix[y][x]
 
@@ -259,8 +269,23 @@ class Game:
                     player.points += 25
                     
             elif checkField == Items.COCONUT:
+                print(player.coconuts)
                 if player.coconuts < 3:
                     player.coconuts += 1
+                    print(self.safed_items_list)
+                    for safed_item in self.safed_items_list:
+                        if safed_item[1] == toCoordinates:
+                            index = self.safed_items_list.index(safed_item)
+                            print(index)
+                            del self.safed_items_list[index]
+                            break
+                else:
+                    safed_item_in_safed_items_list = False
+                    for safed_item in self.safed_items_list:
+                        if safed_item[0] == toCoordinates:
+                            safed_item_in_safed_items_list = True
+                    if not safed_item_in_safed_items_list:
+                        self.safed_items_list.append((Items.COCONUT, toCoordinates, self.round))
             if checkField != Items.FOREST:
                 self.setElementAt(player.x, player.y, Items.EMPTY)
                 self.setElementAtCoords(toCoordinates, player)
@@ -305,28 +330,15 @@ class Game:
             player2 = checkField
             player2.lives -= 1
             logging.debug(f'Player {player2.uuid} hit')
+
+        player.coconuts -= 1
     
     def getFOV(self, player):
         field_of_view_matrix = []
-        # checks for vision disability because of field border/ detects point of player in view matrix
         sight_x = player.sight
         sight_y = player.sight
         point_of_player_in_sight_matrix = [
             int(player.sight/2), int(player.sight/2)]
-
-        if player.x < int(player.sight/2):
-            sight_x -= int(player.sight/2) - player.x
-            point_of_player_in_sight_matrix[0] -= player.sight - sight_x
-        if player.x > self.field_dim[0] - int(player.sight/2):
-            sight_x -= int(player.sight/2) - \
-                self.field_dim[0] + player.x
-
-        if player.y < int(player.sight/2):
-            sight_y -= int(player.sight/2) - player.y
-            point_of_player_in_sight_matrix[1] -= player.sight - sight_y
-        if player.y > self.field_dim[1] - int(player.sight/2):
-            sight_y -= int(player.sight/2) - \
-                self.field_dim[1] + player.y
 
         # makes matrix
         for y in range(sight_y):
