@@ -191,12 +191,12 @@ class Game:
 
     def doNextRound(self):
         for move in self.move_list:  # check for moving
-            if move[1] == "1":
+            if move[1] == 1:
                 player = self.getPlayerFromID(move[0])
                 self.executeMoving(player, move[2])
 
         for move in self.move_list:  # check for shooting
-            if move[1] == "2":
+            if move[1] == 2:
                 player = self.getPlayerFromID(move[0])
                 self.executeShooting(player, move[2])
 
