@@ -108,6 +108,7 @@ class Game:
         self.player_list = []
         self.state = 0
         self.round = 0
+        self.safed_items_list= []
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
@@ -207,6 +208,14 @@ class Game:
                 index = self.player_list.index(player)
                 del self.player_list[index]
 
+        for safed_item in self.safed_items_list:
+            if safed_item[2] != self.round:#Item is from previous round round
+                if self.getElementAtCoords(safed_item[1]) == Items.EMPTY:
+                    self.setElementAtCoords(safed_item[1], safed_item[0])
+                elif isinstance(self.getElementAtCoords(safed_item[1]), Player) == False:
+                    del self.safed_items_list[self.safed_items_list.index(safed_item)]
+        self.round += 1
+
     def getElementAt(self, x, y):
         return self.matrix[y][x]
 
@@ -259,8 +268,23 @@ class Game:
                     player.points += 25
                     
             elif checkField == Items.COCONUT:
+                print(player.coconuts)
                 if player.coconuts < 3:
                     player.coconuts += 1
+                    print(self.safed_items_list)
+                    for safed_item in self.safed_items_list:
+                        if safed_item[1] == toCoordinates:
+                            index = self.safed_items_list.index(safed_item)
+                            print(index)
+                            del self.safed_items_list[index]
+                            break
+                else:
+                    safed_item_in_safed_items_list = False
+                    for safed_item in self.safed_items_list:
+                        if safed_item[0] == toCoordinates:
+                            safed_item_in_safed_items_list = True
+                    if not safed_item_in_safed_items_list:
+                        self.safed_items_list.append((Items.COCONUT, toCoordinates, self.round))
             if checkField != Items.FOREST:
                 self.setElementAt(player.x, player.y, Items.EMPTY)
                 self.setElementAtCoords(toCoordinates, player)
@@ -305,6 +329,8 @@ class Game:
             player2 = checkField
             player2.lives -= 1
             logging.debug(f'Player {player2.uuid} hit')
+
+        player.coconuts -= 1
     
     def getFOV(self, player):
         field_of_view_matrix = []

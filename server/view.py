@@ -73,7 +73,6 @@ def view(game):
                 elif(map[i][j].id) != "  ":
                     pygame.draw.circle(SCREEN, RED,
                                        (j*40+20, i*40+20), 15)
-        print(f"{game.player_list[0].lives}, {game.player_list[0].coconuts}, {game.player_list[0].points}")
         pygame.time.delay(100)
         pygame.display.flip()
         pygame.display.update()
