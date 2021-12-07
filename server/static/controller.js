@@ -14,7 +14,7 @@ class Controller {
 
     async getData(info) {
         // get certain info from app.py
-        const response = await fetch("/view");
+        const response = await fetch("/view", { method: 'POST' });
         const json = await response.json();
 
         switch(info) {
@@ -110,7 +110,7 @@ class Controller {
                 direction = -1;
         }
 
-        const response = await fetch(`/action/${type}/${direction}`);
+        const response = await fetch(`/action/${type}/${direction}`, { method: 'POST' });
         const json = await response.json();
     }
 }

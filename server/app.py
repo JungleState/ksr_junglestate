@@ -69,7 +69,7 @@ def root():
 def login():
     return render_template('login.html') 
 
-@app.route('/joinGame/<string:mode>/<string:player_name>')
+@app.route('/joinGame/<string:mode>/<string:player_name>', methods=['POST'])
 def joinGame(mode, player_name):
     if not player_name in player_list.values() and not session.get('playerId'):
         app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
@@ -89,7 +89,7 @@ def joinGame(mode, player_name):
         return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
-@app.route('/view')
+@app.route('/view', methods=['POST'])
 def view():
     if isLoggedIn():
         playerId = session.get('playerId')
@@ -107,7 +107,7 @@ def view():
         abort(403) # Invalid player id
 
 # Input
-@app.route('/action/<moveType>/<direction>')
+@app.route('/action/<moveType>/<direction>', methods=['POST'])
 def action(moveType, direction):
     if isLoggedIn():
         playerId = session.get('playerId')
