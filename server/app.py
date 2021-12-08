@@ -2,7 +2,9 @@ import os
 from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
 import uuid
+import threading
 
+TIME_BEFOR_KICK = 10.0
 
 app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
@@ -55,7 +57,13 @@ def isLoggedIn():
     playerId=session.get('playerId')
     return playerId in player_list.keys()
     
-
+def kickPlayer():
+    app.logger.debug(f"Kicked {player_list.get(session.get('playerId'))}")
+    game_id = session.get('gameId')
+    for game in game_list:
+        if game.id == game_id:
+            game.kickPlayer(player_list.get(session.get('playerId')))
+    del player_list[session.get('playerId')]
 
 ### JSON ENDPOINTS ###
 
@@ -94,7 +102,6 @@ def joinGame(mode, player_name):
         session['playerId'] = newId
         session['mode'] = mode
         session['gameId'] = gameId
-
         return jsonify(ok=True)
     
     else:
