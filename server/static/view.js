@@ -44,10 +44,10 @@ class View{
         }
         else if (stats[5] == 'client') {
             this.navigation.querySelector('#name').innerHTML = `Logged in as: ${stats[0]}`;
+            this.navigation.querySelector('#lifes').innerHTML = `Lifes: ${stats[3]}`;
+            this.navigation.querySelector('#points').innerHTML = `Points: ${stats[2]}`;
+            this.navigation.querySelector('#round').innerHTML = `Round: ${stats[1]}`;
         }
-        this.navigation.querySelector('#lifes').innerHTML = `Lifes: ${stats[3]}`;
-        this.navigation.querySelector('#points').innerHTML = `Points: ${stats[2]}`;
-        this.navigation.querySelector('#round').innerHTML = `Round: ${stats[1]}`;
 
     }
 }
