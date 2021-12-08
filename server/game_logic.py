@@ -404,11 +404,12 @@ class Game:
             if player.id == player_id:
                 return self.getFOV(player)
 
-    def GetPlayerVar(self, player_id, var):  # for specific player
+    def GetPlayerVar(self, player_id, item):  # for specific player
         for player in self.player_list:
             if player.id == player_id:
-                item_dict = {}
-                # for item in player.item_list:
-                #     item_dict[f'{item.name}'] = item.count
-                return item_dict
-        return []
+                if item == "CC":
+                    return player.cocnuts
+                elif item == "P":
+                    return player.points
+                elif item == "lives":
+                    return player.lives
