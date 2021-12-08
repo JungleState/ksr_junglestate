@@ -45,7 +45,7 @@ namespace Player {
 
             if (data != null) {
                 // ask user written algorithm about what to do
-                playerBehaviour(data.field);
+                playerBehaviour(data.field, data.lives, data.coconuts, data.points, data.round);
             }
             else {
                 Console.WriteLine("ERROR: data is null");
@@ -93,7 +93,7 @@ namespace Player {
 
 
 
-string name = "Hans Muster";
+string name = "Max Mustermann";
 
 
 
@@ -105,7 +105,7 @@ string name = "Hans Muster";
             return name;
         }
 
-        private static void playerBehaviour(string field) {   
+        private static void playerBehaviour(string field, int health, int ammo, int score, int round) {   
         // method with the user written algorithm
                 
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
@@ -125,9 +125,20 @@ string name = "Hans Muster";
 //    6: left
 //    7: up left
 
-// string field: 5x5 matrix of surrounding
+// "  ": plain:     empty
+// "FF": jungle:    wall
+// "CC": coconut:   +1 ammo
+// "BB": banana:    +1 health
+// "PP": pineapple: +1 score
 
-// custom mehtods can be added in the next section. DON'T DO IT HERE!
+// string field: 5x5 matrix of surrounding
+// int health: health of character
+// int ammo: amount of ammo left
+// int score: score of player
+// int round: round of the game
+
+// custom mehtods can be added in the next section.
+// DON'T DO IT HERE!
 
 
 
@@ -140,7 +151,7 @@ if (decision == 0){
     move(-1);
 }
 else {
-    dontMove();
+    moveLeft();
 }
 
 
@@ -163,8 +174,8 @@ else {
 
 
 
-private static void dontMove() {
-    move(-1);
+private static void moveLeft() {
+    move(6);
 }
 
 
