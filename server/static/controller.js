@@ -16,7 +16,7 @@ class Controller {
         // field updates
         setInterval(async () => {
             await this.getData();
-            this.stats = [this.name, this.round, this.points, this.lives, this.coconuts];
+            this.stats = [this.name, this.round, this.points, this.lives, this.coconuts, this.mode];
             view.Showfield(this.field, this.stats);
         }, 500);
     }
