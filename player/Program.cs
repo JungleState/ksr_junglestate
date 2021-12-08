@@ -98,6 +98,7 @@ string name = "Max Mustermann";
 
 
 
+
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^/YOUR/CONFIGS/ABOVE/HERE/^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
@@ -109,7 +110,7 @@ string name = "Max Mustermann";
         // method with the user written algorithm
                 
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
-//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv/YOUR/CODE/BELOW/HERE/VVVVvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
+//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv/YOUR/CODE/BELOW/HERE/vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
 
 // attack:  attack(DIRECTION)   options for DIRECTION: [0, 7]
