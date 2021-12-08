@@ -17,8 +17,6 @@ class View{
         //The Matrix should be the same Dimensions as the given field of HTML Elements.   
         //Dimensions are set by the field automatically:
 
-        console.log(stats);
-
         let row=0;
         for (let row_element of this.field.getElementsByClassName("row")) { //come from HTML
             let column=0;
@@ -40,7 +38,13 @@ class View{
             row+=1;
         }
 
-        this.navigation.querySelector('#name').innerHTML = `Logged in as: ${stats[0]}`;
+        // Display stats
+        if (stats[5] == 'spec') {
+            this.navigation.querySelector('#name').innerHTML = `Logged in as: Spectator`;
+        }
+        else if (stats[5] == 'client') {
+            this.navigation.querySelector('#name').innerHTML = `Logged in as: ${stats[0]}`;
+        }
         this.navigation.querySelector('#lifes').innerHTML = `Lifes: ${stats[3]}`;
         this.navigation.querySelector('#points').innerHTML = `Points: ${stats[2]}`;
         this.navigation.querySelector('#round').innerHTML = `Round: ${stats[1]}`;
