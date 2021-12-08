@@ -1,5 +1,8 @@
 class Controller {
     constructor(view) {
+        let name;
+        let li
+
         // listen for input
         window.onkeydown = (key) => {
             this.keyInput(key.keyCode);
@@ -20,6 +23,15 @@ class Controller {
         switch(info) {
             case "field":
                 return json.field;
+            case "lives":
+                return json.lives;
+            case "coconuts":
+                return json.coconuts;
+            case "points":
+                return json.points;
+            case "round":
+                return json.round;
+            case "r"
             default:
                 return "error";
         }

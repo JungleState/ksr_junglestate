@@ -9,6 +9,7 @@ cell {
     background-color: burlywood;
 }
 #grid {
+    display: inline-block;
     width: min(90vw, 90vh); /* fits to the smaller component (Normally height) */
 }
 
@@ -31,4 +32,14 @@ cell {
 .player{
     background-image: url(sprites/monkey.png);
     background-size: cover;
+}
+
+.container {
+    padding: 10px;
+}
+
+#navigation {
+    display: inline-block;
+    position: absolute;
+    margin-left: 10px;
 }

@@ -8,6 +8,10 @@ app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
 app.secret_key = os.urandom(16)
 
+app.config.update(
+    TEMPLATES_AUTO_RELOAD = True
+)
+
 next_game_id = 0
 game_list = []
 player_list = {} # Dict with playerID : playerName
@@ -36,13 +40,16 @@ def GetJSON(mode, game_id, player_id=None):
                                "coconuts":game.GetPlayerVar(player_id, "CC"),
                                "lives":game.GetPlayerVar(player_id, "lives"),
                                "points":game.GetPlayerVar(player_id, "P"),
-                               "round":game.round}
+                               "round":game.round,
+                               "mode":mode,
+                               "name":player_list.get(player_id)}
             elif mode == "spec":#returns JSON file for spectator
                 return {"id":player_id, 
                                "field":game.SerializeMatrix(), 
                                "state":game.state, 
                                "round":game.round,
-                               "player_list":game.GetPlayerListForJSON()}
+                               "player_list":game.GetPlayerListForJSON(),
+                               "mode":mode}
 
 def isLoggedIn():
     playerId=session.get('playerId')
