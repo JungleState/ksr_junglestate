@@ -1,7 +1,12 @@
 class Controller {
     constructor(view) {
+        let mode;
+        let round;
+        let field;
         let name;
-        let li
+        let points;
+        let lives;
+        let coconuts;
 
         // listen for input
         window.onkeydown = (key) => {
@@ -10,31 +15,43 @@ class Controller {
 
         // field updates
         setInterval(async () => {
-            let field = await this.getData("field");
-            view.Showfield(field);
+            await this.getData();
+            view.Showfield(this.field);
         }, 500);
     }
 
-    async getData(info) {
-        // get certain info from app.py
+    async getData() {
+        // get info from app.py
         const response = await fetch("/view");
         const json = await response.json();
 
-        switch(info) {
-            case "field":
-                return json.field;
-            case "lives":
-                return json.lives;
-            case "coconuts":
-                return json.coconuts;
-            case "points":
-                return json.points;
-            case "round":
-                return json.round;
-            case "r"
-            default:
-                return "error";
+        // variables for both modes
+        this.mode = json.mode;
+        this.round = json.round;
+        this.field = json.field;
+
+        // variables for client
+        if (this.mode == "client") {
+            this.name = json.name;
+            this.points = json.points;
+            this.lives = json.lives;
+            this.coconuts = json.coconuts;
         }
+        // switch(info) {
+        //     case "field":
+        //         return json.field;
+        //     case "lives":
+        //         return json.lives;
+        //     case "coconuts":
+        //         return json.coconuts;
+        //     case "points":
+        //         return json.points;
+        //     case "round":
+        //         return json.round;
+        //     case "r"
+        //     default:
+        //         return "error";
+        // }
     }
 
     async keyInput(commandKey) {
