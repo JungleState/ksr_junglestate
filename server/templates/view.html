@@ -12,19 +12,24 @@
 </head>
 
 <body>
-    <button onclick="test()">Test</button>
+    <!-- <button onclick="test()">Test</button> -->
 
-    <div id="grid">
-        {%for row in range( dimension_y )%} <!-- the dimension variable comes directly from app.py-->
-            <div class="row">
-                {%for coumn in range( dimension_x )%}
-                    <cell> </cell>
-                {%endfor%}
-            </div>
-        {% endfor %}
-    </div>
-    <div id="display">
-        
+    <div class="container">
+        <div id="grid">
+            {%for row in range( dimension_y )%} <!-- the dimension variable comes directly from app.py-->
+                <div class="row">
+                    {%for coumn in range( dimension_x )%}
+                        <cell> </cell>
+                    {%endfor%}
+                </div>
+            {% endfor %}
+        </div>
+        <div id="navigation">
+            <div id="name">Logged in as: </div>
+            <div id="lifes">Lifes: </div>
+            <div id="points">Points: </div>
+            <div id="round">Round: </div>
+        </div>
     </div>
 </body>
 </html>
