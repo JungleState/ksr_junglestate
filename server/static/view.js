@@ -1,7 +1,7 @@
 // get endpoints and manage view
 
 class View{
-    constructor(grid){
+    constructor(grid, navigation){
         this.field = grid;
 
         this.types = {

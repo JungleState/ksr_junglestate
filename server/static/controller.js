@@ -119,7 +119,7 @@ class Controller {
 }
 
 function startController() {
-    let view = new View(document.getElementById("grid"));
+    let view = new View(document.getElementById("grid"), document.getElementsByClassName['navigation'][0]);
     let controller = new Controller(view);
 }
 
