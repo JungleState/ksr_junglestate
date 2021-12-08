@@ -408,7 +408,7 @@ class Game:
         for player in self.player_list:
             if player.id == player_id:
                 if item == "CC":
-                    return player.cocnuts
+                    return player.coconuts
                 elif item == "P":
                     return player.points
                 elif item == "lives":
