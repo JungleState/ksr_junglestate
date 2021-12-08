@@ -21,7 +21,7 @@ class Rules:
         BANANA = 25
     class Damage:
         COCONUT = 1
-        FOREST = 0
+        FOREST = 1
         PLAYER = 1
 
 class Items:
@@ -374,7 +374,7 @@ class Game:
                 player.coconuts += 1
                 del self.safed_items_list[self.safed_items_list.index(safed_item)]
                 break
-            
+
     def getFOV(self, player):
         field_of_view_matrix = []
         sight_x = player.sight
