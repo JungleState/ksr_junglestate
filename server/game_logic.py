@@ -346,7 +346,7 @@ class Game:
             logging.debug(f'Player {player2.uuid} hit')
 
         player.coconuts -= 1
-    
+        #TODO: Pick up coconut, after shot if coconut is on field
     def getFOV(self, player):
         field_of_view_matrix = []
         sight_x = player.sight
