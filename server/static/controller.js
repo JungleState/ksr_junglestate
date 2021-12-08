@@ -16,7 +16,8 @@ class Controller {
         // field updates
         setInterval(async () => {
             await this.getData();
-            view.Showfield(this.field);
+            this.stats = [this.name, this.round, this.points, this.lives, this.coconuts];
+            view.Showfield(this.field, this.stats);
         }, 500);
     }
 
@@ -145,7 +146,7 @@ class Controller {
 }
 
 function startController() {
-    let view = new View(document.getElementById("grid"), document.getElementsByClassName['navigation'][0]);
+    let view = new View(document.getElementById("grid"), document.getElementById('navigation'));
     let controller = new Controller(view);
 }
 
