@@ -1,6 +1,6 @@
 from random import randint
 import logging
-
+import threading
 logging.getLogger().setLevel("DEBUG")
 
 class Item:
@@ -14,6 +14,7 @@ class Item:
 SIGHT = 2
 
 class Rules:
+    TIME_TO_MOVE = 10.0
     class Scores:
         KNOCK_OUT = 25
         HIT = 10
@@ -126,6 +127,7 @@ class Game:
         self.matrix = generator.purge(
             generator.generate(self.field_lengh, self.field_height))
         self.field_dim = [self.field_lengh, self.field_height]
+        
 
     def join(self, name, id):
         logging.debug(f"Player {id} joined as {name}")
@@ -188,6 +190,10 @@ class Game:
         # 5: down left
         # 6: left
         # 7: up left
+        if len(self.move_list) == 0:
+            timer = threading.Timer(Rules.TIME_TO_MOVE, self.doNextRound)
+            timer.start()
+
         for move in self.move_list:
             if move[0] == player_id:
                 #DEBUG : logging.debug(f"Rejecting move from Player {player_id} who already moved.")
@@ -218,17 +224,18 @@ class Game:
         return player_list
 
     def doNextRound(self):
-        for move in self.move_list:  # check for moving
+        move_list = list(self.move_list)
+        self.move_list.clear()
+        for move in move_list:  # check for moving
             if move[1] == 1:
                 player = self.getPlayerFromID(move[0])
                 self.executeMoving(player, move[2])
 
-        for move in self.move_list:  # check for shooting
+        for move in move_list:  # check for shooting
             if move[1] == 2:
                 player = self.getPlayerFromID(move[0])
                 self.executeShooting(player, move[2])
 
-        self.move_list.clear()
         for player in self.player_list:
             if player.lives <= 0:
                 self.setElementAt(player.x, player.y, Items.EMPTY)
