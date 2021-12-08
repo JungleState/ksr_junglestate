@@ -114,4 +114,5 @@ if __name__ == "__main__":
     game = game_logic.Game(1, FIELD)
     game.join(f'Pacifico', 100)
     game.join("Phillip", 101)
+    game.join("Joran", 102)
     view(game)
