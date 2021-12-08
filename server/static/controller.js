@@ -1,5 +1,8 @@
 class Controller {
     constructor(view) {
+        let name;
+        let li
+
         // listen for input
         window.onkeydown = (key) => {
             this.keyInput(key.keyCode);
