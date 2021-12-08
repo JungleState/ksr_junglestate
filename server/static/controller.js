@@ -23,6 +23,15 @@ class Controller {
         switch(info) {
             case "field":
                 return json.field;
+            case "lives":
+                return json.lives;
+            case "coconuts":
+                return json.coconuts;
+            case "points":
+                return json.points;
+            case "round":
+                return json.round;
+            case "r"
             default:
                 return "error";
         }
