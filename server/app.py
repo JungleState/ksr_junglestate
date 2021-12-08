@@ -2,11 +2,17 @@ import os
 from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
 import uuid
+import threading
 
+TIME_BEFOR_KICK = 10.0
 
 app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
 app.secret_key = os.urandom(16)
+
+app.config.update(
+    TEMPLATES_AUTO_RELOAD = True
+)
 
 next_game_id = 0
 game_list = []
@@ -36,19 +42,28 @@ def GetJSON(mode, game_id, player_id=None):
                                "coconuts":game.GetPlayerVar(player_id, "CC"),
                                "lives":game.GetPlayerVar(player_id, "lives"),
                                "points":game.GetPlayerVar(player_id, "P"),
-                               "round":game.round}
+                               "round":game.round,
+                               "mode":mode,
+                               "name":player_list.get(player_id)}
             elif mode == "spec":#returns JSON file for spectator
                 return {"id":player_id, 
                                "field":game.SerializeMatrix(), 
                                "state":game.state, 
                                "round":game.round,
-                               "player_list":game.GetPlayerListForJSON()}
+                               "player_list":game.GetPlayerListForJSON(),
+                               "mode":mode}
 
 def isLoggedIn():
     playerId=session.get('playerId')
     return playerId in player_list.keys()
     
-
+def kickPlayer():
+    app.logger.debug(f"Kicked {player_list.get(session.get('playerId'))}")
+    game_id = session.get('gameId')
+    for game in game_list:
+        if game.id == game_id:
+            game.kickPlayer(player_list.get(session.get('playerId')))
+    del player_list[session.get('playerId')]
 
 ### JSON ENDPOINTS ###
 
@@ -87,7 +102,6 @@ def joinGame(mode, player_name):
         session['playerId'] = newId
         session['mode'] = mode
         session['gameId'] = gameId
-
         return jsonify(ok=True)
     
     else:

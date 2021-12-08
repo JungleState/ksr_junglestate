@@ -45,15 +45,26 @@ def view(game):
             break
 
         elif keys[pygame.K_w]:
-            doSpecificTurn(game, 1, 0)
+            doSpecificTurn(game, 1, 0, 1)
         elif keys[pygame.K_s]:
-            doSpecificTurn(game, 1, 4)
+            doSpecificTurn(game, 1, 4, 1)
         elif keys[pygame.K_a]:
-            doSpecificTurn(game, 1, 6)
+            doSpecificTurn(game, 1, 6, 1)
         elif keys[pygame.K_d]:
-            doSpecificTurn(game, 1, 2)
-        elif keys[pygame.K_k]:
-            doSpecificTurn(game, 2, 0)
+            doSpecificTurn(game, 1, 2, 1)
+        elif keys[pygame.K_1]:
+            doSpecificTurn(game, 2, 0, 1)
+
+        elif keys[pygame.K_UP]:
+            doSpecificTurn(game, 1, 0, 2)
+        elif keys[pygame.K_DOWN]:
+            doSpecificTurn(game, 1, 4, 2)
+        elif keys[pygame.K_LEFT]:
+            doSpecificTurn(game, 1, 6, 2)
+        elif keys[pygame.K_RIGHT]:
+            doSpecificTurn(game, 1, 2, 2)
+        elif keys[pygame.K_2]:
+            doSpecificTurn(game, 2, 0, 2)
 
         SCREEN.fill(BACKGROUND)
         for i in range(len(map)):
@@ -78,10 +89,11 @@ def view(game):
         pygame.display.update()
     pygame.quit()
 
-def doSpecificTurn(game, move, dir):
-    game.addMove(100, move, dir)
-    game.addMove(101, 1, 0)
-    game.doNextRound()
+def doSpecificTurn(game, move, dir, player):
+    if player == 1:
+        game.addMove(100, move, dir)
+    else:
+        game.addMove(101, move, dir)
 
 def doTurn(game):
     r1 = randint(0, 3)
@@ -102,4 +114,5 @@ if __name__ == "__main__":
     game = game_logic.Game(1, FIELD)
     game.join(f'Pacifico', 100)
     game.join("Phillip", 101)
+    game.join("Joran", 102)
     view(game)
