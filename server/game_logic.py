@@ -368,7 +368,7 @@ class Game:
                 self.handleScore(player, Rules.Scores.HIT)
 
         player.coconuts -= 1
-    
+        #TODO: Pick up coconut, after shot if coconut is on field
     def getFOV(self, player):
         field_of_view_matrix = []
         sight_x = player.sight
