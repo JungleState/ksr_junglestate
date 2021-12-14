@@ -10,6 +10,7 @@ class Controller {
         // field updates
         setInterval(async () => {
             let json = await this.getData();
+            console.log(json.player_list);
             view.updateView(json.field, json);
             if (updateTitle) {
                 if (json.mode == 'client') {
