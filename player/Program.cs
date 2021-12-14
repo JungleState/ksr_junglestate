@@ -13,6 +13,9 @@ namespace Player {
         private static readonly HttpClient client = new HttpClient();
 
         private static async Task joinGame(Tuple<string, string> configs) {
+            // non-user configs
+            int SLEEP_TIME = 500;
+
             // join game (fetch request)
             var stringTask = client.GetStringAsync(configs.Item1+"joinGame/client/"+configs.Item2);
             var json = await stringTask;
@@ -25,45 +28,50 @@ namespace Player {
                 Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
                 }
                 else {
+                    int score = 0;
                     // loop with regular request for the field followed by an instruction for the server what to do
-                    bool running = true;
-                    while (running) {
-                        await getData(configs);
-                        Thread.Sleep(500);
+                    while (true) {
+                        Tuple<bool, int> returnedData = await getData(configs);
+                        Thread.Sleep(SLEEP_TIME);
+                        if (returnedData.Item1) {
+                            score = returnedData.Item2;
+                            break;
+                        }
                     }
                     Console.WriteLine("!!!!!!!!!!!");
                     Console.WriteLine("!GAME OVER!");
                     Console.WriteLine("!!!!!!!!!!!");
+                    Console.WriteLine("Score: "+score);
                 }   
             }
             else {
                 Console.WriteLine("ERROR: data is null");
             }
         }
-        private static async Task getData(Tuple<string, string> configs) {
+        private static async Task<Tuple<bool, int>> getData(Tuple<string, string> configs) {
             // get the map
             var stringTask = client.GetStringAsync(configs.Item1+"view");
             var json = await stringTask;
             dynamic? data = JsonConvert.DeserializeObject(json);
 
+            bool gameOver = false;
+            int score = 0;
+
             if (data != null) {
+                score = data.points;
                 // ask user written algorithm about what to do
                 if (data.lives > 0) {
                     playerBehaviour(configs, data.field, data.lives, data.coconuts, data.points, data.round);
                 }
                 else {
                     // end loop from joinGame
-
-
-
-
-
-
+                    gameOver = true;
                 }
             }
             else {
                 Console.WriteLine("ERROR: data is null");
             }
+            return new Tuple<bool, int>(gameOver, score);
         }
 
         private static void move(Tuple<string, string> configs, int direction) {
