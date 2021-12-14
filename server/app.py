@@ -58,10 +58,11 @@ def isLoggedIn():
     playerId=session.get('playerId')
     return playerId in player_list.keys()
 
-def checkPlayerName(name):
+def checkLogInData(name, mode):
     err = None
     valid = True
 
+    # Check Name
     if len(name) == name.count(' ') or len(name) == 0:
         err = 'Invalid Name'
         valid = False
@@ -70,6 +71,14 @@ def checkPlayerName(name):
         valid = False
     elif name in player_list.values():
         err = 'Name Already In Use'
+        valid = False
+    elif session.get('playerId'):
+        err = 'Already Logged In'
+        valid = False
+
+    # Check Mode
+    if mode != 'client' and mode != 'spec':
+        err = 'Invalid Mode'
         valid = False
 
     return (valid, err)
@@ -84,7 +93,7 @@ def kickPlayer():
 
 ### JSON ENDPOINTS ###
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def root():
     if not isLoggedIn():
         return redirect(url_for('login'))
@@ -96,18 +105,14 @@ def root():
             dimension = FIELD
         return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1])
         
-@app.route('/login')
+@app.route('/login', methods=['GET'])
 def login():
     return render_template('login.html') 
 
 @app.route('/joinGame/<string:mode>/<string:player_name>', methods=['POST'])
 def joinGame(mode, player_name):
-    if session.get('playerId'):
-        # Player already logged in
-        app.logger.info('Already Logged In')
-        return jsonify(ok=False, msg='Already Logged In')
 
-    valid, err = checkPlayerName(player_name)
+    valid, err = checkLogInData(player_name, mode)
 
     if not valid:
         # Invalid name
@@ -133,7 +138,7 @@ def joinGame(mode, player_name):
     
 
 # View - Server knows if the request comes from a spectator or a player
-@app.route('/view')
+@app.route('/view', methods=['GET'])
 def view():
     if isLoggedIn():
         playerId = session.get('playerId')
