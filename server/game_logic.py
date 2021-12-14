@@ -3,6 +3,7 @@ import logging
 import threading
 logging.getLogger().setLevel("DEBUG")
 
+
 class Item:
     def __init__(self, name, id):
         self.name = name
@@ -11,19 +12,24 @@ class Item:
     def __str__(self) -> str:
         return self.id
 
+
 SIGHT = 2
+
 
 class Rules:
     TIME_TO_MOVE = 0.5
+
     class Scores:
         KNOCK_OUT = 25
         HIT = 10
         PINEAPPLE = 50
         BANANA = 25
+
     class Damage:
         COCONUT = 1
         FOREST = 1
         PLAYER = 1
+
 
 class Items:
     EMPTY = Item("empty", "  ")
@@ -47,8 +53,18 @@ class Player(Item):
         self.coconuts = 2
         self.points = 0
 
+    def item_dict(self):
+        return {"coconuts":self.coconuts,
+                "id": self.id,
+                "knockouts": self.knockouts,
+                "hits": self.hits,
+                "name": self.name,
+                "lives": self.lives,
+                "points": self.points}
+
 class MapGenerator:
     """ A map generator that creates empty maps with forest all around."""
+
     def generate(self, width, height):
         matrix = []
         for y in range(height):
@@ -113,20 +129,20 @@ class RandomGenerator(MapGenerator):
                                 surrounding_obstacles -= 1
         return matrix
 
+
 class Game:
     def __init__(self, id, field_dimensions, generator=RandomGenerator(20, 1, 1, 1)):
-        self.move_list = []
         self.id = id
-        self.player_list = []
         self.state = 0
         self.round = 0
-        self.safed_items_list= []
+        self.move_list = []
+        self.player_list = []
+        self.safed_items_list = []
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
             generator.generate(self.field_lengh, self.field_height))
         self.field_dim = [self.field_lengh, self.field_height]
-        
 
     def join(self, name, id):
         logging.debug(f"Player {id} joined as {name}")
@@ -167,7 +183,8 @@ class Game:
                     if [player.x, player.y] == safed_item[1]:
                         coconut_in_this_cell = True
                         self.setElementAt(player.x, player.y, Items.COCONUT)
-                        del self.safed_items_list[self.safed_items_list.index(safed_item)]
+                        del self.safed_items_list[self.safed_items_list.index(
+                            safed_item)]
                         break
                 if not coconut_in_this_cell:
                     self.setElementAt(player.x, player.y, Items.EMPTY)
@@ -195,16 +212,24 @@ class Game:
 
         for move in self.move_list:
             if move[0] == player_id:
-                self.move_list[self.move_list.index(move)] = [player_id, move_id, dir]
+                self.move_list[self.move_list.index(move)] = [
+                    player_id, move_id, dir]
                 return True
 
-        if self.getPlayerFromID(player_id) == False:
-            #DEBUG : logging.debug(f"Rejecting move from Player {player_id} who is dead.")
+        if self.getPlayerFromID(player_id).lives <= 0:
+            logging.debug(
+                f"Rejecting move from Player {player_id} who is dead.")
             return False
 
         logging.debug(f"Adding move from {player_id}.")
         self.move_list.append([player_id, move_id, dir])
-        if len(self.move_list) == len(self.player_list):
+
+        alive = 0
+        for player in self.player_list:
+            if player.lives > 0:
+                alive += 1
+
+        if len(self.move_list) == alive:
             logging.debug(f"All players moved - next round!")
             self.doNextRound()
         return True
@@ -238,15 +263,15 @@ class Game:
         for player in self.player_list:
             if player.lives <= 0:
                 self.setElementAt(player.x, player.y, Items.EMPTY)
-                index = self.player_list.index(player)
-                del self.player_list[index]
+                # TODO: NOT REMOVE PLAYER
 
         for safed_item in self.safed_items_list:
-            if safed_item[2] != self.round:#Item is from previous round round
+            if safed_item[2] != self.round:  # Item is from previous round round
                 if self.getElementAtCoords(safed_item[1]) == Items.EMPTY:
                     self.setElementAtCoords(safed_item[1], safed_item[0])
                 elif isinstance(self.getElementAtCoords(safed_item[1]), Player) == False:
-                    del self.safed_items_list[self.safed_items_list.index(safed_item)]
+                    del self.safed_items_list[self.safed_items_list.index(
+                        safed_item)]
         self.round += 1
 
     def getElementAt(self, x, y):
@@ -292,14 +317,14 @@ class Game:
 
         elif isinstance(checkField, Item):
             if checkField == Items.PINEAPPLE:
-                    self.handleScore(player, Rules.Scores.PINEAPPLE)
+                self.handleScore(player, Rules.Scores.PINEAPPLE)
 
             elif checkField == Items.BANANA:
                 if player.lives < 3:
                     player.lives += 1
                 else:
                     self.handleScore(player, Rules.Scores.BANANA)
-                    
+
             elif checkField == Items.COCONUT:
                 print(player.coconuts)
                 if player.coconuts < 3:
@@ -315,24 +340,24 @@ class Game:
                         if safed_item[0] == toCoordinates:
                             safed_item_in_safed_items_list = True
                     if not safed_item_in_safed_items_list:
-                        self.safed_items_list.append((Items.COCONUT, toCoordinates, self.round))
+                        self.safed_items_list.append(
+                            (Items.COCONUT, toCoordinates, self.round))
             if checkField != Items.FOREST:  # empty field
                 self.setElementAt(player.x, player.y, Items.EMPTY)
                 self.setElementAtCoords(toCoordinates, player)
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
 
-    def handlePlayerDamage(self, player, damage = 1):
+    def handlePlayerDamage(self, player, damage=1):
         """Inflicts damage on the given player and returns True if the player is knocked out."""
         logging.debug(f'Player {player.uuid} is hurting {damage}')
         player.lives -= damage
         if player.lives < 1:
             logging.debug(f'Player {player.uuid} is knocked out - sleep well!')
             self.setElementAt(player.x, player.y, Items.EMPTY)
-            self.player_list.remove(player)
             return True
         return False
 
-    def handleScore(self, player, score = 0):
+    def handleScore(self, player, score=0):
         """Changes the given player's score."""
         logging.debug(f'Player {player.uuid} scored {score}')
         player.points += score
@@ -378,7 +403,8 @@ class Game:
         for safed_item in self.safed_items_list:
             if safed_item[1] == [player.x, player.y]:
                 player.coconuts += 1
-                del self.safed_items_list[self.safed_items_list.index(safed_item)]
+                del self.safed_items_list[self.safed_items_list.index(
+                    safed_item)]
                 break
 
     def getFOV(self, player):
@@ -394,7 +420,8 @@ class Game:
             for x in range(sight_x):
                 final_y = y+player.y-point_of_player_in_sight_matrix[1]
                 final_x = x+player.x-point_of_player_in_sight_matrix[0]
-                field_of_view_matrix[y] += self.SerializeItem(self.getElementAt(final_x, final_y))
+                field_of_view_matrix[y] += self.SerializeItem(
+                    self.getElementAt(final_x, final_y))
 
         return field_of_view_matrix
 
@@ -414,32 +441,27 @@ class Game:
                     return player.lives
 
     def Scoreboard(self, sortby, hyrarchy):
-        scoreboard_dict = {"coconuts":sorted(self.player_list, key=self.byCoconuts),
-                           "lives": sorted(self.player_list, key=self.byLives),
-                           "points": sorted(self.player_list, key=self.byPoints),
-                           "knockouts": sorted(self.player_list, key=self.byKnockouts),
-                           "hits": sorted(self.player_list, key=self.byHits),
-                           "name": sorted(self.player_list, key=self.byName)}
-        sorted_list = scoreboard_dict[f"{sortby}"]
-        return [player.id for player in sorted_list]
+        sorted_player_list = [i for i in range(len(self.player_list))]
+        item_list_dict = {"coconuts":[player.coconuts for player in self.player_list],
+                           "lives": [player.lives for player in self.player_list],
+                           "points": [player.points for player in self.player_list],
+                           "knockouts": [player.knockouts for player in self.player_list],
+                           "hits": [player.hits for player in self.player_list],
+                           "name": [player.name[0] for player in self.player_list]}
 
-    def byCoconuts(self, p1, p2):
-        return p1.coconuts - p2.coconuts
-    def byLives(self, p1, p2):
-        return p1.lives - p2.lives
-    def byPoints(self, p1, p2):
-        return p1.points - p2.points
-    def byKnockouts(self, p1, p2):
-        return p1.knockouts - p2.knockouts
-    def byHits(self, p1, p2):
-        return p1.hits - p2.hits
-    def byName(self, p1, p2):
-        pass
-
-
-game = Game(0, [12, 20])
-game.join("joran", 0)
-game.join("sheran", 1)
-game.join("Ich", 2)
-
-print(game.Scoreboard("points", "in"))
+        sorted_list = sorted(item_list_dict[f"{sortby}"])
+        item_list = item_list_dict[f"{sortby}"]
+        for i in range(len(item_list)):
+            plus_index = 0
+            while isinstance(sorted_player_list[sorted_list.index(item_list[i]) + plus_index], Player):
+                plus_index += 1
+            sorted_player_list[sorted_list.index(item_list[i]) + plus_index] = self.player_list[i]
+        
+        sorted_player_id_list = [player.item_dict() for player in sorted_player_list]
+        if hyrarchy == "decr":
+            if sortby != "name":
+                sorted_player_id_list.reverse()
+        elif hyrarchy == "incr":
+            if sortby == "name":
+                sorted_player_id_list.reverse()
+        return sorted_player_id_list

@@ -69,12 +69,9 @@ def kickPlayer():
 
 @app.route('/')
 def root():
-    app.logger.debug("Request for root")
     if not isLoggedIn():
-        app.logger.debug("Redirecting to 'login'")
         return redirect(url_for('login'))
     else:
-        app.logger.debug("Returning 'view'")
         dimension = None
         if session.get('mode') == 'client':
             dimension = (5, 5)
@@ -116,14 +113,13 @@ def view():
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
-                app.logger.debug(f"return view for '{player_list.get(playerId)}' (mode: {session.get('mode')})")
                 return jsonify(GetJSON(session.get('mode'), gameId, playerId))
 
         app.logger.info("View error: game not available")
         abort(410) # Game not available
 
     else:
-        app.logger.info("view error: invalid player id")
+        app.logger.info("View error: invalid player id")
         abort(403) # Invalid player id
 
 # Input
@@ -136,11 +132,11 @@ def action(moveType, direction):
                 if game.id == session.get('gameId'):
                     game.addMove(playerId, int(moveType), int(direction))
 
-            return jsonify(msg="move accepted")
+            return jsonify(ok=True)
         
         else:
             app.logger.info("Action error: spectator is not allowed to move")
-            return jsonify(msg="move not permitted")
+            return jsonify(ok=False)
 
     else:
         app.logger.info("Action error: invalid player id")

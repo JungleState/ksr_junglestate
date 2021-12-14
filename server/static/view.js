@@ -13,7 +13,7 @@ class View{
             "PP":"pineapple"
         }
     }
-    Showfield(stringfield, stats){ //show the field //probably +playerdict (if we manage it in here)
+    updateView(stringfield, json){ //show the field //probably +playerdict (if we manage it in here)
         //The Matrix should be the same Dimensions as the given field of HTML Elements.   
         //Dimensions are set by the field automatically:
 
@@ -39,16 +39,16 @@ class View{
         }
 
         // Display stats
-        if (stats[5] == 'spec') {
-            this.navigation.querySelector('#name').innerHTML = `Logged in as: Spectator`;
+        if (json.mode == 'spec') {
+            
         }
-        else if (stats[5] == 'client') {
-            this.navigation.querySelector('#name').innerHTML = `Logged in as: ${stats[0]}`;
-            this.navigation.querySelector('#lifes').innerHTML = `Lifes: ${stats[3]}`;
-            this.navigation.querySelector('#points').innerHTML = `Points: ${stats[2]}`;
-            this.navigation.querySelector('#round').innerHTML = `Round: ${stats[1]}`;
+        else if (json.mode == 'client') {
+            this.navigation.querySelector('#name').innerHTML = `Logged in as: ${json.name}`;
+            this.navigation.querySelector('#coconuts').innerHTML = `Coconuts: ${json.coconuts}`;
+            this.navigation.querySelector('#lives').innerHTML = `Lives: ${json.lives}`;
+            this.navigation.querySelector('#points').innerHTML = `Points: ${json.points}`;
+            this.navigation.querySelector('#round').innerHTML = `Round: ${json.round}`;
         }
-
     }
 }
 
