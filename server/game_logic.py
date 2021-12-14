@@ -14,7 +14,7 @@ class Item:
 SIGHT = 2
 
 class Rules:
-    TIME_TO_MOVE = 10.0
+    TIME_TO_MOVE = 0.5
     class Scores:
         KNOCK_OUT = 25
         HIT = 10
@@ -196,8 +196,8 @@ class Game:
 
         for move in self.move_list:
             if move[0] == player_id:
-                #DEBUG : logging.debug(f"Rejecting move from Player {player_id} who already moved.")
-                return False
+                self.move_list[self.move_list.index(move)] = [player_id, move_id, dir]
+                return True
 
         if self.getPlayerFromID(player_id) == False:
             #DEBUG : logging.debug(f"Rejecting move from Player {player_id} who is dead.")
