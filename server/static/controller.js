@@ -8,7 +8,7 @@ class Controller {
         // field updates
         setInterval(async () => {
             let json = await this.getData();
-            view.updateView(this.field, json);
+            view.updateView(json.field, json);
         }, 500);
     }
 
