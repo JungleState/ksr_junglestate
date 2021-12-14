@@ -1,12 +1,6 @@
 class Controller {
     constructor(view) {
-        let mode;
-        let round;
-        let field;
-        let name;
-        let points;
-        let lives;
-        let coconuts;
+        let updateTitle = true;
 
         // listen for input
         window.onkeydown = (key) => {
@@ -15,44 +9,25 @@ class Controller {
 
         // field updates
         setInterval(async () => {
-            await this.getData();
-            this.stats = [this.name, this.round, this.points, this.lives, this.coconuts, this.mode];
-            view.Showfield(this.field, this.stats);
+            let json = await this.getData();
+            console.log(json.player_list);
+            view.updateView(json.field, json);
+            if (updateTitle) {
+                if (json.mode == 'client') {
+                    document.title += ' - Player';
+                }
+                else if (json.mode == 'spec') {
+                    document.title += ' - Spectator';
+                }
+                updateTitle = false;
+            }
         }, 500);
     }
 
     async getData() {
         // get info from app.py
         const response = await fetch("/view");
-        const json = await response.json();
-
-        // variables for both modes
-        this.mode = json.mode;
-        this.round = json.round;
-        this.field = json.field;
-
-        // variables for client
-        if (this.mode == "client") {
-            this.name = json.name;
-            this.points = json.points;
-            this.lives = json.lives;
-            this.coconuts = json.coconuts;
-        }
-        // switch(info) {
-        //     case "field":
-        //         return json.field;
-        //     case "lives":
-        //         return json.lives;
-        //     case "coconuts":
-        //         return json.coconuts;
-        //     case "points":
-        //         return json.points;
-        //     case "round":
-        //         return json.round;
-        //     case "r"
-        //     default:
-        //         return "error";
-        // }
+        return await response.json();
     }
 
     async keyInput(commandKey) {
