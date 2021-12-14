@@ -17,15 +17,16 @@ namespace Player {
             int SLEEP_TIME = 500;
 
             // join game (fetch request)
-            var stringTask = client.PostAsync(configs.Item1+"joinGame/client/"+configs.Item2, new StringContent(""));
-            var json = await stringTask;
+            var response = await client.PostAsync(configs.Item1+"joinGame/client/"+configs.Item2, new StringContent(""));
+            var json = await response.Content.ReadAsStringAsync();
             dynamic? data = JsonConvert.DeserializeObject(json);
 
             // check if joining was successful
             if (data != null){
                 if (data.ok == false) {
-                Console.WriteLine("Connection to game failed!");
-                Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
+                    Console.WriteLine("Connection to game failed!");
+                    Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
+                    Console.WriteLine(data.msg);
                 }
                 else {
                     int score = 0;
