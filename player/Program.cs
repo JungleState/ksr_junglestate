@@ -25,7 +25,6 @@ namespace Player {
             if (data != null){
                 if (data.ok == false) {
                     Console.WriteLine("Connection to game failed!");
-                    Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
                     Console.WriteLine(data.msg);
                 }
                 else {
@@ -59,10 +58,10 @@ namespace Player {
             int score = 0;
 
             if (data != null) {
-                score = data.points;
+                score = int.Parse(data.points);
                 // ask user written algorithm about what to do
                 if (data.lives > 0) {
-                    playerBehaviour(configs, data.field, data.lives, data.coconuts, data.points, data.round);
+                    playerBehaviour(configs, data.field.ToString(), int.Parse(data.lives), int.Parse(data.coconuts), int.Parse(data.points), int.Parse(data.round));
                 }
                 else {
                     // end loop from joinGame
@@ -122,7 +121,7 @@ string url = "http://localhost:5500/";
 
 // name of player
 // e.g. Max Mustermann
-string name = "MaxMustermann";
+string name = "Max Mustermann2";
 
 
 
