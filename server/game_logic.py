@@ -47,7 +47,6 @@ class Player(Item):
         self.coconuts = 2
         self.points = 0
 
-
 class MapGenerator:
     """ A map generator that creates empty maps with forest all around."""
     def generate(self, width, height):
@@ -413,3 +412,34 @@ class Game:
                     return player.points
                 elif item == "lives":
                     return player.lives
+
+    def Scoreboard(self, sortby, hyrarchy):
+        scoreboard_dict = {"coconuts":sorted(self.player_list, key=self.byCoconuts),
+                           "lives": sorted(self.player_list, key=self.byLives),
+                           "points": sorted(self.player_list, key=self.byPoints),
+                           "knockouts": sorted(self.player_list, key=self.byKnockouts),
+                           "hits": sorted(self.player_list, key=self.byHits),
+                           "name": sorted(self.player_list, key=self.byName)}
+        sorted_list = scoreboard_dict[f"{sortby}"]
+        return [player.id for player in sorted_list]
+
+    def byCoconuts(self, p1, p2):
+        return p1.coconuts - p2.coconuts
+    def byLives(self, p1, p2):
+        return p1.lives - p2.lives
+    def byPoints(self, p1, p2):
+        return p1.points - p2.points
+    def byKnockouts(self, p1, p2):
+        return p1.knockouts - p2.knockouts
+    def byHits(self, p1, p2):
+        return p1.hits - p2.hits
+    def byName(self, p1, p2):
+        pass
+
+
+game = Game(0, [12, 20])
+game.join("joran", 0)
+game.join("sheran", 1)
+game.join("Ich", 2)
+
+print(game.Scoreboard("points", "in"))
