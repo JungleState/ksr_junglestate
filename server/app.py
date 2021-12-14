@@ -1,10 +1,11 @@
 import os
-from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
+from flask import Flask, json, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
 import uuid
 import threading
 
 TIME_BEFOR_KICK = 10.0
+NAME_LENGTH_MAX = 30
 
 app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
@@ -56,6 +57,22 @@ def GetJSON(mode, game_id, player_id=None):
 def isLoggedIn():
     playerId=session.get('playerId')
     return playerId in player_list.keys()
+
+def checkPlayerName(name):
+    err = None
+    valid = True
+
+    if len(name) == name.count(' ') or len(name) == 0:
+        err = 'Invalid Name'
+        valid = False
+    elif len(name) > NAME_LENGTH_MAX:
+        err = 'Too Many Characters'
+        valid = False
+    elif name in player_list.values():
+        err = 'Name Already In Use'
+        valid = False
+
+    return (valid, err)
     
 def kickPlayer():
     app.logger.debug(f"Kicked {player_list.get(session.get('playerId'))}")
@@ -85,25 +102,35 @@ def login():
 
 @app.route('/joinGame/<string:mode>/<string:player_name>', methods=['POST'])
 def joinGame(mode, player_name):
-    if not player_name in player_list.values() and not session.get('playerId'):
-        app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
-        newId = str(uuid.uuid4())
+    if session.get('playerId'):
+        # Player already logged in
+        app.logger.info('Already Logged In')
+        return jsonify(ok=False, msg='Already Logged In')
 
-        if mode == 'client':
-            player_list.update({newId:player_name})
-        elif mode == 'spec':
-            player_list.update({newId:newId})
+    valid, err = checkPlayerName(player_name)
 
-        gameId = newGame(newId, mode)
+    if not valid:
+        # Invalid name
+        app.logger.info(err)
+        return jsonify(ok=False, msg=err)
 
-        session['playerId'] = newId
-        session['mode'] = mode
-        session['gameId'] = gameId
-        return jsonify(ok=True)
+    # Login data valid
+    app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
+    newId = str(uuid.uuid4())
+
+    if mode == 'client':
+        player_list.update({newId:player_name})
+    elif mode == 'spec':
+        player_list.update({newId:newId})
+
+    gameId = newGame(newId, mode)
+
+    session['playerId'] = newId
+    session['mode'] = mode
+    session['gameId'] = gameId
+
+    return jsonify(ok=True)
     
-    else:
-        app.logger.info("Join Game invalid: player name already in use / already logged in")
-        return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
 @app.route('/view')

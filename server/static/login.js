@@ -28,7 +28,7 @@ async function login() {
         window.location.replace('/')
     }
     else {
-        alert("Player Name Already Used / Already logged in");
+        alert(json.msg);
     }
 
     document.getElementById('name').value = "";
