@@ -17,7 +17,7 @@ namespace Player {
             int SLEEP_TIME = 500;
 
             // join game (fetch request)
-            var stringTask = client.GetStringAsync(configs.Item1+"joinGame/client/"+configs.Item2);
+            var stringTask = client.PostAsync(configs.Item1+"joinGame/client/"+configs.Item2, new StringContent(""));
             var json = await stringTask;
             dynamic? data = JsonConvert.DeserializeObject(json);
 
@@ -121,7 +121,7 @@ string url = "http://localhost:5500/";
 
 // name of player
 // e.g. Max Mustermann
-string name = "Max Mustermann";
+string name = "MaxMustermann";
 
 
 
