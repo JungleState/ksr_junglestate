@@ -91,11 +91,12 @@ def root():
         return redirect(url_for('login'))
     else:
         dimension = None
-        if session.get('mode') == 'client':
+        mode = session.get('mode')
+        if mode == 'client':
             dimension = (5, 5)
-        elif session.get('mode') == 'spec':
+        elif mode == 'spec':
             dimension = FIELD
-        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1])
+        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1], mode=mode)
         
 @app.route('/login', methods=['GET'])
 def login():
