@@ -40,7 +40,7 @@ class View{
 
         // Display stats
         if (json.mode == 'spec') {
-            this.navigation.querySelector('#name').innerHTML = `Logged in as: Spectator`;
+            
         }
         else if (json.mode == 'client') {
             this.navigation.querySelector('#name').innerHTML = `Logged in as: ${json.name}`;
