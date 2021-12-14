@@ -132,11 +132,11 @@ def action(moveType, direction):
                 if game.id == session.get('gameId'):
                     game.addMove(playerId, int(moveType), int(direction))
 
-            return jsonify(msg="move accepted")
+            return jsonify(ok=True)
         
         else:
             app.logger.info("Action error: spectator is not allowed to move")
-            return jsonify(msg="move not permitted")
+            return jsonify(ok=False)
 
     else:
         app.logger.info("Action error: invalid player id")
