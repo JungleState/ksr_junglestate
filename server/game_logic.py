@@ -176,7 +176,7 @@ class Game:
         return False
 
     def kickPlayer(self, player_name):
-        "gets player name, kicks player"
+        """gets player name, kicks player"""
         for player in self.player_list:
             if player.name == player_name:
                 coconut_in_this_cell = False
@@ -192,21 +192,21 @@ class Game:
                 del self.player_list[self.player_list.index(player)]
 
     def addMove(self, player_id, move_id, dir):
-        # move_id list:
-        # 0: Stay
-        # 1: Move
-        # 2: Shoot
-        #
-        # dir list:
-        # -1: No direction
-        # 0: up
-        # 1: up right
-        # 2: right
-        # 3: down right
-        # 4: down
-        # 5: down left
-        # 6: left
-        # 7: up left
+        """move_id list:
+        0: Stay
+        1: Move
+        2: Shoot
+        
+        dir list:
+        -1: No direction
+        0: up
+        1: up right
+        2: right
+        3: down right
+        4: down
+        5: down left
+        6: left
+        7: up left"""
         if len(self.move_list) == 0:
             timer = threading.Timer(Rules.TIME_TO_MOVE, self.doNextRound)
             timer.start()
@@ -218,8 +218,7 @@ class Game:
                 return True
 
         if self.getPlayerFromID(player_id).state == 1:
-            logging.debug(
-                f"Rejecting move from Player {player_id} who is dead.")
+            logging.debug(f"Rejecting move from Player {player_id} who is knocked out.")
             return False
 
         logging.debug(f"Adding move from {player_id}.")

@@ -2,9 +2,7 @@ import os
 from flask import Flask, json, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
 import uuid
-import threading
 
-TIME_BEFOR_KICK = 10.0
 NAME_LENGTH_MAX = 30
 
 app = Flask(__name__, template_folder='templates')
@@ -34,7 +32,7 @@ def newGame(playerId, mode):
             game_list[-1].join(player_list.get(playerId), playerId)
         return game_list[-1].id
 
-def GetJSON(mode, game_id, player_id=None):
+def GetJSON(mode, game_id, player_id):
     for game in game_list:
         if game.id == game_id:
             app.logger.info(f"Found game {game_id} for player {player_id}")
@@ -60,28 +58,22 @@ def isLoggedIn():
 
 def checkLogInData(name, mode):
     err = None
-    valid = True
 
     # Check Name
     if len(name) == name.count(' ') or len(name) == 0:
         err = 'Invalid Name'
-        valid = False
     elif len(name) > NAME_LENGTH_MAX:
         err = 'Too Many Characters'
-        valid = False
     elif name in player_list.values():
         err = 'Name Already In Use'
-        valid = False
     elif session.get('playerId'):
         err = 'Already Logged In'
-        valid = False
 
     # Check Mode
     if mode != 'client' and mode != 'spec':
         err = 'Invalid Mode'
-        valid = False
 
-    return (valid, err)
+    return err
     
 def kickPlayer():
     app.logger.debug(f"Kicked {player_list.get(session.get('playerId'))}")
@@ -112,15 +104,14 @@ def login():
 @app.route('/joinGame/<string:mode>/<string:player_name>', methods=['POST'])
 def joinGame(mode, player_name):
 
-    valid, err = checkLogInData(player_name, mode)
+    err = checkLogInData(player_name, mode)
 
-    if not valid:
+    if err:
         # Invalid name
         app.logger.info(err)
         return jsonify(ok=False, msg=err)
 
     # Login data valid
-    app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
     newId = str(uuid.uuid4())
 
     if mode == 'client':
@@ -136,7 +127,6 @@ def joinGame(mode, player_name):
 
     return jsonify(ok=True)
     
-
 # View - Server knows if the request comes from a spectator or a player
 @app.route('/view', methods=['GET'])
 def view():
