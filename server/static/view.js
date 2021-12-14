@@ -13,7 +13,7 @@ class View{
             "PP":"pineapple"
         }
     }
-    Showfield(stringfield, stats){ //show the field //probably +playerdict (if we manage it in here)
+    updateView(stringfield, json){ //show the field //probably +playerdict (if we manage it in here)
         //The Matrix should be the same Dimensions as the given field of HTML Elements.   
         //Dimensions are set by the field automatically:
 
