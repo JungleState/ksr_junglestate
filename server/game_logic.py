@@ -52,6 +52,7 @@ class Player(Item):
         self.lives = 3
         self.coconuts = 2
         self.points = 0
+        self.state = 0  # 0 = alive ; 1 = dead
 
     def item_dict(self):
         return {"coconuts":self.coconuts,
@@ -216,7 +217,7 @@ class Game:
                     player_id, move_id, dir]
                 return True
 
-        if self.getPlayerFromID(player_id).lives <= 0:
+        if self.getPlayerFromID(player_id).state == 1:
             logging.debug(
                 f"Rejecting move from Player {player_id} who is dead.")
             return False
@@ -226,7 +227,7 @@ class Game:
 
         alive = 0
         for player in self.player_list:
-            if player.lives > 0:
+            if player.state == 0:
                 alive += 1
 
         if len(self.move_list) == alive:
@@ -261,9 +262,9 @@ class Game:
                 self.executeShooting(player, move[2])
 
         for player in self.player_list:
-            if player.lives <= 0:
+            if player.lives <= 0 and player.state == 0:
+                player.state = 1
                 self.setElementAt(player.x, player.y, Items.EMPTY)
-                # TODO: NOT REMOVE PLAYER
 
         for safed_item in self.safed_items_list:
             if safed_item[2] != self.round:  # Item is from previous round round
@@ -353,6 +354,7 @@ class Game:
         player.lives -= damage
         if player.lives < 1:
             logging.debug(f'Player {player.uuid} is knocked out - sleep well!')
+            player.state = 1
             self.setElementAt(player.x, player.y, Items.EMPTY)
             return True
         return False
