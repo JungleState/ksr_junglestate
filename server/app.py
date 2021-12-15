@@ -44,7 +44,7 @@ def GetJSON(mode, game_id, player_id):
                                "round":game.round,
                                "mode":mode,
                                "name":player_list.get(player_id),
-                               "player_list":game.GetPlayers()}
+                               "name_list":game.GetPlayers()}
             elif mode == "spec":#returns JSON file for spectator
                 return {"id":player_id, 
                                "field":game.SerializeMatrix(), 
@@ -52,7 +52,7 @@ def GetJSON(mode, game_id, player_id):
                                "round":game.round,
                                "player_list":game.GetPlayerListForJSON(),
                                "mode":mode,
-                               "player_list":game.GetPlayers()}
+                               "name_list":game.GetPlayers()}
 
 def isLoggedIn():
     playerId=session.get('playerId')
