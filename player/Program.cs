@@ -15,7 +15,7 @@ namespace Player {
 
         private static async Task joinGame(Tuple<string, string> configs) {
             // non-user configs
-            int SLEEP_TIME = 500;
+            int SLEEP_TIME = 50;
 
             // join game (fetch request)
             var response = await client.PostAsync(configs.Item1+"joinGame/client/"+configs.Item2, new StringContent(""));
@@ -39,6 +39,7 @@ namespace Player {
                             break;
                         }
                     }
+                    Console.WriteLine("");
                     Console.WriteLine("!!!!!!!!!!!");
                     Console.WriteLine("!GAME OVER!");
                     Console.WriteLine("!!!!!!!!!!!");
@@ -59,11 +60,14 @@ namespace Player {
             int score = 0;
 
             if (data != null) {
-                Console.WriteLine(data.points);
-                Console.WriteLine(data.points.GetType());
                 score = data.points.ToObject<int>(); //, System.Globalization.NumberStyles.Integer
                 // ask user written algorithm about what to do
                 if (data.lives > 0) {
+                    Console.WriteLine("");
+                    Console.WriteLine("Round: "+data.round);
+                    Console.WriteLine("Health: "+data.lives);
+                    Console.WriteLine("Ammo: "+data.coconuts);
+                    Console.WriteLine("Score: "+data.points);
                     playerBehaviour(configs, data.field.ToString(), data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
                 }
                 else {
@@ -104,9 +108,11 @@ namespace Player {
         private static async void sendCommand(Tuple<string, string> configs, int type, int direction) {
             // send the chosen action to the server
             try {
+                Console.WriteLine("-> Action: "+type+" "+direction);
                 var response = await client.PostAsync(configs.Item1+"action/"+type+"/"+direction, new StringContent(""));
             }
             catch {
+                Console.WriteLine("");
                 Console.WriteLine("Command could not be sent");
             }
         }
@@ -128,7 +134,7 @@ string url = "http://localhost:5500/";
 
 // name of player
 // e.g. Max Mustermann
-string name = "Max Mustermann442223";
+string name = "Max Mustermann1";
 
 
 
