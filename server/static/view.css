@@ -1,10 +1,16 @@
-
-.row{
-    display: flex;
+@font-face {
+  font-family: JungleFont;
+  src: url(fonts/EvilEmpire-4BBVK.ttf);
 }
+
+.row {
+  display: flex;
+}
+
 cell {
     display:block;
     height: min(var(--size_height), var(--size_width));  /*size is calculated in HTML*/
+    width: min(var(--size_height), var(--size_width));
     aspect-ratio: 1/1;
     background-size: cover;
     background-position: center;
@@ -24,35 +30,57 @@ playername{
     display: inline-block;
 }
 
-.plain{
-    background-image: url(sprites/grass.png);
+.plain {
+  background-image: url(sprites/grass.png);
 }
-.jungle{
-    background-image: url(sprites/jungle.png), url(sprites/grass.png); /*need to do it like this, couldn't find a better way to get a background over a backgroudn*/
+.jungle {
+  background-image: url(sprites/jungle.png), url(sprites/grass.png); /*need to do it like this, couldn't find a better way to get a background over a backgroudn*/
 }
-.coconut{
-    background-image: url(sprites/coconut.png), url(sprites/grass.png);
+.coconut {
+  background-image: url(sprites/coconut.png), url(sprites/grass.png);
 }
-.banana{
-    background-image: url(sprites/banana.png), url(sprites/grass.png);
+.banana {
+  background-image: url(sprites/banana.png), url(sprites/grass.png);
 }
-.pineapple{
-    background-image: url(sprites/pineapple.png), url(sprites/grass.png);
+.pineapple {
+  background-image: url(sprites/pineapple.png), url(sprites/grass.png);
 }
-.player{
-    background-image: url(sprites/monkey_pixel.png), url(sprites/grass.png);
-
+.player {
+  background-image: url(sprites/monkey_pixel.png), url(sprites/grass.png);
 }
 
 .container {
-    padding: 10px;
+  padding: 10px;
 }
 
 #navigation {
-    display: inline-block;
-    position: absolute;
-    margin-left: 10px;
-    padding: 5px;
-    border: 1px solid black;
-    border-radius: 10px;
+  display: inline-block;
+  position: absolute;
+  margin-left: 10px;
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 10px;
+}
+
+#knockmsg {
+  display: inline-table;
+  background-color: #875b;
+  margin-top: 35vh;
+  padding-left: 5vw;
+  padding-right: 5vw;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  margin-left: 5.8vw;
+  font-size: 9vh;
+  font-family: JungleFont;
+  border-radius: 5vh;
+}
+
+#overlay {
+  position: relative;
+  top: -90.7vh;
+  visibility: hidden;
+  background-color: #1117;
+  height: 90vh;
+  width: 39.9vw;
 }
