@@ -50,7 +50,7 @@ def GetJSON(mode, game_id, player_id):
                                "field":game.SerializeMatrix(), 
                                "state":game.state, 
                                "round":game.round,
-                               "player_list":game.GetPlayerListForJSON(),
+                               "scoreboard":game.Scoreboard("points", "decr"),
                                "mode":mode,
                                "name_list":game.GetPlayers()}
 
