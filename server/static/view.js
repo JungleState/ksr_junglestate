@@ -44,10 +44,10 @@ class View{
 
         // Display stats
         if (json.mode == 'spec') {
-            this.specMode();
+            this.specMode(json);
         }
         else if (json.mode == 'client') {
-            this.clientMode();
+            this.clientMode(json);
         }
     }
 
