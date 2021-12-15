@@ -13,7 +13,7 @@ namespace Player {
     class Program {
         private static readonly HttpClient client = new HttpClient();
 
-        private static async Task joinGame(Tuple<string, string> configs) {
+        private static async Task joinGame(Tuple<string?, string?> configs) {
             // non-user configs
             int SLEEP_TIME = 50;
 
@@ -50,7 +50,7 @@ namespace Player {
                 Console.WriteLine("ERROR: data is null");
             }
         }
-        private static async Task<Tuple<bool, int>> getData(Tuple<string, string> configs) {
+        private static async Task<Tuple<bool, int>> getData(Tuple<string?, string?> configs) {
             // get the map
             var stringTask = client.GetStringAsync(configs.Item1+"view");
             var json = await stringTask;
@@ -246,21 +246,26 @@ private static void moveLeft(Tuple<string, string> c) {
             Tuple<string, string, bool> rawConfigs = loadConfigs();
             Console.Clear();
             if (rawConfigs.Item3 == false) {
-                Tuple<string, string> configs = new Tuple<string, string>(rawConfigs.Item1, rawConfigs.Item2);
+                // normal start
+                Tuple<string?, string?> configs = new Tuple<string?, string?>(rawConfigs.Item1, rawConfigs.Item2);
                 await joinGame(configs);
             }
             else {
+                // app mode start
                 try {
+                    // ask url
                     Console.WriteLine("Enter url of server");
                     Console.WriteLine("e.g. http://localhost:5500/");
-                    string url = Console.ReadLine();
+                    string? url = Console.ReadLine();
 
+                    // ask name
                     Console.Clear();
                     Console.WriteLine("Enter name of player");
-                    string name = Console.ReadLine();
+                    string? name = Console.ReadLine();
 
+                    // start
                     Console.Clear();
-                    Tuple<string, string> configs = new Tuple<string, string>(url, name);
+                    Tuple<string?, string?> configs = new Tuple<string?, string?>(url, name);
                     await joinGame(configs);
                 }
                 catch {
