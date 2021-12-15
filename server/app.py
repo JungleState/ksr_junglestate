@@ -64,7 +64,7 @@ def checkLogInData(name, mode):
         err = 'Invalid Name'
     elif len(name) > NAME_LENGTH_MAX:
         err = 'Too Many Characters'
-    elif name in player_list.values():
+    elif name in player_list.values() and mode == 'client':
         err = 'Name Already In Use'
     elif session.get('playerId'):
         err = 'Already Logged In'
