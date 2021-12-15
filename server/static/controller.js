@@ -23,7 +23,7 @@ class Controller {
             if (json.lives == 0) {
                 document.documentElement.style.setProperty('--visibility' , "visible")
             }
-        }, 100);
+        }, 500);
     }
 
     async getData() {
