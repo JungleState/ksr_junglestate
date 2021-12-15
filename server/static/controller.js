@@ -1,5 +1,7 @@
 class Controller {
     constructor(view) {
+        let updateTitle = true;
+
         // listen for input
         window.onkeydown = (key) => {
             this.keyInput(key.keyCode);
@@ -9,6 +11,15 @@ class Controller {
         setInterval(async () => {
             let json = await this.getData();
             view.updateView(json);
+            if (updateTitle) {
+                if (json.mode == 'client') {
+                    document.title += ' - Player';
+                }
+                else if (json.mode == 'spec') {
+                    document.title += ' - Spectator';
+                }
+                updateTitle = false;
+            }
         }, 500);
     }
 

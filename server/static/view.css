@@ -52,5 +52,7 @@ playername{
     display: inline-block;
     position: absolute;
     margin-left: 10px;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 10px;
 }
-
