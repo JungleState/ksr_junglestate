@@ -13,9 +13,10 @@
 
 <body>
     <!-- <button onclick="test()">Test</button> -->
-
     <div class="container">
-        <div id="grid">
+        <div id="grid" style="
+        --size_width: {{ (90/dimension_x) }}vw;
+        --size_height: {{ (90/dimension_y) }}vh"> <!-- sorts dimensions and takes the smallest one. (basically a min() function-->
             {%for row in range( dimension_y )%} <!-- the dimension variable comes directly from app.py-->
                 <div class="row">
                     {%for coumn in range( dimension_x )%}
