@@ -34,7 +34,7 @@ class View{
                     tile.setAttribute('class', "player");
                     var playername = document.createElement("playername")
                     tile.appendChild(playername)
-                    playername.textContent="ddddddddddddddddddfffffdnny";
+                    playername.textContent=json.name;
                 }
                 column+=2; //because every tile consists of 2 letters.
                 
@@ -44,10 +44,10 @@ class View{
 
         // Display stats
         if (json.mode == 'spec') {
-            this.specMode();
+            this.specMode(json);
         }
         else if (json.mode == 'client') {
-            this.clientMode();
+            this.clientMode(json);
         }
     }
 

@@ -1,5 +1,5 @@
 import os
-from flask import Flask, json, jsonify, session, abort, render_template, redirect, url_for
+from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
 import uuid
 
