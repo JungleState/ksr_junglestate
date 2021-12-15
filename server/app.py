@@ -38,25 +38,23 @@ def GetJSON(mode, game_id, player_id):
     for game in game_list:
         if game.id == game_id:
             # app.logger.info(f"Found game {game_id} for player {player_id}")
-            if mode == "client":  # returns JSON file for client
-                return {"field": game.GetFieldOfView(player_id),
-                        "coconuts": game.GetPlayerVar(player_id, "CC"),
-                        "lives": game.GetPlayerVar(player_id, "lives"),
-                        "points": game.GetPlayerVar(player_id, "P"),
-                        "state": game.GetPlayerVar(player_id, "state"),
-                        "round": game.round,
-                        "mode": mode,
-                        "name": player_list.get(player_id),
-                        "name_list": game.GetPlayers()}
-            elif mode == "spec":  # returns JSON file for spectator
-                return {"id": player_id,
-                        "field": game.SerializeMatrix(),
-                        "state": game.state,
-                        "round": game.round,
-                        "player_list": game.GetPlayerListForJSON(),
-                        "mode": mode,
-                        "name_list": game.GetPlayers()}
-
+            if mode == "client":#returns JSON file for client
+                return {"field":game.GetFieldOfView(player_id),
+                               "coconuts":game.GetPlayerVar(player_id, "CC"),
+                               "lives":game.GetPlayerVar(player_id, "lives"),
+                               "points":game.GetPlayerVar(player_id, "P"),
+                               "round":game.round,
+                               "mode":mode,
+                               "name":player_list.get(player_id),
+                               "name_list":game.GetPlayers()}
+            elif mode == "spec":#returns JSON file for spectator
+                return {"id":player_id, 
+                               "field":game.SerializeMatrix(), 
+                               "state":game.state, 
+                               "round":game.round,
+                               "scoreboard":game.Scoreboard("points", "decr"),
+                               "mode":mode,
+                               "name_list":game.GetPlayers()}
 
 def isLoggedIn():
     playerId = session.get('playerId')

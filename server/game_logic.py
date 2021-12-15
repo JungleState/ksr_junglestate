@@ -146,9 +146,13 @@ class Game:
             generator.generate(self.field_lengh, self.field_height))
         self.field_dim = [self.field_lengh, self.field_height]
 
-    def join(self, name, id):
-        logging.debug(f"Player {id} joined as {name}")
-        player = Player(id, id, name)
+    def getId(self):
+        pass
+
+    def join(self, name, uuid):
+        # Get Id rangin from "00" to "99"
+        logging.debug(f"Player {uuid} joined as {name}")
+        player = Player(uuid, uuid, name)
         while True:
             x = randint(1, self.field_dim[0]-SIGHT)
             y = randint(1, self.field_dim[1]-SIGHT)
