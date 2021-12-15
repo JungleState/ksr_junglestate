@@ -68,22 +68,23 @@ playername{
 #knockmsg {
   display: inline-table;
   background-color: #875b;
-  margin-top: 35vh;
-  padding-left: 5vw;
-  padding-right: 5vw;
-  padding-top: 5vh;
-  padding-bottom: 5vh;
-  margin-left: 5.8vw;
-  font-size: 9vh;
+  width: 63%;
+  margin-left: 10%;
+  margin-top: 35%;
+  padding-top: 5%;
+  padding-bottom: 5%;
+  padding-left: 15%;
+  font-size: 400%;
   font-family: JungleFont;
   border-radius: 5vh;
+  align-items: center;
 }
 
 #overlay {
   position: relative;
-  top: -90.7vh;
+  top: -90vh;
   visibility: var(--visibility);
   background-color: #1117;
   height: 90vh;
-  width: 39.9vw;
+  width: 100%;
 }
