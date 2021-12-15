@@ -20,7 +20,7 @@ class Controller {
                 }
                 updateTitle = false;
             }
-        }, 500);
+        }, 100);
     }
 
     async getData() {
