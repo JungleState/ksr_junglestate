@@ -1,5 +1,7 @@
 class Controller {
     constructor(view) {
+        let updateTitle = true;
+
         // listen for input
         window.onkeydown = (key) => {
             this.keyInput(key.keyCode);
@@ -7,22 +9,25 @@ class Controller {
 
         // field updates
         setInterval(async () => {
-            let field = await this.getData("field");
-            view.Showfield(field);
+            let json = await this.getData();
+            console.log(json.player_list);
+            view.updateView(json.field, json);
+            if (updateTitle) {
+                if (json.mode == 'client') {
+                    document.title += ' - Player';
+                }
+                else if (json.mode == 'spec') {
+                    document.title += ' - Spectator';
+                }
+                updateTitle = false;
+            }
         }, 500);
     }
 
-    async getData(info) {
-        // get certain info from app.py
+    async getData() {
+        // get info from app.py
         const response = await fetch("/view");
-        const json = await response.json();
-
-        switch(info) {
-            case "field":
-                return json.field;
-            default:
-                return "error";
-        }
+        return await response.json();
     }
 
     async keyInput(commandKey) {
@@ -116,7 +121,7 @@ class Controller {
 }
 
 function startController() {
-    let view = new View(document.getElementById("grid"));
+    let view = new View(document.getElementById("grid"), document.getElementById('navigation'));
     let controller = new Controller(view);
 }
 

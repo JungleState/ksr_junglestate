@@ -6,29 +6,42 @@ cell {
     display:block;
     width: 100%; /* 100% of the grids width*/
     aspect-ratio: 1/1;
-    background-color: burlywood;
+    background-size: cover;
+    background-position: center;
 }
 #grid {
+    display: inline-block;
     width: min(90vw, 90vh); /* fits to the smaller component (Normally height) */
 }
 
 .plain{
-    background-color: burlywood; /* add textures */
+    background-image: url(sprites/grass.png);
 }
 .jungle{
-    background-color: rgb(3, 61, 3);
+    background-image: url(sprites/jungle.png), url(sprites/grass.png); /*need to do it like this, couldn't find a better way to get a background over a backgroudn*/
 }
 .coconut{
-    background-color: rgb(70, 39, 13);
+    background-image: url(sprites/coconut.png), url(sprites/grass.png);
 }
 .banana{
-    background-color: yellow;
+    background-image: url(sprites/banana.png), url(sprites/grass.png);
 }
 .pineapple{
-    background-image: url(sprites/pineapple.png);
-    background-size: cover;
+    background-image: url(sprites/pineapple.png), url(sprites/grass.png);
 }
 .player{
-    background-image: url(sprites/monkey.png);
-    background-size: cover;
+    background-image: url(sprites/monkey_pixel.png), url(sprites/grass.png);
+}
+
+.container {
+    padding: 10px;
+}
+
+#navigation {
+    display: inline-block;
+    position: absolute;
+    margin-left: 10px;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 10px;
 }

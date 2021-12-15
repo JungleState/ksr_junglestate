@@ -1,8 +1,9 @@
 // get endpoints and manage view
 
 class View{
-    constructor(grid){
+    constructor(grid, navigation){
         this.field = grid;
+        this.navigation = navigation;
 
         this.types = {
             "  ":"plain",
@@ -12,11 +13,11 @@ class View{
             "PP":"pineapple"
         }
     }
-    Showfield(stringfield){ //show the field //probably +playerdict (if we manage it in here)
+    updateView(stringfield, json){ //show the field //probably +playerdict (if we manage it in here)
         //The Matrix should be the same Dimensions as the given field of HTML Elements.   
         //Dimensions are set by the field automatically:
 
-        let row=0
+        let row=0;
         for (let row_element of this.field.getElementsByClassName("row")) { //come from HTML
             let column=0;
 
@@ -37,6 +38,17 @@ class View{
             row+=1;
         }
 
+        // Display stats
+        if (json.mode == 'spec') {
+            
+        }
+        else if (json.mode == 'client') {
+            this.navigation.querySelector('#name').innerHTML = `Logged in as: ${json.name}`;
+            this.navigation.querySelector('#coconuts').innerHTML = `Coconuts: ${json.coconuts}`;
+            this.navigation.querySelector('#lives').innerHTML = `Lives: ${json.lives}`;
+            this.navigation.querySelector('#points').innerHTML = `Points: ${json.points}`;
+            this.navigation.querySelector('#round').innerHTML = `Round: ${json.round}`;
+        }
     }
 }
 

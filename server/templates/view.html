@@ -12,16 +12,30 @@
 </head>
 
 <body>
-    <button onclick="test()">Test</button>
+    <!-- <button onclick="test()">Test</button> -->
 
-    <div id="grid">
-        {%for row in range( dimension_y )%} <!-- the dimension variable comes directly from app.py-->
-            <div class="row">
-                {%for coumn in range( dimension_x )%}
-                    <cell> </cell>
-                {%endfor%}
-            </div>
-        {% endfor %}
+    <div class="container">
+        <div id="grid">
+            {%for row in range( dimension_y )%} <!-- the dimension variable comes directly from app.py-->
+                <div class="row">
+                    {%for column in range( dimension_x )%}
+                        <cell> </cell>
+                    {%endfor%}
+                </div>
+            {% endfor %}
+        </div>
+        <div id="navigation">
+            {% if mode == "client" %}
+                <!-- Client HTML -->
+                <div id="name"></div>
+                <div id="lives"></div>
+                <div id="coconuts"></div>
+                <div id="points"></div>
+                <div id="round"></div>
+            {% else %}
+                <!-- Spectator HTML -->
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>
