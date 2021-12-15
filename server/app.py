@@ -137,7 +137,6 @@ def view():
         for game in game_list:
             if game.id == gameId:
                 response = GetJSON(session.get('mode'), gameId, playerId)
-                print(response)
                 return jsonify(response)
 
         app.logger.info("View error: game not available")
