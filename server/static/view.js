@@ -34,7 +34,7 @@ class View{
                     tile.setAttribute('class', "player");
                     var playername = document.createElement("playername")
                     tile.appendChild(playername)
-                    playername.textContent=json.name_list[parseInt(charcode)];
+                    playername.textContent=Object.values(json.name_list)[parseInt(charcode)];
                 }
                 column+=2; //because every tile consists of 2 letters.
                 
