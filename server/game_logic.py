@@ -441,6 +441,9 @@ class Game:
                 elif item == "lives":
                     return player.lives
 
+    def GetPlayers(self):
+        return {player.uuid : player.name for player in self.player_list}
+
     def Scoreboard(self, sortby, hyrarchy):
         sorted_player_list = [i for i in range(len(self.player_list))]
         item_list_dict = {"coconuts":[player.coconuts for player in self.player_list],
