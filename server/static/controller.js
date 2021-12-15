@@ -10,8 +10,7 @@ class Controller {
         // field updates
         setInterval(async () => {
             let json = await this.getData();
-            console.log(json.player_list);
-            view.updateView(json.field, json);
+            view.updateView(json);
             if (updateTitle) {
                 if (json.mode == 'client') {
                     document.title += ' - Player';

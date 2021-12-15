@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 // For usage in Visual Studio Code:
 //     - Download C# extension
@@ -14,18 +15,18 @@ namespace Player {
 
         private static async Task joinGame(Tuple<string, string> configs) {
             // non-user configs
-            int SLEEP_TIME = 500;
+            int SLEEP_TIME = 50;
 
             // join game (fetch request)
-            var stringTask = client.PostAsync(configs.Item1+"joinGame/client/"+configs.Item2, new StringContent(""));
-            var json = await stringTask;
+            var response = await client.PostAsync(configs.Item1+"joinGame/client/"+configs.Item2, new StringContent(""));
+            var json = await response.Content.ReadAsStringAsync();
             dynamic? data = JsonConvert.DeserializeObject(json);
 
             // check if joining was successful
             if (data != null){
                 if (data.ok == false) {
-                Console.WriteLine("Connection to game failed!");
-                Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
+                    Console.WriteLine("Connection to game failed!");
+                    Console.WriteLine(data.msg);
                 }
                 else {
                     int score = 0;
@@ -38,6 +39,7 @@ namespace Player {
                             break;
                         }
                     }
+                    Console.WriteLine("");
                     Console.WriteLine("!!!!!!!!!!!");
                     Console.WriteLine("!GAME OVER!");
                     Console.WriteLine("!!!!!!!!!!!");
@@ -58,10 +60,15 @@ namespace Player {
             int score = 0;
 
             if (data != null) {
-                score = data.points;
+                score = data.points.ToObject<int>(); //, System.Globalization.NumberStyles.Integer
                 // ask user written algorithm about what to do
                 if (data.lives > 0) {
-                    playerBehaviour(configs, data.field, data.lives, data.coconuts, data.points, data.round);
+                    Console.WriteLine("");
+                    Console.WriteLine("Round: "+data.round);
+                    Console.WriteLine("Health: "+data.lives);
+                    Console.WriteLine("Ammo: "+data.coconuts);
+                    Console.WriteLine("Score: "+data.points);
+                    playerBehaviour(configs, data.field.ToString(), data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
                 }
                 else {
                     // end loop from joinGame
@@ -100,8 +107,14 @@ namespace Player {
 
         private static async void sendCommand(Tuple<string, string> configs, int type, int direction) {
             // send the chosen action to the server
-            var stringTask = client.GetStringAsync(configs.Item1+"action/"+type+"/"+direction);
-            var json = await stringTask;
+            try {
+                Console.WriteLine("-> Action: "+type+" "+direction);
+                var response = await client.PostAsync(configs.Item1+"action/"+type+"/"+direction, new StringContent(""));
+            }
+            catch {
+                Console.WriteLine("");
+                Console.WriteLine("Command could not be sent");
+            }
         }
 
         private static Tuple<string, string> loadConfigs() {
@@ -121,7 +134,7 @@ string url = "http://localhost:5500/";
 
 // name of player
 // e.g. Max Mustermann
-string name = "MaxMustermann";
+string name = "Max Mustermann1";
 
 
 

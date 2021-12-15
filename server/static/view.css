@@ -9,14 +9,27 @@
 
 cell {
   display: block;
-  width: 100%; /* 100% of the grids width*/
+  height: min(
+    var(--size_height),
+    var(--size_width)
+  ); /*size is calculated in HTML*/
   aspect-ratio: 1/1;
   background-size: cover;
   background-position: center;
 }
+playername {
+  display: block;
+  width: 100%;
+  position: relative;
+  bottom: 0px; /*so I can easily set where the name floats */
+  left: 0px;
+  background-color: yellow;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 #grid {
+  font-size: 13px;
   display: inline-block;
-  width: min(90vw, 90vh); /* fits to the smaller component (Normally height) */
 }
 
 .plain {

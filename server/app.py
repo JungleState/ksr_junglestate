@@ -1,10 +1,8 @@
 import os
-from flask import Flask, json, jsonify, session, abort, render_template, redirect, url_for
+from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
 import uuid
-import threading
 
-TIME_BEFOR_KICK = 10.0
 NAME_LENGTH_MAX = 30
 
 app = Flask(__name__, template_folder='templates')
@@ -34,10 +32,10 @@ def newGame(playerId, mode):
             game_list[-1].join(player_list.get(playerId), playerId)
         return game_list[-1].id
 
-def GetJSON(mode, game_id, player_id=None):
+def GetJSON(mode, game_id, player_id):
     for game in game_list:
         if game.id == game_id:
-            app.logger.info(f"Found game {game_id} for player {player_id}")
+            # app.logger.info(f"Found game {game_id} for player {player_id}")
             if mode == "client":#returns JSON file for client
                 return {"field":game.GetFieldOfView(player_id),
                                "coconuts":game.GetPlayerVar(player_id, "CC"),
@@ -58,21 +56,24 @@ def isLoggedIn():
     playerId=session.get('playerId')
     return playerId in player_list.keys()
 
-def checkPlayerName(name):
+def checkLogInData(name, mode):
     err = None
-    valid = True
 
+    # Check Name
     if len(name) == name.count(' ') or len(name) == 0:
         err = 'Invalid Name'
-        valid = False
     elif len(name) > NAME_LENGTH_MAX:
         err = 'Too Many Characters'
-        valid = False
     elif name in player_list.values():
         err = 'Name Already In Use'
-        valid = False
+    elif session.get('playerId'):
+        err = 'Already Logged In'
 
-    return (valid, err)
+    # Check Mode
+    if mode != 'client' and mode != 'spec':
+        err = 'Invalid Mode'
+
+    return err
     
 def kickPlayer():
     app.logger.debug(f"Kicked {player_list.get(session.get('playerId'))}")
@@ -84,38 +85,34 @@ def kickPlayer():
 
 ### JSON ENDPOINTS ###
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def root():
     if not isLoggedIn():
         return redirect(url_for('login'))
     else:
         dimension = None
-        if session.get('mode') == 'client':
+        mode = session.get('mode')
+        if mode == 'client':
             dimension = (5, 5)
-        elif session.get('mode') == 'spec':
+        elif mode == 'spec':
             dimension = FIELD
-        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1])
-        
-@app.route('/login')
+        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1], mode=mode)
+
+@app.route('/login', methods=['GET'])
 def login():
     return render_template('login.html') 
 
 @app.route('/joinGame/<string:mode>/<string:player_name>', methods=['POST'])
 def joinGame(mode, player_name):
-    if session.get('playerId'):
-        # Player already logged in
-        app.logger.info('Already Logged In')
-        return jsonify(ok=False, msg='Already Logged In')
 
-    valid, err = checkPlayerName(player_name)
+    err = checkLogInData(player_name, mode)
 
-    if not valid:
-        # Invalid name
+    if err:
+        # Invalid name or mode
         app.logger.info(err)
         return jsonify(ok=False, msg=err)
 
     # Login data valid
-    app.logger.info(f"NEW PLAYER: {player_name} (Mode: {mode})")
     newId = str(uuid.uuid4())
 
     if mode == 'client':
@@ -130,17 +127,18 @@ def joinGame(mode, player_name):
     session['gameId'] = gameId
 
     return jsonify(ok=True)
-    
 
 # View - Server knows if the request comes from a spectator or a player
-@app.route('/view')
+@app.route('/view', methods=['GET'])
 def view():
     if isLoggedIn():
         playerId = session.get('playerId')
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
-                return jsonify(GetJSON(session.get('mode'), gameId, playerId))
+                response = GetJSON(session.get('mode'), gameId, playerId)
+                print(response)
+                return jsonify(response)
 
         app.logger.info("View error: game not available")
         abort(410) # Game not available
