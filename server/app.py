@@ -1,5 +1,5 @@
 import os
-from flask import Flask, json, jsonify, session, abort, render_template, redirect, url_for
+from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
 import uuid
 
@@ -137,7 +137,6 @@ def view():
         for game in game_list:
             if game.id == gameId:
                 response = GetJSON(session.get('mode'), gameId, playerId)
-                print(response)
                 return jsonify(response)
 
         app.logger.info("View error: game not available")
