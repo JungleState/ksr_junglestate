@@ -35,7 +35,7 @@ def newGame(playerId, mode):
 def GetJSON(mode, game_id, player_id):
     for game in game_list:
         if game.id == game_id:
-            app.logger.info(f"Found game {game_id} for player {player_id}")
+            # app.logger.info(f"Found game {game_id} for player {player_id}")
             if mode == "client":#returns JSON file for client
                 return {"field":game.GetFieldOfView(player_id),
                                "coconuts":game.GetPlayerVar(player_id, "CC"),
@@ -108,7 +108,7 @@ def joinGame(mode, player_name):
     err = checkLogInData(player_name, mode)
 
     if err:
-        # Invalid name
+        # Invalid name or mode
         app.logger.info(err)
         return jsonify(ok=False, msg=err)
 
@@ -136,7 +136,9 @@ def view():
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
-                return jsonify(GetJSON(session.get('mode'), gameId, playerId))
+                response = GetJSON(session.get('mode'), gameId, playerId)
+                print(response)
+                return jsonify(response)
 
         app.logger.info("View error: game not available")
         abort(410) # Game not available
