@@ -43,16 +43,19 @@ def GetJSON(mode, game_id, player_id):
                         "coconuts": game.GetPlayerVar(player_id, "CC"),
                         "lives": game.GetPlayerVar(player_id, "lives"),
                         "points": game.GetPlayerVar(player_id, "P"),
+                        "state": game.GetPlayerVar(player_id, "state"),
                         "round": game.round,
                         "mode": mode,
-                        "name": player_list.get(player_id)}
+                        "name": player_list.get(player_id),
+                        "name_list": game.GetPlayers()}
             elif mode == "spec":  # returns JSON file for spectator
                 return {"id": player_id,
                         "field": game.SerializeMatrix(),
                         "state": game.state,
                         "round": game.round,
                         "player_list": game.GetPlayerListForJSON(),
-                        "mode": mode}
+                        "mode": mode,
+                        "name_list": game.GetPlayers()}
 
 
 def isLoggedIn():
