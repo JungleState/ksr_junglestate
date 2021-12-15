@@ -24,6 +24,10 @@
                     {%endfor%}
                 </div>
             {% endfor %}
+
+            <div id="overlay">
+                <div id="knockmsg">Knocked Out</div>
+            </div>
         </div>
         <div id="navigation">
             {% if mode == "client" %}
@@ -36,9 +40,6 @@
             {% else %}
                 <!-- Spectator HTML -->
             {% endif %}
-        </div>
-        <div id="overlay">
-            <div id="knockmsg">Knocked Out</div>
         </div>
     </div>
 </body>
