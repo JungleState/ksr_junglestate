@@ -20,7 +20,7 @@ class Controller {
                 }
                 updateTitle = false;
             }
-            if (json.lives == 0) {
+            if (json.state == 1) {
                 document.documentElement.style.setProperty('--visibility' , "visible")
             }
         }, 500);
