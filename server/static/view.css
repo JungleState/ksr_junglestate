@@ -5,6 +5,7 @@
 cell {
     display:block;
     height: min(var(--size_height), var(--size_width));  /*size is calculated in HTML*/
+    width: min(var(--size_height), var(--size_width));
     aspect-ratio: 1/1;
     background-size: cover;
     background-position: center;
