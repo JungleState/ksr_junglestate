@@ -13,10 +13,11 @@ class View{
             "PP":"pineapple"
         }
     }
-    updateView(stringfield, json){ //show the field //probably +playerdict (if we manage it in here)
+    updateView(json){ //show the field //probably +playerdict (if we manage it in here)
         //The Matrix should be the same Dimensions as the given field of HTML Elements.   
         //Dimensions are set by the field automatically:
 
+        let stringfield = json.field;
         let row=0;
         for (let row_element of this.field.getElementsByClassName("row")) { //come from HTML
             let column=0;
@@ -40,15 +41,23 @@ class View{
 
         // Display stats
         if (json.mode == 'spec') {
-            
+            this.specMode();
         }
         else if (json.mode == 'client') {
-            this.navigation.querySelector('#name').innerHTML = `Logged in as: ${json.name}`;
-            this.navigation.querySelector('#coconuts').innerHTML = `Coconuts: ${json.coconuts}`;
-            this.navigation.querySelector('#lives').innerHTML = `Lives: ${json.lives}`;
-            this.navigation.querySelector('#points').innerHTML = `Points: ${json.points}`;
-            this.navigation.querySelector('#round').innerHTML = `Round: ${json.round}`;
+            this.clientMode();
         }
+    }
+
+    specMode(json) {
+        console.log(json);
+    }
+
+    clientMode(json) {
+        this.navigation.querySelector('#name').innerHTML = `Logged in as: ${json.name}`;
+        this.navigation.querySelector('#coconuts').innerHTML = `Coconuts: ${json.coconuts}`;
+        this.navigation.querySelector('#lives').innerHTML = `Lives: ${json.lives}`;
+        this.navigation.querySelector('#points').innerHTML = `Points: ${json.points}`;
+        this.navigation.querySelector('#round').innerHTML = `Round: ${json.round}`;
     }
 }
 
