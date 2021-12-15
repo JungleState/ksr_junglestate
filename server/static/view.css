@@ -3,6 +3,10 @@
   src: url(fonts/EvilEmpire-4BBVK.ttf);
 }
 
+:root {
+  --visibility: hidden;
+}
+
 .row {
   display: flex;
 }
@@ -81,7 +85,7 @@ playername {
 #overlay {
   position: relative;
   top: -90.7vh;
-  visibility: hidden;
+  visibility: var(--visibility);
   background-color: #1117;
   height: 90vh;
   width: 39.9vw;
