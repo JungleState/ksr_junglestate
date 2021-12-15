@@ -103,7 +103,12 @@ namespace Player {
 
         private static async void sendCommand(Tuple<string, string> configs, int type, int direction) {
             // send the chosen action to the server
-            var response = await client.PostAsync(configs.Item1+"action/"+type+"/"+direction, new StringContent(""));
+            try {
+                var response = await client.PostAsync(configs.Item1+"action/"+type+"/"+direction, new StringContent(""));
+            }
+            catch {
+                Console.WriteLine("Command could not be sent");
+            }
         }
 
         private static Tuple<string, string> loadConfigs() {
@@ -123,7 +128,7 @@ string url = "http://localhost:5500/";
 
 // name of player
 // e.g. Max Mustermann
-string name = "Max Mustermann4";
+string name = "Max Mustermann442223";
 
 
 
