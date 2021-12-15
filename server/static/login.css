@@ -1,13 +1,43 @@
-body {
+/* body {
     text-align: center;
     margin-left: 35%;
     margin-right: 35%;
     background-color: rgb(41, 97, 9);
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+    /* margin: auto; */
+    
+
+}
+
+html,body {
+    height:100%;
+    width:100%;
+    margin:0;
+    background-color: rgb(41, 97, 9);
+  }
+
+body {
+    display:flex;
+    
+}
+
+
+.spacing {
+    height: 50vh
+}
+
+.window {
+    border-width: thick;
+    border: solid;
+    margin: auto;
+    
 }
 
 .title {
     border-color: saddlebrown;
-    border-width: thick;
+    border-width: thin;
     border: solid;
     background-color: yellow;
     
@@ -20,6 +50,7 @@ body {
     padding-top: 5%;
     padding-bottom: 5%;
     background-color: rgb(199, 151, 75);
+    
     
 }
 

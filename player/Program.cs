@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 // For usage in Visual Studio Code:
 //     - Download C# extension
@@ -58,10 +59,12 @@ namespace Player {
             int score = 0;
 
             if (data != null) {
-                score = int.Parse(data.points);
+                Console.WriteLine(data.points);
+                Console.WriteLine(data.points.GetType());
+                score = data.points.ToObject<int>(); //, System.Globalization.NumberStyles.Integer
                 // ask user written algorithm about what to do
                 if (data.lives > 0) {
-                    playerBehaviour(configs, data.field.ToString(), int.Parse(data.lives), int.Parse(data.coconuts), int.Parse(data.points), int.Parse(data.round));
+                    playerBehaviour(configs, data.field.ToString(), data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
                 }
                 else {
                     // end loop from joinGame
@@ -100,8 +103,7 @@ namespace Player {
 
         private static async void sendCommand(Tuple<string, string> configs, int type, int direction) {
             // send the chosen action to the server
-            var stringTask = client.GetStringAsync(configs.Item1+"action/"+type+"/"+direction);
-            var json = await stringTask;
+            var response = await client.PostAsync(configs.Item1+"action/"+type+"/"+direction, new StringContent(""));
         }
 
         private static Tuple<string, string> loadConfigs() {
@@ -121,7 +123,7 @@ string url = "http://localhost:5500/";
 
 // name of player
 // e.g. Max Mustermann
-string name = "Max Mustermann2";
+string name = "Max Mustermann4";
 
 
 
