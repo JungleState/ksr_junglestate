@@ -123,7 +123,7 @@ namespace Player {
             }
         }
 
-        private static Tuple<string, string> loadConfigs() {
+        private static Tuple<string, string, bool> loadConfigs() {
             // configurations that need to be changed by the user
 
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
@@ -134,7 +134,7 @@ namespace Player {
 
 
 
-// url for server
+// url of server
 // e.g. http://localhost:5500/
 string url = "http://localhost:5500/";
 
@@ -142,6 +142,9 @@ string url = "http://localhost:5500/";
 // e.g. Max Mustermann
 string name = "Max Mustermann";
 
+// debug mode
+// app mode requires you to enter url and name after starting app
+bool appMode = true;
 
 
 
@@ -149,7 +152,7 @@ string name = "Max Mustermann";
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^/YOUR/CONFIGS/ABOVE/HERE/^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
-            Tuple<string, string> configs = new Tuple<string, string>(url, name);
+            Tuple<string, string, bool> configs = new Tuple<string, string, bool>(url, name, appMode);
             return configs;
         }
 
@@ -238,10 +241,32 @@ private static void moveLeft(Tuple<string, string> c) {
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 
 
-
         static async Task Main(string[] args) {
             // start the process
-            await joinGame(loadConfigs());
+            Tuple<string, string, bool> rawConfigs = loadConfigs();
+            Console.Clear();
+            if (rawConfigs.Item3 == false) {
+                Tuple<string, string> configs = new Tuple<string, string>(rawConfigs.Item1, rawConfigs.Item2);
+                await joinGame(configs);
+            }
+            else {
+                try {
+                    Console.WriteLine("Enter url of server");
+                    Console.WriteLine("e.g. http://localhost:5500/");
+                    string url = Console.ReadLine();
+
+                    Console.Clear();
+                    Console.WriteLine("Enter name of player");
+                    string name = Console.ReadLine();
+
+                    Console.Clear();
+                    Tuple<string, string> configs = new Tuple<string, string>(url, name);
+                    await joinGame(configs);
+                }
+                catch {
+                    Console.WriteLine("Invalid input.");
+                }
+            }
         }
     }
 }
