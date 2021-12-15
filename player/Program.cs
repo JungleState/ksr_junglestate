@@ -108,12 +108,18 @@ namespace Player {
         private static async void sendCommand(Tuple<string, string> configs, int type, int direction) {
             // send the chosen action to the server
             try {
-                Console.WriteLine("-> Action: "+type+" "+direction);
                 var response = await client.PostAsync(configs.Item1+"action/"+type+"/"+direction, new StringContent(""));
+                
+                string[] actionsArray = new string[] {"stay", "move", "attack"};
+                string[] directionsArray = new string[] {"up", "up right", "right", "down right", "down", "down left", "left", "up left", "on the spot"};
+                if (direction < 0) {
+                    direction = 8;
+                }
+                Console.WriteLine("-> Action: "+actionsArray[type]+" "+directionsArray[direction]);
             }
             catch {
-                Console.WriteLine("");
-                Console.WriteLine("Command could not be sent");
+                // Console.WriteLine("");
+                // Console.WriteLine("Command could not be sent");
             }
         }
 
@@ -134,7 +140,7 @@ string url = "http://localhost:5500/";
 
 // name of player
 // e.g. Max Mustermann
-string name = "Max Mustermann1";
+string name = "Max Mustermann";
 
 
 

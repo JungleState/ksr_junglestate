@@ -20,7 +20,10 @@ class Controller {
                 }
                 updateTitle = false;
             }
-        }, 500);
+            if (json.lives == 0) {
+                document.documentElement.style.setProperty('--visibility' , "visible")
+            }
+        }, 100);
     }
 
     async getData() {
