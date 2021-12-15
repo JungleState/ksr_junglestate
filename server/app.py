@@ -97,7 +97,7 @@ def root():
         elif mode == 'spec':
             dimension = FIELD
         return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1], mode=mode)
-        
+
 @app.route('/login', methods=['GET'])
 def login():
     return render_template('login.html') 
@@ -127,7 +127,7 @@ def joinGame(mode, player_name):
     session['gameId'] = gameId
 
     return jsonify(ok=True)
-    
+
 # View - Server knows if the request comes from a spectator or a player
 @app.route('/view', methods=['GET'])
 def view():
