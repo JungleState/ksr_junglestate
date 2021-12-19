@@ -9,7 +9,7 @@ class Controller {
 
         // Detect page close
         window.addEventListener('unload', function() {
-            navigator.sendBeacon('/leave', '');
+            navigator.sendBeacon('/inactive', '');
         });
 
         // field updates

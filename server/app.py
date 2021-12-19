@@ -2,10 +2,11 @@ import os
 from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
 import datetime
+import threading
 import uuid
 
 NAME_LENGTH_MAX = 30
-MAX_PLAYER_TIMEOUT = 10
+MAX_PLAYER_TIMEOUT = 5
 
 app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
@@ -16,15 +17,18 @@ app.config.update(
 )
 
 user_list = []
+game_list = []
+FIELD = (30, 20)
+
 
 class User:
     def __init__(self, name, mode):
         self.mode = mode
         self.uuid = str(uuid.uuid4())
         self.active = True
-        self.leave_date = None
         self.name = self.set_name(name)
         self.game_id = newGame(self)
+        self.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [self])
     
     def set_name(self, name):
         if self.mode == 'spec':
@@ -39,10 +43,6 @@ class User:
                 return user
 
         return None
-
-game_list = []
-
-FIELD = (30, 20)
 
 
 def newGame(user):
@@ -83,17 +83,15 @@ def GetJSON(game_id, user):
 def isLoggedIn():
     user = User.get_user_by_id(session.get('playerId'))
 
-    if user:
-        if not user.active:
-            user.active = True
-            time_delta = (datetime.datetime.now() - user.leave_date).seconds
-            if time_delta > MAX_PLAYER_TIMEOUT:
-                # Renew player id
-                kickPlayer(user)
-                return None
+    if not user:
+        session['playerId'] = None
+    else:
+        user.active = True
+        user.timer.cancel()
+        user.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [user])
+        user.timer.start()
 
     return user
-
 
 def checkLogInData(name, mode):
     err = None
@@ -203,13 +201,14 @@ def action(moveType, direction):
         app.logger.info("Action error: invalid player id")
         abort(403)
 
+# Inactive - AFK (player will be kicked automatically after timeout)
 
-@app.route('/leave', methods=['POST'])
+@app.route('/inactive', methods=['POST'])
 def leave():
     user = User.get_user_by_id(session.get('playerId'))
     if user:
         user.active = False
-        user.leave_date = datetime.datetime.now()
+
     return jsonify(ok=True)
 
 if __name__ == '__main__':
