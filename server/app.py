@@ -1,6 +1,7 @@
 import os
-from flask import Flask, jsonify, session, abort, render_template, redirect, sessions, url_for
+from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
+import datetime
 import uuid
 
 NAME_LENGTH_MAX = 30
@@ -13,42 +14,63 @@ app.config.update(
     TEMPLATES_AUTO_RELOAD=True
 )
 
+user_list = []
+
+class User:
+    def __init__(self, name, mode):
+        self.mode = mode
+        self.uuid = str(uuid.uuid4())
+        self.active = True
+        self.name = self.set_name(name)
+    
+    def set_name(self, name):
+        if self.mode == 'spec':
+            return 'Spectator'
+        else:
+            return name
+
+    @staticmethod
+    def get_user_by_id(id):
+        for user in user_list:
+            if user.uuid == id:
+                return user
+
+
+
 next_game_id = 0
 game_list = []
-player_list = {}  # Dict with playerID : playerName
 
 FIELD = (30, 20)
 
 
-def newGame(playerId, mode):
+def newGame(user):
     if len(game_list) == 0:
         newId = uuid.uuid4()
         game = Game(newId, FIELD)
-        if mode == 'client':
-            game.join(player_list.get(playerId), playerId)
+        if user.mode == 'client':
+            game.join(user.name, user.uuid)
         game_list.append(game)
         return game.id
     else:
-        if mode == 'client':
-            game_list[-1].join(player_list.get(playerId), playerId)
+        if user.mode == 'client':
+            game_list[-1].join(user.name, user.uuid)
         return game_list[-1].id
 
 
-def GetJSON(mode, game_id, player_id):
+def GetJSON(mode, game_id, user):
     for game in game_list:
         if game.id == game_id:
-            # app.logger.info(f"Found game {game_id} for player {player_id}")
             if mode == "client":#returns JSON file for client
-                return {"field":game.GetFieldOfView(player_id),
-                               "coconuts":game.GetPlayerVar(player_id, "CC"),
-                               "lives":game.GetPlayerVar(player_id, "lives"),
-                               "points":game.GetPlayerVar(player_id, "P"),
+                return {"field":game.GetFieldOfView(user.uuid),
+                               "coconuts":game.GetPlayerVar(user.uuid, "CC"),
+                               "lives":game.GetPlayerVar(user.uuid, "lives"),
+                               "points":game.GetPlayerVar(user.uuid, "P"),
                                "round":game.round,
                                "mode":mode,
-                               "name":player_list.get(player_id),
+                               "name":user.name,
                                "name_list":game.GetPlayers()}
             elif mode == "spec":#returns JSON file for spectator
-                return {"id":player_id, 
+                return {"id":user.uuid, 
                                "field":game.SerializeMatrix(), 
                                "state":game.state, 
                                "round":game.round,
@@ -58,7 +80,7 @@ def GetJSON(mode, game_id, player_id):
 
 def isLoggedIn():
     playerId = session.get('playerId')
-    return playerId in player_list.keys()
+    return playerId in [user.uuid for user in user_list]
 
 
 def checkLogInData(name, mode):
@@ -69,7 +91,7 @@ def checkLogInData(name, mode):
         err = 'Invalid Name'
     elif len(name) > NAME_LENGTH_MAX:
         err = 'Too Many Characters'
-    elif name in player_list.values() and mode == 'client':
+    elif name in [user.name for user in user_list] and mode == 'client':
         err = 'Name Already In Use'
     elif session.get('playerId'):
         err = 'Already Logged In'
@@ -82,16 +104,14 @@ def checkLogInData(name, mode):
 
 
 def kickPlayer():
-    app.logger.debug(f"Kicked {player_list.get(session.get('playerId'))}")
+    user = User.get_user_by_id(session.get('playerId'))
+    app.logger.debug(f"Kicked {user.name}")
     game_id = session.get('gameId')
     for game in game_list:
         if game.id == game_id:
-            game.kickPlayer(player_list.get(session.get('playerId')))
-    del player_list[session.get('playerId')]
+            game.kickPlayer(user.name)
+    user_list.remove(user)
 
-    session['playerId'] = None
-    session['mode'] = None
-    session['gameId'] = None
 
 ### JSON ENDPOINTS ###
 
@@ -126,16 +146,12 @@ def joinGame(mode, player_name):
         return jsonify(ok=False, msg=err)
 
     # Login data valid
-    newId = str(uuid.uuid4())
+    user = User(player_name, mode)
 
-    if mode == 'client':
-        player_list.update({newId: player_name})
-    elif mode == 'spec':
-        player_list.update({newId: 'Spectator'})
+    user_list.append(user)
+    gameId = newGame(user)
 
-    gameId = newGame(newId, mode)
-
-    session['playerId'] = newId
+    session['playerId'] = user.uuid
     session['mode'] = mode
     session['gameId'] = gameId
 
@@ -151,7 +167,8 @@ def view():
         gameId = session.get('gameId')
         for game in game_list:
             if game.id == gameId:
-                response = GetJSON(session.get('mode'), gameId, playerId)
+                user = User.get_user_by_id(playerId)
+                response = GetJSON(session.get('mode'), gameId, user)
                 return jsonify(response)
 
         app.logger.info("View error: game not available")
@@ -186,7 +203,7 @@ def action(moveType, direction):
 
 @app.route('/leave', methods=['POST'])
 def leave():
-    # kickPlayer()
+    
     return jsonify(ok=True)
 
 if __name__ == '__main__':
