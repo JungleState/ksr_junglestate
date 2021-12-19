@@ -5,6 +5,7 @@ import datetime
 import uuid
 
 NAME_LENGTH_MAX = 30
+MAX_PLAYER_TIMEOUT = 10
 
 app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
@@ -21,7 +22,9 @@ class User:
         self.mode = mode
         self.uuid = str(uuid.uuid4())
         self.active = True
+        self.leave_date = None
         self.name = self.set_name(name)
+        self.game_id = newGame(self)
     
     def set_name(self, name):
         if self.mode == 'spec':
@@ -35,9 +38,8 @@ class User:
             if user.uuid == id:
                 return user
 
+        return None
 
-
-next_game_id = 0
 game_list = []
 
 FIELD = (30, 20)
@@ -57,30 +59,40 @@ def newGame(user):
         return game_list[-1].id
 
 
-def GetJSON(mode, game_id, user):
+def GetJSON(game_id, user):
     for game in game_list:
         if game.id == game_id:
-            if mode == "client":#returns JSON file for client
+            if user.mode == "client":#returns JSON file for client
                 return {"field":game.GetFieldOfView(user.uuid),
                                "coconuts":game.GetPlayerVar(user.uuid, "CC"),
                                "lives":game.GetPlayerVar(user.uuid, "lives"),
                                "points":game.GetPlayerVar(user.uuid, "P"),
                                "round":game.round,
-                               "mode":mode,
+                               "mode":user.mode,
                                "name":user.name,
                                "name_list":game.GetPlayers()}
-            elif mode == "spec":#returns JSON file for spectator
+            elif user.mode == "spec":#returns JSON file for spectator
                 return {"id":user.uuid, 
                                "field":game.SerializeMatrix(), 
                                "state":game.state, 
                                "round":game.round,
                                "scoreboard":game.Scoreboard("points", "decr"),
-                               "mode":mode,
+                               "mode":user.mode,
                                "name_list":game.GetPlayers()}
 
 def isLoggedIn():
-    playerId = session.get('playerId')
-    return playerId in [user.uuid for user in user_list]
+    user = User.get_user_by_id(session.get('playerId'))
+
+    if user:
+        if not user.active:
+            user.active = True
+            time_delta = (datetime.datetime.now() - user.leave_date).seconds
+            if time_delta > MAX_PLAYER_TIMEOUT:
+                # Renew player id
+                kickPlayer(user)
+                return None
+
+    return user
 
 
 def checkLogInData(name, mode):
@@ -91,7 +103,7 @@ def checkLogInData(name, mode):
         err = 'Invalid Name'
     elif len(name) > NAME_LENGTH_MAX:
         err = 'Too Many Characters'
-    elif name in [user.name for user in user_list] and mode == 'client':
+    elif name in [user.name for user in user_list if user.mode == 'client'] and mode == 'client':
         err = 'Name Already In Use'
     elif session.get('playerId'):
         err = 'Already Logged In'
@@ -103,12 +115,10 @@ def checkLogInData(name, mode):
     return err
 
 
-def kickPlayer():
-    user = User.get_user_by_id(session.get('playerId'))
+def kickPlayer(user):
     app.logger.debug(f"Kicked {user.name}")
-    game_id = session.get('gameId')
     for game in game_list:
-        if game.id == game_id:
+        if game.id == user.game_id:
             game.kickPlayer(user.name)
     user_list.remove(user)
 
@@ -118,16 +128,16 @@ def kickPlayer():
 
 @app.route('/', methods=['GET'])
 def root():
-    if not isLoggedIn():
+    user = isLoggedIn()
+    if not user:
         return redirect(url_for('login'))
     else:
         dimension = None
-        mode = session.get('mode')
-        if mode == 'client':
+        if user.mode == 'client':
             dimension = (5, 5)
-        elif mode == 'spec':
+        elif user.mode == 'spec':
             dimension = FIELD
-        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1], mode=mode)
+        return render_template('view.html', dimension_x=dimension[0], dimension_y=dimension[1], mode=user.mode)
 
 
 @app.route('/login', methods=['GET'])
@@ -147,13 +157,8 @@ def joinGame(mode, player_name):
 
     # Login data valid
     user = User(player_name, mode)
-
     user_list.append(user)
-    gameId = newGame(user)
-
     session['playerId'] = user.uuid
-    session['mode'] = mode
-    session['gameId'] = gameId
 
     return jsonify(ok=True)
 
@@ -162,13 +167,11 @@ def joinGame(mode, player_name):
 
 @app.route('/view', methods=['GET'])
 def view():
-    if isLoggedIn():
-        playerId = session.get('playerId')
-        gameId = session.get('gameId')
+    user = isLoggedIn()
+    if user:
         for game in game_list:
-            if game.id == gameId:
-                user = User.get_user_by_id(playerId)
-                response = GetJSON(session.get('mode'), gameId, user)
+            if game.id == user.game_id:
+                response = GetJSON(user.game_id, user)
                 return jsonify(response)
 
         app.logger.info("View error: game not available")
@@ -183,12 +186,12 @@ def view():
 
 @app.route('/action/<moveType>/<direction>', methods=['POST'])
 def action(moveType, direction):
-    if isLoggedIn():
-        if session.get('mode') == 'client':
-            playerId = session.get('playerId')
+    user = isLoggedIn()
+    if user:
+        if user.mode == 'client':
             for game in game_list:
                 if game.id == session.get('gameId'):
-                    game.addMove(playerId, int(moveType), int(direction))
+                    game.addMove(user.uuid, int(moveType), int(direction))
 
             return jsonify(ok=True)
 
@@ -203,7 +206,10 @@ def action(moveType, direction):
 
 @app.route('/leave', methods=['POST'])
 def leave():
-    
+    user = User.get_user_by_id(session.get('playerId'))
+    if user:
+        user.active = False
+        user.leave_date = datetime.datetime.now()
     return jsonify(ok=True)
 
 if __name__ == '__main__':
