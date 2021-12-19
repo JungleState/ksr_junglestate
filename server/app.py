@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
+from flask import Flask, json, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
 import uuid
 
@@ -179,6 +179,16 @@ def action(moveType, direction):
         app.logger.info("Action error: invalid player id")
         abort(403)
 
+
+@app.route('/leave', methods=['POST'])
+def leave():
+    app.logger.info(f"Player '{player_list.get(session.get('playerId'))}' has left the game")
+
+    session['playerId'] = None
+    session['mode'] = None
+    session['gameId'] = None
+
+    return jsonify(ok=True)
 
 if __name__ == '__main__':
     app.run(port=5500)

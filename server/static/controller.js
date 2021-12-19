@@ -7,6 +7,11 @@ class Controller {
             this.keyInput(key.keyCode);
         }
 
+        // Listen for page unload
+        window.addEventListener('unload', function() {
+            navigator.sendBeacon('/leave', '');
+        });
+
         // field updates
         setInterval(async () => {
             let json = await this.getData();
