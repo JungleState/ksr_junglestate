@@ -183,6 +183,7 @@ def action(moveType, direction):
 @app.route('/leave', methods=['POST'])
 def leave():
     app.logger.info(f"Player '{player_list.get(session.get('playerId'))}' has left the game")
+    kickPlayer()
 
     session['playerId'] = None
     session['mode'] = None
