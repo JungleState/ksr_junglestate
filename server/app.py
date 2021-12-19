@@ -1,5 +1,5 @@
 import os
-from flask import Flask, json, jsonify, session, abort, render_template, redirect, url_for
+from flask import Flask, jsonify, session, abort, render_template, redirect, sessions, url_for
 from game_logic import Game
 import uuid
 
@@ -89,6 +89,10 @@ def kickPlayer():
             game.kickPlayer(player_list.get(session.get('playerId')))
     del player_list[session.get('playerId')]
 
+    session['playerId'] = None
+    session['mode'] = None
+    session['gameId'] = None
+
 ### JSON ENDPOINTS ###
 
 
@@ -127,7 +131,7 @@ def joinGame(mode, player_name):
     if mode == 'client':
         player_list.update({newId: player_name})
     elif mode == 'spec':
-        player_list.update({newId: newId})
+        player_list.update({newId: 'Spectator'})
 
     gameId = newGame(newId, mode)
 
@@ -182,13 +186,7 @@ def action(moveType, direction):
 
 @app.route('/leave', methods=['POST'])
 def leave():
-    app.logger.info(f"Player '{player_list.get(session.get('playerId'))}' has left the game")
-    kickPlayer()
-
-    session['playerId'] = None
-    session['mode'] = None
-    session['gameId'] = None
-
+    # kickPlayer()
     return jsonify(ok=True)
 
 if __name__ == '__main__':

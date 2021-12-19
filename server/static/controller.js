@@ -7,7 +7,7 @@ class Controller {
             this.keyInput(key.keyCode);
         }
 
-        // Listen for page unload
+        // Detect page close
         window.addEventListener('unload', function() {
             navigator.sendBeacon('/leave', '');
         });
