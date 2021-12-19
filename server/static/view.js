@@ -52,7 +52,22 @@ class View{
     }
 
     specMode(json) {
-        console.log(json);
+        let l = json.scoreboard.length;
+        let navigation = document.getElementById('navigation');
+
+        navigation.innerHTML = '';
+
+        let title = document.createElement('div');
+        title.classList.add('title');
+        title.innerText = 'Scoreboard - Points';
+        navigation.appendChild(title);
+
+        for (let i = 0; i < l; i++) {
+            let div = document.createElement('div');
+            div.classList.add('playerSb');
+            div.innerText = `${i+1}. ${json.scoreboard[i].name} (${json.scoreboard[i].points})`;
+            navigation.appendChild(div);
+        }
     }
 
     clientMode(json) {

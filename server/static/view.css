@@ -88,3 +88,12 @@ playername{
   height: 90vh;
   width: 100%;
 }
+
+/* Scoreboard for Players */
+.title {
+  border-bottom: 1px solid black;
+}
+
+.playerSb {
+  padding: 0 5px;
+}
