@@ -188,7 +188,7 @@ def action(moveType, direction):
     if user:
         if user.mode == 'client':
             for game in game_list:
-                if game.id == session.get('gameId'):
+                if game.id == user.game_id:
                     game.addMove(user.uuid, int(moveType), int(direction))
 
             return jsonify(ok=True)
