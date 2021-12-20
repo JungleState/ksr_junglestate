@@ -97,3 +97,7 @@ playername{
 .playerSb {
   padding: 0 5px;
 }
+
+.playerSb.inactive {
+  color: grey;
+}

@@ -1,12 +1,11 @@
 import os
 from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
 from game_logic import Game
-import datetime
 import threading
 import uuid
 
 NAME_LENGTH_MAX = 30
-MAX_PLAYER_TIMEOUT = 5
+MAX_PLAYER_TIMEOUT = 10
 
 app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
@@ -80,6 +79,14 @@ def GetJSON(game_id, user):
                                "mode":user.mode,
                                "name_list":game.GetPlayers()}
 
+def updatePlayerActive(user):
+    for game in game_list:
+        if game.id == user.game_id:
+            for i, player in enumerate(game.player_list):
+                if player.uuid == user.uuid:
+                    game.player_list[i].active = user.active
+                    return 
+
 def isLoggedIn():
     user = User.get_user_by_id(session.get('playerId'))
 
@@ -87,6 +94,7 @@ def isLoggedIn():
         session['playerId'] = None
     else:
         user.active = True
+        updatePlayerActive(user)
         user.timer.cancel()
         user.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [user])
         user.timer.start()
@@ -207,7 +215,9 @@ def action(moveType, direction):
 def leave():
     user = User.get_user_by_id(session.get('playerId'))
     if user:
+        print(f"{user.name} has left the game")
         user.active = False
+        updatePlayerActive(user)
 
     return jsonify(ok=True)
 

@@ -53,6 +53,7 @@ class Player(Item):
         self.coconuts = 2
         self.points = 0
         self.state = 0  # 0 = alive ; 1 = dead
+        self.active = True
 
     def item_dict(self):
         return {"coconuts": self.coconuts,
@@ -61,7 +62,8 @@ class Player(Item):
                 "hits": self.hits,
                 "name": self.name,
                 "lives": self.lives,
-                "points": self.points}
+                "points": self.points,
+                "active": self.active}
 
 
 class MapGenerator:
@@ -459,7 +461,8 @@ class Game:
                           "points": [player.points for player in self.player_list],
                           "knockouts": [player.knockouts for player in self.player_list],
                           "hits": [player.hits for player in self.player_list],
-                          "name": [player.name[0] for player in self.player_list]}
+                          "name": [player.name[0] for player in self.player_list],
+                          "active": [player.active for player in self.player_list]}
 
         sorted_list = sorted(item_list_dict[f"{sortby}"])
         item_list = item_list_dict[f"{sortby}"]
@@ -478,4 +481,5 @@ class Game:
         elif hyrarchy == "incr":
             if sortby == "name":
                 sorted_player_id_list.reverse()
+        print(sorted_player_id_list)
         return sorted_player_id_list

@@ -65,6 +65,10 @@ class View{
         for (let i = 0; i < l; i++) {
             let div = document.createElement('div');
             div.classList.add('playerSb');
+            if (!json.scoreboard[i].active) {
+                console.log("inactive");
+                div.classList.add('inactive');
+            }
             div.innerText = `${i+1}. ${json.scoreboard[i].name} (${json.scoreboard[i].points})`;
             navigation.appendChild(div);
         }
