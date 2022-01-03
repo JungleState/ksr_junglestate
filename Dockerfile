@@ -6,10 +6,10 @@ FROM python:3-slim
 ENV PYTHONUNBUFFERED True
 
 # Copy local code to the container image.
-ENV APP_HOME /Server
-COPY requirements.txt ./
+ENV APP_HOME /app
 WORKDIR $APP_HOME
-COPY . ./
+COPY requirements.txt ./
+COPY Server/ ./
 
 # Install production dependencies.
 RUN pip install --no-cache-dir -r requirements.txt
