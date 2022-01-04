@@ -18,7 +18,7 @@ async function login(join_mode) {
 
     let options = {
         method: 'POST',
-        body: JSON.stringify({"game_mode": "","player_name": name, "player_mode": player_mode}),
+        body: JSON.stringify({"player_name": name, "player_mode": player_mode}),
         headers: {
             'Content-Type': 'application/json'
         }
