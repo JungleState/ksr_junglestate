@@ -25,7 +25,7 @@ class Controller {
                 }
                 updateTitle = false;
             }
-            if (json.state == 1) {
+            if (json.lives == 0) {
                 document.documentElement.style.setProperty('--visibility' , "visible")
             }
         }, 500);
