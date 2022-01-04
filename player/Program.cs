@@ -127,7 +127,7 @@ namespace Player {
             // configurations that need to be changed by the user
 
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
-//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv/YOUR/CONFIGS/BELOW/HERE//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
+//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv/YOUR/CONFIGS/BELOW/HERE/vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
 
 
@@ -145,6 +145,7 @@ string name = "Max Mustermann";
 // debug mode
 // app mode requires you to enter url and name after starting app
 bool appMode = true;
+
 
 
 
