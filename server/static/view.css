@@ -2,6 +2,11 @@
   font-family: JungleFont;
   src: url(fonts/EvilEmpire-4BBVK.ttf);
 }
+@font-face {
+  font-family: PixelFont;
+  src:url(fonts/ARCADECLASSIC.TTF)
+}
+
 
 :root {
   --visibility: hidden;
@@ -18,15 +23,18 @@ cell {
     aspect-ratio: 1/1;
     background-size: cover;
     background-position: center;
-    text-align: center; /*so player name is centered*/
 }
 playername{
     position: relative;
-    font-size: min(2vw, 2vh);
-    bottom: 0.75vw; /*text floats above monkey */
+    width: 12.5vw;
+    font-size: 3vh;
+    font-family: PixelFont;
+    text-shadow: greenyellow;
+    bottom: min(50%, 2vh); /*text floats above monkey */
     white-space: nowrap; /*so name is shown on one single line*/
     text-overflow: ellipsis;
     overflow: hidden;
+    display: block; /*anotherwise width doesn't work*/
 }
 #grid{
     font-size: 13px;

@@ -1,31 +1,35 @@
-document.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        login('');
-    }
-});
-
-async function login(loginMode) {
+async function login(join_mode) {
     let name = document.getElementById('name').value;
     let mode = document.getElementById('mode').checked;
+    let player_mode;
 
-    let modeName;
-
+    // Set mode
     if (mode) {
-        modeName = 'spec';
+        player_mode = 'spec';
     }
     else {
-        modeName = 'client';
+        player_mode = 'client';
     }
 
     if (!name) {
         return;
     }
 
-    let response = await fetch(`/joinGame/${modeName}/${name}`, { method: 'POST' });
+
+    let options = {
+        method: 'POST',
+        body: JSON.stringify({"game_mode": "","player_name": name, "player_mode": player_mode}),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    // Login
+    let response = await fetch(`/joinGame`, options);
     let json = await response.json();
 
     if (json.ok) {
-        window.location.replace('/')
+        window.location.replace('/');
     }
     else {
         alert(json.msg);
@@ -33,7 +37,7 @@ async function login(loginMode) {
 
     document.getElementById('name').value = "";
     document.getElementById('mode').checked = false;
-
+    document.getElementById('password').value = "";
 }
 
 function refresh(json){
