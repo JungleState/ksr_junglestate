@@ -152,20 +152,32 @@ def login():
 
 @app.route('/getGames')
 def getGames():
-    gamesJson = {}
+    gamesJson = {"games": []}
     for game in game_list:
-        gamesJson.update({
+        gamesJson['games'].append({
             "id": game.id,
             "players": len(game.player_list),
             "secured": bool(game.password)
         })
 
-    return jsonify(games=gamesJson)
+    return jsonify(gamesJson)
+
+@app.route('/createGame', methods=['POST'])
+def createGame():
+    
+    data = request.get_json()
+    password = data['password']
+
+    game = Game(uuid.uuid4(), FIELD)
+    game_list.append(game)
+    game.password = password
+
+    return jsonify(ok=True)
 
 @app.route('/joinGame', methods=['POST'])
-def joinGame():#join_mode, password, player_mode, player_name):
+def joinGame():
 
-    data = request.get_json()
+    data = request.get_json() # Post request arguments
     player_name = data['player_name']
     player_mode = data['player_mode']
 
