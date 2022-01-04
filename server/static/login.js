@@ -1,10 +1,10 @@
 document.addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
-        login();
+        login('');
     }
 });
 
-async function login(mode) {
+async function login(loginMode) {
     let name = document.getElementById('name').value;
     let mode = document.getElementById('mode').checked;
 
@@ -34,3 +34,9 @@ async function login(mode) {
     document.getElementById('name').value = "";
     document.getElementById('mode').checked = false;
 }
+
+setInterval(async () => {
+    let response = await fetch('/getGames');
+    let json = await response.json();
+    console.log(json);
+}, 1000);

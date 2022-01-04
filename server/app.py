@@ -152,7 +152,15 @@ def login():
 
 @app.route('/getGames')
 def getGames():
-    pass
+    gamesJson = {}
+    for game in game_list:
+        gamesJson.update({
+            "id": game.id,
+            "players": len(game.player_list),
+            "secured": bool(game.password)
+        })
+
+    return jsonify(games=gamesJson)
 
 @app.route('/joinGame/<string:mode>/<string:player_name>', methods=['POST'])
 def joinGame(mode, player_name):
