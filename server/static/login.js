@@ -4,7 +4,7 @@ document.addEventListener("keydown", function(event) {
     }
 });
 
-async function login() {
+async function login(mode) {
     let name = document.getElementById('name').value;
     let mode = document.getElementById('mode').checked;
 
