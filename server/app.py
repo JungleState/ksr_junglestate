@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, session, abort, render_template, redirect, url_for
+from flask import Flask, jsonify, session, abort, render_template, redirect, url_for, request
 from game_logic import Game
 import threading
 import uuid
@@ -162,20 +162,24 @@ def getGames():
 
     return jsonify(games=gamesJson)
 
-@app.route('/joinGame/<string:mode>/<string:player_name>', methods=['POST'])
-def joinGame(mode, player_name):
+@app.route('/joinGame', methods=['POST'])
+def joinGame():#join_mode, password, player_mode, player_name):
 
-    err = checkLogInData(player_name, mode)
+    data = request.get_json()
+    print(data['name'])
 
-    if err:
-        # Invalid name or mode
-        app.logger.info(err)
-        return jsonify(ok=False, msg=err)
 
-    # Login data valid
-    user = User(player_name, mode)
-    user_list.append(user)
-    session['playerId'] = user.uuid
+    # err = checkLogInData(player_name, player_mode)
+
+    # if err:
+    #     # Invalid name or mode
+    #     app.logger.info(err)
+    #     return jsonify(ok=False, msg=err)
+
+    # # Login data valid
+    # user = User(player_name, player_mode)
+    # user_list.append(user)
+    # session['playerId'] = user.uuid
 
     return jsonify(ok=True)
 
