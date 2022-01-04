@@ -40,8 +40,29 @@ async function login(join_mode) {
     document.getElementById('password').value = "";
 }
 
+function refresh(json){
+    parentElement = document.getElementById('openGames');
+    json.games.forEach((item, index) => {
+        console.log(`${index} : ${item}`);
+        var div = document.createElement('div'); 
+        div.textContent = "Server " + index;  
+        parentElement.appendChild(div)  
+    });
+}
+
 setInterval(async () => {
     let response = await fetch('/getGames');
     let json = await response.json();
     console.log(json);
+
+    parentElement = document.getElementById('openGames');
+
+    while (parentElement.hasChildNodes()) {  
+        parentElement.removeChild(parentElement.firstChild);
+    } 
+    
+    var div = document.createElement('div'); 
+    div.textContent = "Server:    " + json.games.id;  
+    parentElement.appendChild(div)  
+    //json.games.forEach(element => console.log(element));
 }, 1000);
