@@ -150,6 +150,9 @@ def root():
 def login():
     return render_template('login.html')
 
+@app.route('/getGames')
+def getGames():
+    pass
 
 @app.route('/joinGame/<string:mode>/<string:player_name>', methods=['POST'])
 def joinGame(mode, player_name):
