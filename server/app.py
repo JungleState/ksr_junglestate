@@ -43,21 +43,6 @@ class User:
 
         return None
 
-
-def newGame(user):
-    if len(game_list) == 0:
-        newId = uuid.uuid4()
-        game = Game(newId, FIELD)
-        if user.mode == 'client':
-            game.join(user.name, user.uuid)
-        game_list.append(game)
-        return game.id
-    else:
-        if user.mode == 'client':
-            game_list[-1].join(user.name, user.uuid)
-        return game_list[-1].id
-
-
 def GetJSON(game_id, user):
     for game in game_list:
         if game.id == game_id:
@@ -188,13 +173,15 @@ def joinGame():
         game_list.append(game)
         game.password = password
         user.game_id = game.id
-        game.join(user.name, user.uuid)
+        if player_mode == 'client':
+            game.join(user.name, user.uuid)
     elif mode == 'joinExisting':
         game_id = data['game_id']
         user.game_id = game_id
         for game in game_list:
             if game.id == game_id:
-                game.join(user.name, user.uuid)
+                if player_mode == 'client':
+                    game.join(user.name, user.uuid)
 
     return jsonify(ok=True)
 
