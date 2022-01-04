@@ -4,14 +4,6 @@ async function login(join_mode) {
     let password = document.getElementById('password').value;
     let player_mode;
 
-    let options = {
-        method: 'POST',
-        body: JSON.stringify({"name":"Matt"}),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }
-
     if (mode) {
         player_mode = 'spec';
     }
@@ -31,13 +23,21 @@ async function login(join_mode) {
 
     }
 
+    let options = {
+        method: 'POST',
+        body: JSON.stringify({"player_name": name, "player_mode": player_mode}),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
 
     // Login
     let response = await fetch(`/joinGame`, options);
     let json = await response.json();
 
     if (json.ok) {
-        // window.location.replace('/');
+        window.location.replace('/');
     }
     else {
         alert(json.msg);

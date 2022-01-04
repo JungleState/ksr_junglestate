@@ -166,20 +166,20 @@ def getGames():
 def joinGame():#join_mode, password, player_mode, player_name):
 
     data = request.get_json()
-    print(data['name'])
+    player_name = data['player_name']
+    player_mode = data['player_mode']
 
+    err = checkLogInData(player_name, player_mode)
 
-    # err = checkLogInData(player_name, player_mode)
+    if err:
+        # Invalid name or mode
+        app.logger.info(err)
+        return jsonify(ok=False, msg=err)
 
-    # if err:
-    #     # Invalid name or mode
-    #     app.logger.info(err)
-    #     return jsonify(ok=False, msg=err)
-
-    # # Login data valid
-    # user = User(player_name, player_mode)
-    # user_list.append(user)
-    # session['playerId'] = user.uuid
+    # Login data valid
+    user = User(player_name, player_mode)
+    user_list.append(user)
+    session['playerId'] = user.uuid
 
     return jsonify(ok=True)
 
