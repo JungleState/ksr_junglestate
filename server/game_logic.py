@@ -133,6 +133,7 @@ class RandomGenerator(MapGenerator):
 
 class Game:
     def __init__(self, id, field_dimensions, generator=RandomGenerator(20, 1, 1, 1)):
+        self.password = ""
         self.id = id
         self.state = 0
         self.round = 0
