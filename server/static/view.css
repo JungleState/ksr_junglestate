@@ -1,6 +1,8 @@
 @font-face {
   font-family: JungleFont;
   src: url(fonts/EvilEmpire-4BBVK.ttf);
+}
+@font-face {
   font-family: PixelFont;
   src:url(fonts/ARCADECLASSIC.TTF)
 }
