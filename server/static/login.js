@@ -60,9 +60,12 @@ setInterval(async () => {
     while (parentElement.hasChildNodes()) {  
         parentElement.removeChild(parentElement.firstChild);
     } 
+
+    json.games.forEach((item, index) => {
+        console.log(`${index} : ${item}`);
+        var div = document.createElement('div'); 
+        div.textContent = "Server " + item.id;
+        parentElement.appendChild(div)  
+    });
     
-    var div = document.createElement('div'); 
-    div.textContent = "Server:    " + json.games.id;  
-    parentElement.appendChild(div)  
-    //json.games.forEach(element => console.log(element));
 }, 1000);
