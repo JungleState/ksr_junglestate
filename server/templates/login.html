@@ -14,19 +14,19 @@
 <body>
     <div class="image"></div>
     <div class="window">
-    <div class="title">
-    <h1>Welcome To JungleState </h1>
+        <div class="title">
+            <h1>Welcome To JungleState </h1>
+        </div>
+        <div class='login'>
+            <label for="name">Enter Your Name: </label> 
+            <input id="name" type="text">  
+            <br>
+                <label for="mode">Are You a Spectator?</label>
+                <input  id="mode" type="checkbox">
+            <br>
+        <button onclick="login('new')">New Game</button>
+        </div>
+        <div id="openGames"></div>
     </div>
-    <div class='login'>
-    <label for="name">Enter Your Name: </label> 
-    <input id="name" type="text">  
-    <br>
-    <label for="mode">Are You a Spectator?</label>
-    <input  id="mode" type="checkbox">
-    <br>
-    <button onclick="login('new')">New Game</button>
-    </div>
-    </div>
-    <div class="openGames"></div>
 </body>
 </html>
