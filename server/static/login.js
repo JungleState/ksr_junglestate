@@ -18,7 +18,7 @@ async function login(join_mode) {
 
     let options = {
         method: 'POST',
-        body: JSON.stringify({"player_name": name, "player_mode": player_mode}),
+        body: JSON.stringify({"game_mode": "","player_name": name, "player_mode": player_mode}),
         headers: {
             'Content-Type': 'application/json'
         }
@@ -38,16 +38,6 @@ async function login(join_mode) {
     document.getElementById('name').value = "";
     document.getElementById('mode').checked = false;
     document.getElementById('password').value = "";
-}
-
-function refresh(json){
-    parentElement = document.getElementById('openGames');
-    json.games.forEach((item, index) => {
-        console.log(`${index} : ${item}`);
-        var div = document.createElement('div'); 
-        div.textContent = "Server " + index;  
-        parentElement.appendChild(div)  
-    });
 }
 
 setInterval(async () => {
