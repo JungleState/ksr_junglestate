@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "/home/phdoenni/g/ksr_junglestate/player/player.csproj": {}
+    "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player\\player.csproj": {}
   },
   "projects": {
-    "/home/phdoenni/g/ksr_junglestate/player/player.csproj": {
+    "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player\\player.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/phdoenni/g/ksr_junglestate/player/player.csproj",
+        "projectUniqueName": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player\\player.csproj",
         "projectName": "player",
-        "projectPath": "/home/phdoenni/g/ksr_junglestate/player/player.csproj",
-        "packagesPath": "/home/phdoenni/.nuget/packages/",
-        "outputPath": "/home/phdoenni/g/ksr_junglestate/player/obj/",
+        "projectPath": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player\\player.csproj",
+        "packagesPath": "C:\\Users\\matth\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/phdoenni/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\matth\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -58,7 +60,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.100/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

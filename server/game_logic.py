@@ -50,15 +50,18 @@ class Player(Item):
         self.coconuts = 2
         self.points = 0
         self.state = 0  # 0 = alive ; 1 = dead
+        self.active = True
 
     def item_dict(self):
-        return {"coconuts":self.coconuts,
+        return {"coconuts": self.coconuts,
                 "id": self.id,
                 "knockouts": self.knockouts,
                 "hits": self.hits,
                 "name": self.name,
                 "lives": self.lives,
-                "points": self.points}
+                "points": self.points,
+                "active": self.active}
+
 
 class MapGenerator:
     """ A map generator that creates empty maps with forest all around."""
@@ -142,9 +145,13 @@ class Game:
             generator.generate(self.field_lengh, self.field_height))
         self.field_dim = [self.field_lengh, self.field_height]
 
-    def join(self, name, id):
-        logging.debug(f"Player {id} joined as {name}")
-        player = Player(id, id, name)
+    def getId(self):
+        pass
+
+    def join(self, name, uuid):
+        # Get Id rangin from "00" to "99"
+        logging.debug(f"Player {uuid} joined as {name}")
+        player = Player(uuid, uuid, name)
         while True:
             x = randint(1, self.field_dim[0]-Rules.SIGHT)
             y = randint(1, self.field_dim[1]-Rules.SIGHT)
@@ -173,7 +180,7 @@ class Game:
         return False
 
     def kickPlayer(self, player_name):
-        "gets player name, kicks player"
+        """gets player name, kicks player"""
         for player in self.player_list:
             if player.name == player_name:
                 coconut_in_this_cell = False
@@ -189,21 +196,21 @@ class Game:
                 del self.player_list[self.player_list.index(player)]
 
     def addMove(self, player_id, move_id, dir):
-        # move_id list:
-        # 0: Stay
-        # 1: Move
-        # 2: Shoot
-        #
-        # dir list:
-        # -1: No direction
-        # 0: up
-        # 1: up right
-        # 2: right
-        # 3: down right
-        # 4: down
-        # 5: down left
-        # 6: left
-        # 7: up left
+        """move_id list:
+        0: Stay
+        1: Move
+        2: Shoot
+
+        dir list:
+        -1: No direction
+        0: up
+        1: up right
+        2: right
+        3: down right
+        4: down
+        5: down left
+        6: left
+        7: up left"""
         if len(self.move_list) == 0:
             timer = threading.Timer(Rules.TIME_TO_MOVE, self.doNextRound)
             timer.start()
@@ -216,7 +223,7 @@ class Game:
 
         if self.getPlayerFromID(player_id).state == 1:
             logging.debug(
-                f"Rejecting move from Player {player_id} who is dead.")
+                f"Rejecting move from Player {player_id} who is knocked out.")
             return False
 
         logging.debug(f"Adding move from {player_id}.")
@@ -438,15 +445,21 @@ class Game:
                     return player.points
                 elif item == "lives":
                     return player.lives
+                elif item == "state":
+                    return player.state
+
+    def GetPlayers(self):
+        return {player.id: player.name for player in self.player_list}
 
     def Scoreboard(self, sortby, hyrarchy):
         sorted_player_list = [i for i in range(len(self.player_list))]
-        item_list_dict = {"coconuts":[player.coconuts for player in self.player_list],
-                           "lives": [player.lives for player in self.player_list],
-                           "points": [player.points for player in self.player_list],
-                           "knockouts": [player.knockouts for player in self.player_list],
-                           "hits": [player.hits for player in self.player_list],
-                           "name": [player.name[0] for player in self.player_list]}
+        item_list_dict = {"coconuts": [player.coconuts for player in self.player_list],
+                          "lives": [player.lives for player in self.player_list],
+                          "points": [player.points for player in self.player_list],
+                          "knockouts": [player.knockouts for player in self.player_list],
+                          "hits": [player.hits for player in self.player_list],
+                          "name": [player.name[0] for player in self.player_list],
+                          "active": [player.active for player in self.player_list]}
 
         sorted_list = sorted(item_list_dict[f"{sortby}"])
         item_list = item_list_dict[f"{sortby}"]
@@ -454,13 +467,16 @@ class Game:
             plus_index = 0
             while isinstance(sorted_player_list[sorted_list.index(item_list[i]) + plus_index], Player):
                 plus_index += 1
-            sorted_player_list[sorted_list.index(item_list[i]) + plus_index] = self.player_list[i]
-        
-        sorted_player_id_list = [player.item_dict() for player in sorted_player_list]
+            sorted_player_list[sorted_list.index(
+                item_list[i]) + plus_index] = self.player_list[i]
+
+        sorted_player_id_list = [player.item_dict()
+                                 for player in sorted_player_list]
         if hyrarchy == "decr":
             if sortby != "name":
                 sorted_player_id_list.reverse()
         elif hyrarchy == "incr":
             if sortby == "name":
                 sorted_player_id_list.reverse()
+        print(sorted_player_id_list)
         return sorted_player_id_list

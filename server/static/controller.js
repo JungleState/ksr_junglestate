@@ -7,11 +7,15 @@ class Controller {
             this.keyInput(key.keyCode);
         }
 
+        // Detect page close
+        window.addEventListener('unload', function() {
+            navigator.sendBeacon('/inactive', '');
+        });
+
         // field updates
         setInterval(async () => {
             let json = await this.getData();
-            console.log(json.player_list);
-            view.updateView(json.field, json);
+            view.updateView(json);
             if (updateTitle) {
                 if (json.mode == 'client') {
                     document.title += ' - Player';
@@ -20,6 +24,9 @@ class Controller {
                     document.title += ' - Spectator';
                 }
                 updateTitle = false;
+            }
+            if (json.state == 1) {
+                document.documentElement.style.setProperty('--visibility' , "visible")
             }
         }, 500);
     }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 // For usage in Visual Studio Code:
 //     - Download C# extension
@@ -12,20 +13,20 @@ namespace Player {
     class Program {
         private static readonly HttpClient client = new HttpClient();
 
-        private static async Task joinGame(Tuple<string, string> configs) {
+        private static async Task joinGame(Tuple<string?, string?> configs) {
             // non-user configs
-            int SLEEP_TIME = 500;
+            int SLEEP_TIME = 50;
 
             // join game (fetch request)
-            var stringTask = client.PostAsync(configs.Item1+"joinGame/client/"+configs.Item2, new StringContent(""));
-            var json = await stringTask;
+            var response = await client.PostAsync(configs.Item1+"joinGame/client/"+configs.Item2, new StringContent(""));
+            var json = await response.Content.ReadAsStringAsync();
             dynamic? data = JsonConvert.DeserializeObject(json);
 
             // check if joining was successful
             if (data != null){
                 if (data.ok == false) {
-                Console.WriteLine("Connection to game failed!");
-                Console.WriteLine("Problem assumption: Your name is already being used. Change name and try again.");
+                    Console.WriteLine("Connection to game failed!");
+                    Console.WriteLine(data.msg);
                 }
                 else {
                     int score = 0;
@@ -38,6 +39,7 @@ namespace Player {
                             break;
                         }
                     }
+                    Console.WriteLine("");
                     Console.WriteLine("!!!!!!!!!!!");
                     Console.WriteLine("!GAME OVER!");
                     Console.WriteLine("!!!!!!!!!!!");
@@ -48,7 +50,7 @@ namespace Player {
                 Console.WriteLine("ERROR: data is null");
             }
         }
-        private static async Task<Tuple<bool, int>> getData(Tuple<string, string> configs) {
+        private static async Task<Tuple<bool, int>> getData(Tuple<string?, string?> configs) {
             // get the map
             var stringTask = client.GetStringAsync(configs.Item1+"view");
             var json = await stringTask;
@@ -58,10 +60,15 @@ namespace Player {
             int score = 0;
 
             if (data != null) {
-                score = data.points;
+                score = data.points.ToObject<int>(); //, System.Globalization.NumberStyles.Integer
                 // ask user written algorithm about what to do
                 if (data.lives > 0) {
-                    playerBehaviour(configs, data.field, data.lives, data.coconuts, data.points, data.round);
+                    Console.WriteLine("");
+                    Console.WriteLine("Round: "+data.round);
+                    Console.WriteLine("Health: "+data.lives);
+                    Console.WriteLine("Ammo: "+data.coconuts);
+                    Console.WriteLine("Score: "+data.points);
+                    playerBehaviour(configs, data.field.ToString(), data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
                 }
                 else {
                     // end loop from joinGame
@@ -100,11 +107,23 @@ namespace Player {
 
         private static async void sendCommand(Tuple<string, string> configs, int type, int direction) {
             // send the chosen action to the server
-            var stringTask = client.GetStringAsync(configs.Item1+"action/"+type+"/"+direction);
-            var json = await stringTask;
+            try {
+                var response = await client.PostAsync(configs.Item1+"action/"+type+"/"+direction, new StringContent(""));
+                
+                string[] actionsArray = new string[] {"stay", "move", "attack"};
+                string[] directionsArray = new string[] {"up", "up right", "right", "down right", "down", "down left", "left", "up left", "on the spot"};
+                if (direction < 0) {
+                    direction = 8;
+                }
+                Console.WriteLine("-> Action: "+actionsArray[type]+" "+directionsArray[direction]);
+            }
+            catch {
+                // Console.WriteLine("");
+                // Console.WriteLine("Command could not be sent");
+            }
         }
 
-        private static Tuple<string, string> loadConfigs() {
+        private static Tuple<string, string, bool> loadConfigs() {
             // configurations that need to be changed by the user
 
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv//
@@ -115,14 +134,17 @@ namespace Player {
 
 
 
-// url for server
+// url of server
 // e.g. http://localhost:5500/
 string url = "http://localhost:5500/";
 
 // name of player
 // e.g. Max Mustermann
-string name = "MaxMustermann";
+string name = "Max Mustermann";
 
+// debug mode
+// app mode requires you to enter url and name after starting app
+bool appMode = true;
 
 
 
@@ -130,7 +152,7 @@ string name = "MaxMustermann";
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^/YOUR/CONFIGS/ABOVE/HERE/^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
-            Tuple<string, string> configs = new Tuple<string, string>(url, name);
+            Tuple<string, string, bool> configs = new Tuple<string, string, bool>(url, name, appMode);
             return configs;
         }
 
@@ -219,10 +241,37 @@ private static void moveLeft(Tuple<string, string> c) {
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 
 
-
         static async Task Main(string[] args) {
             // start the process
-            await joinGame(loadConfigs());
+            Tuple<string, string, bool> rawConfigs = loadConfigs();
+            Console.Clear();
+            if (rawConfigs.Item3 == false) {
+                // normal start
+                Tuple<string?, string?> configs = new Tuple<string?, string?>(rawConfigs.Item1, rawConfigs.Item2);
+                await joinGame(configs);
+            }
+            else {
+                // app mode start
+                try {
+                    // ask url
+                    Console.WriteLine("Enter url of server");
+                    Console.WriteLine("e.g. http://localhost:5500/");
+                    string? url = Console.ReadLine();
+
+                    // ask name
+                    Console.Clear();
+                    Console.WriteLine("Enter name of player");
+                    string? name = Console.ReadLine();
+
+                    // start
+                    Console.Clear();
+                    Tuple<string?, string?> configs = new Tuple<string?, string?>(url, name);
+                    await joinGame(configs);
+                }
+                catch {
+                    Console.WriteLine("Invalid input.");
+                }
+            }
         }
     }
 }

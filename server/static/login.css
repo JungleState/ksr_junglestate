@@ -1,25 +1,77 @@
-body {
+/* body {
     text-align: center;
     margin-left: 35%;
     margin-right: 35%;
     background-color: rgb(41, 97, 9);
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+    /* margin: auto; */
+    
+
+}
+
+html,body {
+    /* height:100%;
+    width:100%; */
+    /* margin:0; */
+    background-color: rgb(41, 97, 9);
+  }
+
+body {
+    /* display:flex; */
+    background-color: black;
+    height: 90vh;  
+    overflow: hidden;
+
+    
+    
+    
+}
+
+.image {
+    background-image: url("https://i.pinimg.com/originals/ed/a5/73/eda5739966cb33768d8ad0d77d7307ce.gif");
+    
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
+    background-repeat: no-repeat;
+    background-size:100vw 98vh ;
+    /* background-position: center; */
+    height: 100vh;
+}
+
+
+
+.window {
+    transform: translate(0%, -65vh);
+    border-width: thick;
+    border: solid;
+    margin: auto;
+    width: 30vw;
+    /* height: 33vh; */
+    
 }
 
 .title {
-    border-color: saddlebrown;
-    border-width: thick;
-    border: solid;
-    background-color: yellow;
-    
-    
+    /* border-color: saddlebrown;
+    border-width: thin;
+    border: solid; */
+    background-color: rgba(148, 147, 81, 0.8);    
+    text-align: center;
+    color: white;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
 }
 
 .login {
-    border: solid;
-    border-top: transparent;
+    /* border: solid;
+    border-top: transparent; */
     padding-top: 5%;
     padding-bottom: 5%;
-    background-color: rgb(199, 151, 75);
+    background-color: rgba(67, 88, 55, 0.8);
+    padding-left: 5%;
+    color: rgb(214, 214, 214);
+    
     
 }
 
