@@ -162,13 +162,24 @@ def getGames():
 
     return jsonify(gamesJson)
 
+@app.route('/createGame', methods=['POST'])
+def createGame():
+    
+    data = request.get_json()
+    password = data['password']
+
+    game = Game(uuid.uuid4(), FIELD)
+    game_list.append(game)
+    game.password = password
+
+    return jsonify(ok=True)
+
 @app.route('/joinGame', methods=['POST'])
 def joinGame():
 
     data = request.get_json() # Post request arguments
     player_name = data['player_name']
     player_mode = data['player_mode']
-    game_mode = data['game_mode']
 
     err = checkLogInData(player_name, player_mode)
 
