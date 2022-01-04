@@ -26,7 +26,7 @@ class User:
         self.uuid = str(uuid.uuid4())
         self.active = True
         self.name = self.set_name(name)
-        self.game_id = newGame(self)
+        self.game_id = None
         self.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [self])
     
     def set_name(self, name):
@@ -162,24 +162,14 @@ def getGames():
 
     return jsonify(gamesJson)
 
-@app.route('/createGame', methods=['POST'])
-def createGame():
-    
-    data = request.get_json()
-    password = data['password']
-
-    game = Game(uuid.uuid4(), FIELD)
-    game_list.append(game)
-    game.password = password
-
-    return jsonify(ok=True)
-
 @app.route('/joinGame', methods=['POST'])
 def joinGame():
 
     data = request.get_json() # Post request arguments
     player_name = data['player_name']
     player_mode = data['player_mode']
+    password = data['password']
+    mode = data['mode']
 
     err = checkLogInData(player_name, player_mode)
 
@@ -192,6 +182,19 @@ def joinGame():
     user = User(player_name, player_mode)
     user_list.append(user)
     session['playerId'] = user.uuid
+
+    if mode == 'newGame':
+        game = Game(uuid.uuid4(), FIELD)
+        game_list.append(game)
+        game.password = password
+        user.game_id = game.id
+        game.join(user.name, user.uuid)
+    elif mode == 'joinExisting':
+        game_id = data['game_id']
+        user.game_id = game_id
+        for game in game_list:
+            if game.id == game_id:
+                game.join(user.name, user.uuid)
 
     return jsonify(ok=True)
 
