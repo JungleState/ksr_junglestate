@@ -60,7 +60,7 @@ namespace junglestate {
                     Console.WriteLine("Health: "+data.lives);
                     Console.WriteLine("Ammo: "+data.coconuts);
                     Console.WriteLine("Score: "+data.points);
-                    playerBehaviour(configs, data.field.ToString(), data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
+                    playerBehaviour(configs, data.field, data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
                 }
                 else {
                     // end loop from joinGame
@@ -134,8 +134,12 @@ namespace junglestate {
             return configs;
         }
 
-        private static void playerBehaviour(Tuple<string, string> c, string field, int health, int ammo, int score, int round) {   
+        private static void playerBehaviour(Tuple<string, string> c, string[] field, int health, int ammo, int score, int round) {   
         // get user written algorithm
+
+            Move next = monkey.nextMove(new GameState{cells = getCells(field), round = round, lives = health, coconuts = ammo, points = score});
+            
+            
 
         // attack:  attack(c, DIRECTION)   options for DIRECTION: [0, 7]
         // move:    move(c, DIRECTION)     options for DIRECTION: -1, 0, 2, 4, 6
@@ -168,6 +172,36 @@ namespace junglestate {
 
 
 
+        }
+
+        private static Cell[][] getCells(string[] field) {
+            Cell[][] cells = new Cell[5][5];
+            rowIndex = 0;
+            foreach (string row in field) {
+                for (int i = 0; i < row.Length; i++) {
+                    string cellString = row.Substring(i*2, 2);
+                    cells[rowIndex][i] = getCell(cellString);
+                }
+                rowIndex++;
+            }
+            return cells;
+        }
+
+        private static Cell getCell(string cellString) {
+            switch (cellString) {
+                case "FF":
+                    return new Cell{item = Item.FOREST};
+                case "  ":
+                    return new Cell{item = Item.EMPTY};
+                case "PP":
+                    return new Cell{item = Item.PINEAPPLE};
+                case "BB":
+                    return new Cell{item = Item.BANANA};
+                case "CC":
+                    return new Cell{item = Item.COCONUT};
+                default:
+                    return new Cell{item = Item.PLAYER};
+            }
         }
 
         static async Task ProgramMain(string[] args, Monkey monkey) {
