@@ -62,7 +62,12 @@ setInterval(async () => {
         img.src = 'static//sprites//padlock.png';
     else
         img.src = 'static//sprites//open-padlock.png';
+
+    var join_button = document.createElement('button');
+    join_button.textContent = 'JOIN';
+
     div.appendChild(img);
+    div.appendChild(join_button);
     parentElement.appendChild(div);
 
     json.games.forEach((item, index) => {
