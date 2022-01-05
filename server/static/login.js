@@ -60,8 +60,8 @@ setInterval(async () => {
 
         var img = document.createElement('img');
         img.classList.add('lockimage');
-        img.style.height = '1vw';
-        img.style.width = '1vw';
+        img.style.height = '1.4vw';
+        img.style.width = '1.4vw';
         if(item.secured == true)
             img.src = 'static//sprites//padlock.png';
         else
@@ -69,7 +69,7 @@ setInterval(async () => {
         div.appendChild(img);
 
         var text = document.createElement('p');
-        img.classList.add('serverinfo');
+        text.classList.add('serverinfo');
         text.textContent = "Server: " + index + " | Spieler Online: " + item.players;
         div.appendChild(text);
     

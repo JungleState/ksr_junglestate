@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JungleState</title>
+    <title>JungleCamp</title>
     <link rel="icon" type="image/png" href="static/sprites/monkey.png">
     <link rel="stylesheet" href="static/login.css">
 
@@ -13,23 +13,28 @@
 
 <body>
     <div class="image"></div>
-    <div class="window">
-        <div class="title">
-            <h1>Welcome To JungleState </h1>
+        <div class="login">
+
+            <h1>JungleCamp</h1>
+
+            <label for="name">Nickname</label> 
+            <br>
+            <input id="name" type="text">  
+            <br>
+            <label for="mode">Set as Spectator</label>
+            <br>
+            <input  id="mode" type="checkbox">
+            <br>
+            <label for="password">Password</label>
+            <input id="password" type="text">
+            <br>
+            <button onclick="login('newGame', '')">New Game</button>
+            <br>
+            <label class="org">made by JungleState</label>
+            <div id="openGames"></div>
         </div>
-    <div class='login'>
-    <label for="name">Enter Your Name: </label> 
-    <input id="name" type="text">  
-    <br>
-    <label for="mode">Are You a Spectator?</label>
-    <input  id="mode" type="checkbox">
-    <br>
-    <label for="password">Password</label>
-    <input id="password" type="text">
-    <br>
-    <button onclick="login('newGame', '')">New Game</button>
     </div>
-    <div id="openGames"></div>
-    </div>
+
+    
 </body>
 </html>

@@ -1,7 +1,4 @@
-﻿using Program;
-using System;
-
-// For usage in Visual Studio Code:
+﻿// For usage in Visual Studio Code:
 //     - Download C# extension
 //     - Download NET: https://dotnet.microsoft.com/download
 //     - Open Terminal
@@ -10,24 +7,23 @@ using System;
 //     - Run: "dotnet run"
 
 namespace junglestate {
-    class Monkey : BaseMonkey {
-        Monkey() {
-            super("Max Mustermann");
+    public class Monkey : BaseMonkey {
+        public Monkey() : base("Max Mustermann") {
         }
         public override Move nextMove(GameState state) {
             Direction direction = selectRandomDirection(state);
-            return new Action{action = Action.MOVE, direction = direction, nextRound = state.round};
+            return new Move{action = Action.MOVE, direction = direction, nextRound = state.round};
         }
 
         private Direction selectRandomDirection(GameState state) {
             List<Direction> freeDirs = computeFreeDirections(state);
             Random random = new System.Random();
-            int r = random.NextInt(freeDirs.Size());
-            return freeDirs[r];
+            Random r = new Random();
+            return freeDirs[r.Next(freeDirs.Count)];
         }
 
-        private List<Direction> computeFreeDirs(GameState state) {
-            List<Direction> results = new List<>();
+        private List<Direction> computeFreeDirections(GameState state) {
+            List<Direction> result = new List<Direction>();
             foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
                 Cell cell = dir.GetCell(state);
                 if (cell.isMoveable()) {
@@ -37,7 +33,8 @@ namespace junglestate {
             return result;
         }
 
-        static async Task Main(string[] args) {
+        public static async Task Main(string[] args) {
+            // starts the the program
             ProgramMain(args, new Monkey());
         }
     }
