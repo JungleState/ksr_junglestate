@@ -3,11 +3,8 @@ import logging
 import threading
 logging.getLogger().setLevel("DEBUG")
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> f95393a835bc50f89ace3526c337c2dbac6dea6c
 class Item:
     def __init__(self, name, id):
         self.name = name
