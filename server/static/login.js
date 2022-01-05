@@ -56,22 +56,32 @@ setInterval(async () => {
         console.log(`${index} : ${item}`);
 
         var div = document.createElement('div'); 
-        div.textContent = "Server: " + index + " | Spieler Online: " + item.players;
+        div.classList.add('server');
+
         var img = document.createElement('img');
+        img.classList.add('lockimage');
         img.style.height = '1vw';
         img.style.width = '1vw';
-        if(true == false)
+        if(item.secured == true)
             img.src = 'static//sprites//padlock.png';
         else
             img.src = 'static//sprites//open-padlock.png';
         div.appendChild(img);
+
+        var text = document.createElement('p');
+        img.classList.add('serverinfo');
+        text.textContent = "Server: " + index + " | Spieler Online: " + item.players;
+        div.appendChild(text);
     
         var join_button = document.createElement('button');
-        join_button.textContent = 'JOIN';
+        join_button.classList.add('joinbutton');
+        join_button.textContent = 'Join';
         join_button.addEventListener("click", () => {
             login('joinExisting', item.id);
         });
+
         div.appendChild(join_button);
+
         parentElement.appendChild(div);
     });
     

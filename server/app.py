@@ -12,7 +12,7 @@ app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
 app.secret_key = os.urandom(16)
 
-log=logging.getLogger('werkzeug') #turn off the SPAM
+log = logging.getLogger('werkzeug')  # turn off the SPAM
 log.setLevel(logging.ERROR)
 
 app.config.update(
@@ -32,7 +32,7 @@ class User:
         self.name = self.set_name(name)
         self.game_id = None
         self.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [self])
-    
+
     def set_name(self, name):
         if self.mode == 'spec':
             return 'Spectator'
@@ -47,26 +47,28 @@ class User:
 
         return None
 
+
 def GetJSON(game_id, user):
     for game in game_list:
         if game.id == game_id:
-            if user.mode == "client":#returns JSON file for client
-                return {"field":game.GetFieldOfView(user.uuid),
-                               "coconuts":game.GetPlayerVar(user.uuid, "CC"),
-                               "lives":game.GetPlayerVar(user.uuid, "lives"),
-                               "points":game.GetPlayerVar(user.uuid, "P"),
-                               "round":game.round,
-                               "mode":user.mode,
-                               "name":user.name,
-                               "name_list":game.GetPlayers()}
-            elif user.mode == "spec":#returns JSON file for spectator
-                return {"id":user.uuid, 
-                               "field":game.SerializeMatrix(), 
-                               "state":game.state, 
-                               "round":game.round,
-                               "scoreboard":game.Scoreboard("points", "decr"),
-                               "mode":user.mode,
-                               "name_list":game.GetPlayers()}
+            if user.mode == "client":  # returns JSON file for client
+                return {"field": game.GetFieldOfView(user.uuid),
+                        "coconuts": game.GetPlayerVar(user.uuid, "CC"),
+                        "lives": game.GetPlayerVar(user.uuid, "lives"),
+                        "points": game.GetPlayerVar(user.uuid, "P"),
+                        "round": game.round,
+                        "mode": user.mode,
+                        "name": user.name,
+                        "name_list": game.GetPlayers()}
+            elif user.mode == "spec":  # returns JSON file for spectator
+                return {"id": user.uuid,
+                        "field": game.SerializeMatrix(),
+                        "state": game.state,
+                        "round": game.round,
+                        "scoreboard": game.Scoreboard("points", "decr"),
+                        "mode": user.mode,
+                        "name_list": game.GetPlayers()}
+
 
 def updatePlayerActive(user):
     for game in game_list:
@@ -74,7 +76,8 @@ def updatePlayerActive(user):
             for i, player in enumerate(game.player_list):
                 if player.uuid == user.uuid:
                     game.player_list[i].active = user.active
-                    return 
+                    return
+
 
 def isLoggedIn():
     user = User.get_user_by_id(session.get('playerId'))
@@ -89,6 +92,7 @@ def isLoggedIn():
         user.timer.start()
 
     return user
+
 
 def checkLogInData(name, mode):
     err = None
@@ -139,6 +143,7 @@ def root():
 def login():
     return render_template('login.html')
 
+
 @app.route('/getGames', methods=['GET'])
 def getGames():
     gamesJson = {"games": []}
@@ -151,10 +156,11 @@ def getGames():
 
     return jsonify(gamesJson)
 
+
 @app.route('/joinGame', methods=['POST'])
 def joinGame():
 
-    data = request.get_json() # Post request arguments
+    data = request.get_json()  # Post request arguments
     player_name = data['player_name']
     player_mode = data['player_mode']
     password = data['password']
@@ -236,6 +242,7 @@ def action(moveType, direction):
 
 # Inactive - AFK (player will be kicked automatically after timeout)
 
+
 @app.route('/inactive', methods=['POST'])
 def leave():
     user = User.get_user_by_id(session.get('playerId'))
@@ -245,6 +252,7 @@ def leave():
         updatePlayerActive(user)
 
     return jsonify(ok=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5500)))
