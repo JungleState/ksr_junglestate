@@ -135,7 +135,7 @@ def root():
 def login():
     return render_template('login.html')
 
-@app.route('/getGames')
+@app.route('/getGames', methods=['GET'])
 def getGames():
     gamesJson = {"games": []}
     for game in game_list:
