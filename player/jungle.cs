@@ -31,15 +31,15 @@ namespace junglestate {
     public static class DirectionInfo {
         public static (int, int) Coordinates(this Direction dir) {
             switch (dir) {
-                case Direction.NONE: return (2,2);
-                case Direction.UP: return (1,2);
-                case Direction.UP_RIGHT: return (1,3);
-                case Direction.RIGHT: return (2,3);
-                case Direction.DOWN_RIGHT: return (3,3);
-                case Direction.DOWN: return (3,2);
-                case Direction.DOWN_LEFT: return (3,1);
-                case Direction.LEFT: return (2,1);
-                case Direction.UP_LEFT: return (1,1);
+                case NONE: return (2,2);
+                case UP: return (1,2);
+                case UP_RIGHT: return (1,3);
+                case RIGHT: return (2,3);
+                case DOWN_RIGHT: return (3,3);
+                case DOWN: return (3,2);
+                case DOWN_LEFT: return (3,1);
+                case LEFT: return (2,1);
+                case UP_LEFT: return (1,1);
             }
         }
 
