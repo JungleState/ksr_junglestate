@@ -32,15 +32,21 @@ class View{
                 else{ //numbers are players
                     //tile.setAttribute('name', playerdict[charcode]);
                     tile.setAttribute('class', "player");
-                    var playername = document.createElement("playername")
-                    tile.appendChild(playername)
-                    playername.textContent=Object.values(json.name_list)[parseInt(charcode)];
+                    tile.setAttribute('id', Object.keys(json.name_list)[parseInt(charcode)]); //I need to append uuid for coconut throwing
+                    var playername = document.createElement("playername");
+                    tile.appendChild(playername);
+                    playername.textContent= Object.values(json.name_list)[parseInt(charcode)];
                 }
                 column+=2; //because every tile consists of 2 letters.
                 
             }
             row+=1;
         }
+        //for the shoot animation if players shoot coconut
+        for(let player in json.projectiles){
+            this.shoot(player, json.projectiles.direction) //fix, not right yet
+        }
+
 
         // Display stats
         if (json.mode == 'spec') {
@@ -49,6 +55,14 @@ class View{
         else if (json.mode == 'client') {
             this.clientMode(json);
         }
+    }
+
+    shoot(uuidd, direction){ //creates an projectile element with direction property where the player is.
+
+        player=document.getElementById(uuid);
+        var projectile = document.createElement("projectile", {direction: direction});
+        player.appendChild(projectile);
+        
     }
 
     specMode(json) {
