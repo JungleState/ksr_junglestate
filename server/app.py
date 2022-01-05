@@ -23,7 +23,7 @@ user_list = []
 game_list = []
 FIELD = (30, 20)
 
-
+# User
 class User:
     def __init__(self, name, mode):
         self.mode = mode
@@ -48,7 +48,7 @@ class User:
 
         return None
 
-
+# Methods
 def GetJSON(game_id, user):
     for game in game_list:
         if game.id == game_id:
@@ -70,7 +70,6 @@ def GetJSON(game_id, user):
                         "mode": user.mode,
                         "name_list": game.GetPlayers()}
 
-
 def updatePlayerActive(user):
     for game in game_list:
         if game.id == user.game_id:
@@ -78,7 +77,6 @@ def updatePlayerActive(user):
                 if player.uuid == user.uuid:
                     game.player_list[i].active = user.active
                     return
-
 
 def isLoggedIn():
     user = User.get_user_by_id(session.get('playerId'))
@@ -99,7 +97,6 @@ def isLoggedIn():
                         return None
 
     return user
-
 
 def checkLogInData(name, mode):
     err = None
@@ -137,6 +134,8 @@ def kickPlayer(user):
             game.kickPlayer(user.name)
     user_list.remove(user)
 
+def allPlayersMoved(moves):
+    pass
 
 ### JSON ENDPOINTS ###
 
