@@ -1,6 +1,7 @@
 async function login(join_mode) {
     let name = document.getElementById('name').value;
     let mode = document.getElementById('mode').checked;
+    let password = document.getElementById('password').value;
     let player_mode;
 
     // Set mode
@@ -18,11 +19,12 @@ async function login(join_mode) {
     // Set options
     let options = {
         method: 'POST',
-        body: JSON.stringify({"mode": join_mode, "player_name": name, "player_mode": player_mode}),
+        body: JSON.stringify({"mode": join_mode, "password": password, "player_name": name, "player_mode": player_mode}),
         headers: {
             'Content-Type': 'application/json'
         }
     }
+
 
     // Login
     let response = await fetch('/joinGame', options);
