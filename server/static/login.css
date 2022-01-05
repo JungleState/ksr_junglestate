@@ -1,31 +1,44 @@
+@font-face {
+  font-family: JungleFont;
+  src: url(fonts/EvilEmpire-4BBVK.ttf);
+}
 
-html,body {
-    background-color: rgb(0, 0, 0);
-  }
+/* body {
+    text-align: center;
+    margin-left: 35%;
+    margin-right: 35%;
+    background-color: rgb(41, 97, 9);
+    /* display: flex;
+    align-items: center;
+    justify-content: center; */
+/* margin: auto; */
+/*} */
+
+html,
+body {
+  /* height:100%;
+    width:100%; */
+  /* margin:0; */
+  background-color: rgb(41, 97, 9);
+}
 
 body {
-    /* display:flex; */
-    background-color: black;
-    height: 90vh;  
-    overflow: hidden;
-
-    
-    
-    
+  /* display:flex; */
+  background-color: black;
+  height: 90vh;
+  overflow: hidden;
 }
 
 .image {
-    background-image: url("https://i.pinimg.com/originals/ed/a5/73/eda5739966cb33768d8ad0d77d7307ce.gif");
-    
-    filter: blur(8px);
-    -webkit-filter: blur(8px);
-    background-repeat: no-repeat;
-    background-size:100vw 98vh ;
-    /* background-position: center; */
-    height: 100vh;
+  background-image: url("https://i.pinimg.com/originals/ed/a5/73/eda5739966cb33768d8ad0d77d7307ce.gif");
+
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+  background-repeat: no-repeat;
+  background-size: 100vw 98vh;
+  /* background-position: center; */
+  height: 100vh;
 }
-
-
 
 .window {
     
@@ -40,7 +53,7 @@ body {
 
 
 .login {
-    /* border: solid;
+  /* border: solid;
     border-top: transparent; */
 
     background-color: rgb(236, 236, 236);
@@ -70,3 +83,25 @@ body {
     color: grey;
 }
 
+
+.server {
+  display: flex;
+  background-color: gray;
+  margin: 10px;
+  text-align: center;
+  font-family: JungleFont;
+  border-radius: 10px;
+}
+
+.lockimage {
+  padding-top: 16px;
+}
+
+.serverinfo {
+  margin-top: 0px;
+}
+
+.joinbutton {
+  height: 2vh;
+  background-color: rgb(55, 0, 252);
+}

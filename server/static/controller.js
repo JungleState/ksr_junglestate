@@ -7,6 +7,11 @@ class Controller {
             this.keyInput(key.keyCode);
         }
 
+        // Detect page close
+        window.addEventListener('unload', function() {
+            navigator.sendBeacon('/inactive', '');
+        });
+
         // field updates
         setInterval(async () => {
             let json = await this.getData();
@@ -20,7 +25,7 @@ class Controller {
                 }
                 updateTitle = false;
             }
-            if (json.state == 1) {
+            if (json.lives == 0) {
                 document.documentElement.style.setProperty('--visibility' , "visible")
             }
         }, 500);

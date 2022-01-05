@@ -1,12 +1,11 @@
 certifi==2021.5.30
 click==8.0.1
-Flask==1.1.2
+flask==1.1.2
+gunicorn==20.1.0
 importlib-metadata==3.10.0
 itsdangerous==2.0.1
-Jinja2==3.0.1
-MarkupSafe==2.0.1
-pip==21.2.4
-setuptools==52.0.0.post20210125
-Werkzeug==1.0.1
+jinja2==3.0.1
+markupsafe==2.0.1
+werkzeug==1.0.1
 wheel==0.37.0
 zipp==3.5.0

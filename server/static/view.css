@@ -2,6 +2,11 @@
   font-family: JungleFont;
   src: url(fonts/EvilEmpire-4BBVK.ttf);
 }
+@font-face {
+  font-family: PixelFont;
+  src:url(fonts/ARCADECLASSIC.TTF)
+}
+
 
 :root {
   --visibility: hidden;
@@ -12,29 +17,33 @@
 }
 
 cell {
-  display: block;
-  height: min(
-    var(--size_height),
-    var(--size_width)
-  ); /*size is calculated in HTML*/
-  width: min(var(--size_height), var(--size_width));
-  aspect-ratio: 1/1;
-  background-size: cover;
-  background-position: center;
+    display:block;
+    height: min(var(--size_height), var(--size_width));  /*size is calculated in HTML*/
+    width: min(var(--size_height), var(--size_width));
+    aspect-ratio: 1/1;
+    background-size: cover;
+    background-position: center;
 }
-playername {
-  display: block;
-  width: 100%;
-  position: relative;
-  bottom: 0px; /*so I can easily set where the name floats */
-  left: 0px;
-  background-color: yellow;
-  text-overflow: ellipsis;
-  overflow: hidden;
+playername{
+    position: relative;
+    width: 12.5vw;
+    font-size: 3vh;
+    font-family: PixelFont;
+    text-shadow: greenyellow;
+    bottom: min(50%, 2vh); /*text floats above monkey */
+    white-space: nowrap; /*so name is shown on one single line*/
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block; /*anotherwise width doesn't work*/
 }
-#grid {
-  font-size: 13px;
-  display: inline-block;
+
+projectile{
+  position:relative;
+  background-image: url(sprites/coconut.png);
+}
+#grid{
+    font-size: 13px;
+    display: inline-block;
 }
 
 .plain {
@@ -91,4 +100,17 @@ playername {
   background-color: #1117;
   height: 90vh;
   width: 100%;
+}
+
+/* Scoreboard for Players */
+.title {
+  border-bottom: 1px solid black;
+}
+
+.playerSb {
+  padding: 0 5px;
+}
+
+.playerSb.inactive {
+  color: grey;
 }

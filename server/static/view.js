@@ -32,15 +32,21 @@ class View{
                 else{ //numbers are players
                     //tile.setAttribute('name', playerdict[charcode]);
                     tile.setAttribute('class', "player");
-                    var playername = document.createElement("playername")
-                    tile.appendChild(playername)
-                    playername.textContent=json.name_list[parseInt(charcode)];
+                    tile.setAttribute('id', Object.keys(json.name_list)[parseInt(charcode)]); //I need to append uuid for coconut throwing
+                    var playername = document.createElement("playername");
+                    tile.appendChild(playername);
+                    playername.textContent= Object.values(json.name_list)[parseInt(charcode)];
                 }
                 column+=2; //because every tile consists of 2 letters.
                 
             }
             row+=1;
         }
+        //for the shoot animation if players shoot coconut
+        for(let player in json.projectiles){
+            this.shoot(player, json.projectiles.direction) //fix, not right yet
+        }
+
 
         // Display stats
         if (json.mode == 'spec') {
@@ -51,8 +57,35 @@ class View{
         }
     }
 
+    shoot(uuidd, direction){ //creates an projectile element with direction property where the player is.
+
+        player=document.getElementById(uuid);
+        var projectile = document.createElement("projectile", {direction: direction});
+        player.appendChild(projectile);
+        
+    }
+
     specMode(json) {
-        console.log(json);
+        let l = json.scoreboard.length;
+        let navigation = document.getElementById('navigation');
+
+        navigation.innerHTML = '';
+
+        let title = document.createElement('div');
+        title.classList.add('title');
+        title.innerText = 'Scoreboard - Points';
+        navigation.appendChild(title);
+
+        for (let i = 0; i < l; i++) {
+            let div = document.createElement('div');
+            div.classList.add('playerSb');
+            if (!json.scoreboard[i].active) {
+                console.log("inactive");
+                div.classList.add('inactive');
+            }
+            div.innerText = `${i+1}. ${json.scoreboard[i].name} (${json.scoreboard[i].points})`;
+            navigation.appendChild(div);
+        }
     }
 
     clientMode(json) {

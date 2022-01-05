@@ -1,6 +1,7 @@
 from random import randint
 import logging
 import threading
+from app import allPlayersMoved
 logging.getLogger().setLevel("DEBUG")
 
 
@@ -13,12 +14,9 @@ class Item:
         return self.id
 
 
-SIGHT = 2
-
-
 class Rules:
     TIME_TO_MOVE = 0.5
-
+    SIGHT = 2
     class Scores:
         KNOCK_OUT = 25
         HIT = 10
@@ -47,12 +45,13 @@ class Player(Item):
         self.hits = 0
         self.x = 0
         self.y = 0
-        self.sight = SIGHT * 2 + 1  # dimension of field of view matrix, needs to be odd
+        self.sight = Rules.SIGHT * 2 + 1  # dimension of field of view matrix, needs to be odd
         self.name = name
         self.lives = 3
         self.coconuts = 2
         self.points = 0
         self.state = 0  # 0 = alive ; 1 = dead
+        self.active = True
 
     def item_dict(self):
         return {"coconuts": self.coconuts,
@@ -61,7 +60,8 @@ class Player(Item):
                 "hits": self.hits,
                 "name": self.name,
                 "lives": self.lives,
-                "points": self.points}
+                "points": self.points,
+                "active": self.active}
 
 
 class MapGenerator:
@@ -73,7 +73,7 @@ class MapGenerator:
             row = []
             matrix.append(row)
             for x in range(width):
-                if y < SIGHT or y >= height - SIGHT or x < SIGHT or x >= width - SIGHT:
+                if y < Rules.SIGHT or y >= height - Rules.SIGHT or x < Rules.SIGHT or x >= width - Rules.SIGHT:
                     row.append(self.border())
                 else:
                     row.append(self.inner())
@@ -111,10 +111,10 @@ class RandomGenerator(MapGenerator):
         too_many_surrounding_obstacles = 1
         while too_many_surrounding_obstacles > 0:
             too_many_surrounding_obstacles = 0
-            for y in range(len(matrix)-SIGHT*2):
-                y += SIGHT
-                for x in range(len(matrix[y])-SIGHT*2):
-                    x += SIGHT
+            for y in range(len(matrix)-Rules.SIGHT*2):
+                y += Rules.SIGHT
+                for x in range(len(matrix[y])-Rules.SIGHT*2):
+                    x += Rules.SIGHT
                     if matrix[y][x] != Items.FOREST:
                         surrounding_obstacles = 0
                         for i in range(4):
@@ -126,7 +126,7 @@ class RandomGenerator(MapGenerator):
                             index = randint(0, 3)
                             y_coord = y+plus_list[index]
                             x_coord = x+plus_list[-(index+1)]
-                            if y_coord > SIGHT-1 and y_coord < len(matrix)-SIGHT and x_coord > SIGHT-1 and x_coord < len(matrix[y])-SIGHT and matrix[y_coord][x_coord] == Items.FOREST:
+                            if y_coord > Rules.SIGHT-1 and y_coord < len(matrix)-Rules.SIGHT and x_coord > Rules.SIGHT-1 and x_coord < len(matrix[y])-Rules.SIGHT and matrix[y_coord][x_coord] == Items.FOREST:
                                 matrix[y_coord][x_coord] = super().inner()
                                 surrounding_obstacles -= 1
         return matrix
@@ -134,6 +134,7 @@ class RandomGenerator(MapGenerator):
 
 class Game:
     def __init__(self, id, field_dimensions, generator=RandomGenerator(20, 1, 1, 1)):
+        self.password = ""
         self.id = id
         self.state = 0
         self.round = 0
@@ -154,8 +155,8 @@ class Game:
         logging.debug(f"Player {uuid} joined as {name}")
         player = Player(uuid, uuid, name)
         while True:
-            x = randint(1, self.field_dim[0]-SIGHT)
-            y = randint(1, self.field_dim[1]-SIGHT)
+            x = randint(1, self.field_dim[0]-Rules.SIGHT)
+            y = randint(1, self.field_dim[1]-Rules.SIGHT)
             if self.getElementAt(x, y) == Items.EMPTY:
                 player.x = x
                 player.y = y
@@ -255,6 +256,7 @@ class Game:
 
     def doNextRound(self):
         move_list = list(self.move_list)
+        allPlayersMoved(move_list)
         self.move_list.clear()
         for move in move_list:  # check for moving
             if move[1] == 1:
@@ -322,14 +324,17 @@ class Game:
             self.handlePlayerDamage(player2, Rules.Damage.PLAYER)
 
         elif isinstance(checkField, Item):
+            item_picked_up = False
             if checkField == Items.PINEAPPLE:
                 self.handleScore(player, Rules.Scores.PINEAPPLE)
+                item_picked_up = True
 
             elif checkField == Items.BANANA:
                 if player.lives < 3:
                     player.lives += 1
                 else:
                     self.handleScore(player, Rules.Scores.BANANA)
+                item_picked_up = True
 
             elif checkField == Items.COCONUT:
                 print(player.coconuts)
@@ -339,6 +344,7 @@ class Game:
                         if safed_item[1] == toCoordinates:
                             index = self.safed_items_list.index(safed_item)
                             del self.safed_items_list[index]
+                            item_picked_up = True
                             break
                 else:
                     safed_item_in_safed_items_list = False
@@ -352,6 +358,19 @@ class Game:
                 self.setElementAt(player.x, player.y, Items.EMPTY)
                 self.setElementAtCoords(toCoordinates, player)
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
+
+            if item_picked_up:
+                item_list = [Items.BANANA, Items.PINEAPPLE, Items.COCONUT]
+                while True:
+                    x = randint(1, self.field_dim[0]-Rules.SIGHT)
+                    y = randint(1, self.field_dim[1]-Rules.SIGHT)
+                    if self.getElementAt(x, y) == Items.EMPTY:
+                        self.setElementAt(x, y, item_list[randint(0, len(item_list)-1)])
+                        break
+
+                
+
+                
 
     def handlePlayerDamage(self, player, damage=1):
         """Inflicts damage on the given player and returns True if the player is knocked out."""
@@ -370,49 +389,49 @@ class Game:
         player.points += score
 
     def executeShooting(self, player, dir):
-        logging.debug(f"Shooting player {player.id} in direction {dir}!")
+        if player.coconuts > 0:
+            logging.debug(f"Shooting player {player.id} in direction {dir}!")
+            toCoordinates = [player.x, player.y]
 
-        toCoordinates = [player.x, player.y]
+            if dir == 0:
+                toCoordinates[1] -= 1
+            elif dir == 1:
+                toCoordinates[0] += 1
+                toCoordinates[1] -= 1
+            elif dir == 2:
+                toCoordinates[0] += 1
+            elif dir == 3:
+                toCoordinates[0] += 1
+                toCoordinates[1] += 1
+            elif dir == 4:
+                toCoordinates[1] += 1
+            elif dir == 5:
+                toCoordinates[1] += 1
+                toCoordinates[0] -= 1
+            elif dir == 6:
+                toCoordinates[0] -= 1
+            elif dir == 7:
+                toCoordinates[1] -= 1
+                toCoordinates[0] -= 1
 
-        if dir == 0:
-            toCoordinates[1] -= 1
-        elif dir == 1:
-            toCoordinates[0] += 1
-            toCoordinates[1] -= 1
-        elif dir == 2:
-            toCoordinates[0] += 1
-        elif dir == 3:
-            toCoordinates[0] += 1
-            toCoordinates[1] += 1
-        elif dir == 4:
-            toCoordinates[1] += 1
-        elif dir == 5:
-            toCoordinates[1] += 1
-            toCoordinates[0] -= 1
-        elif dir == 6:
-            toCoordinates[0] -= 1
-        elif dir == 7:
-            toCoordinates[1] -= 1
-            toCoordinates[0] -= 1
+            checkField = self.getElementAtCoords(toCoordinates)
 
-        checkField = self.getElementAtCoords(toCoordinates)
+            if isinstance(checkField, Player):  # player field
+                player2 = checkField
+                logging.debug(f'Player {player2.uuid} hit')
+                if self.handlePlayerDamage(player2, Rules.Damage.COCONUT):
+                    self.handleScore(player, Rules.Scores.KNOCK_OUT)
+                else:
+                    self.handleScore(player, Rules.Scores.HIT)
 
-        if isinstance(checkField, Player):  # player field
-            player2 = checkField
-            logging.debug(f'Player {player2.uuid} hit')
-            if self.handlePlayerDamage(player2, Rules.Damage.COCONUT):
-                self.handleScore(player, Rules.Scores.KNOCK_OUT)
-            else:
-                self.handleScore(player, Rules.Scores.HIT)
+            player.coconuts -= 1
 
-        player.coconuts -= 1
-
-        for safed_item in self.safed_items_list:
-            if safed_item[1] == [player.x, player.y]:
-                player.coconuts += 1
-                del self.safed_items_list[self.safed_items_list.index(
-                    safed_item)]
-                break
+            for safed_item in self.safed_items_list:
+                if safed_item[1] == [player.x, player.y]:
+                    player.coconuts += 1
+                    del self.safed_items_list[self.safed_items_list.index(
+                        safed_item)]
+                    break
 
     def getFOV(self, player):
         field_of_view_matrix = []
@@ -459,7 +478,8 @@ class Game:
                           "points": [player.points for player in self.player_list],
                           "knockouts": [player.knockouts for player in self.player_list],
                           "hits": [player.hits for player in self.player_list],
-                          "name": [player.name[0] for player in self.player_list]}
+                          "name": [player.name[0] for player in self.player_list],
+                          "active": [player.active for player in self.player_list]}
 
         sorted_list = sorted(item_list_dict[f"{sortby}"])
         item_list = item_list_dict[f"{sortby}"]
@@ -478,4 +498,5 @@ class Game:
         elif hyrarchy == "incr":
             if sortby == "name":
                 sorted_player_id_list.reverse()
+        print(sorted_player_id_list)
         return sorted_player_id_list

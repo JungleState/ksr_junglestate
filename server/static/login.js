@@ -1,31 +1,36 @@
-document.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        login();
-    }
-});
-
-async function login() {
+async function login(join_mode, game_id) {
     let name = document.getElementById('name').value;
     let mode = document.getElementById('mode').checked;
+    let password = document.getElementById('password').value;
+    let player_mode;
 
-    let modeName;
-
+    // Set mode
     if (mode) {
-        modeName = 'spec';
+        player_mode = 'spec';
     }
     else {
-        modeName = 'client';
+        player_mode = 'client';
     }
 
-    if (!name) {
+    if (!name || (mode == 'spec' && join_mode == 'newGame')) {
         return;
     }
 
-    let response = await fetch(`/joinGame/${modeName}/${name}`, { method: 'POST' });
+    // Set options
+    let options = {
+        method: 'POST',
+        body: JSON.stringify({"mode": join_mode, "password": password, "player_name": name, "player_mode": player_mode, "game_id": game_id}),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    // Login
+    let response = await fetch('/joinGame', options);
     let json = await response.json();
 
     if (json.ok) {
-        window.location.replace('/')
+        window.location.replace('/');
     }
     else {
         alert(json.msg);
@@ -33,4 +38,51 @@ async function login() {
 
     document.getElementById('name').value = "";
     document.getElementById('mode').checked = false;
+    document.getElementById('password').value = "";
 }
+
+setInterval(async () => {
+    let response = await fetch('/getGames');
+    let json = await response.json();
+    console.log(json);
+
+    parentElement = document.getElementById('openGames');
+
+    while (parentElement.hasChildNodes()) {  
+        parentElement.removeChild(parentElement.firstChild);
+    } 
+
+    json.games.forEach((item, index) => {
+        console.log(`${index} : ${item}`);
+
+        var div = document.createElement('div'); 
+        div.classList.add('server');
+
+        var img = document.createElement('img');
+        img.classList.add('lockimage');
+        img.style.height = '1vw';
+        img.style.width = '1vw';
+        if(item.secured == true)
+            img.src = 'static//sprites//padlock.png';
+        else
+            img.src = 'static//sprites//open-padlock.png';
+        div.appendChild(img);
+
+        var text = document.createElement('p');
+        img.classList.add('serverinfo');
+        text.textContent = "Server: " + index + " | Spieler Online: " + item.players;
+        div.appendChild(text);
+    
+        var join_button = document.createElement('button');
+        join_button.classList.add('joinbutton');
+        join_button.textContent = 'Join';
+        join_button.addEventListener("click", () => {
+            login('joinExisting', item.id);
+        });
+
+        div.appendChild(join_button);
+
+        parentElement.appendChild(div);
+    });
+    
+}, 1000);
