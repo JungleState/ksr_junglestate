@@ -4,7 +4,7 @@ namespace junglestate {
         class Program {
         private static readonly HttpClient client = new HttpClient();
 
-        private static async Task joinGame(Tuple<string?, string?> configs) {
+        private static async Task joinGame(BaseMonkey monkey, Tuple<string?, string?> configs) {
             // non-user configs
             int SLEEP_TIME = 50;
 
@@ -23,7 +23,7 @@ namespace junglestate {
                     int score = 0;
                     // loop with regular request for the field followed by an instruction for the server what to do
                     while (true) {
-                        Tuple<bool, int> returnedData = await getData(configs);
+                        Tuple<bool, int> returnedData = await getData(monkey, configs);
                         Thread.Sleep(SLEEP_TIME);
                         if (returnedData.Item1) {
                             score = returnedData.Item2;
@@ -41,7 +41,7 @@ namespace junglestate {
                 Console.WriteLine("ERROR: data is null");
             }
         }
-        private static async Task<Tuple<bool, int>> getData(Tuple<string?, string?> configs) {
+        private static async Task<Tuple<bool, int>> getData(BaseMonkey monkey, Tuple<string?, string?> configs) {
             // get the map
             var stringTask = client.GetStringAsync(configs.Item1+"view");
             var json = await stringTask;
@@ -59,7 +59,7 @@ namespace junglestate {
                     Console.WriteLine("Health: "+data.lives);
                     Console.WriteLine("Ammo: "+data.coconuts);
                     Console.WriteLine("Score: "+data.points);
-                    playerBehaviour(configs, data.field, data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
+                    playerBehaviour(monkey, configs, data.field, data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
                 }
                 else {
                     // end loop from joinGame
@@ -133,7 +133,7 @@ namespace junglestate {
             return configs;
         }
 
-        private static void playerBehaviour(Tuple<string, string> c, string[] field, int health, int ammo, int score, int round) {   
+        private static void playerBehaviour(BaseMonkey monkey, Tuple<string, string> c, string[] field, int health, int ammo, int score, int round) {   
         // get user written algorithm
         // attack:  attack(c, DIRECTION)   options for DIRECTION: [0, 7]
         // move:    move(c, DIRECTION)     options for DIRECTION: -1, 0, 2, 4, 6
@@ -164,21 +164,22 @@ namespace junglestate {
             Move next = monkey.nextMove(new GameState{cells = getCells(field), round = round, lives = health, coconuts = ammo, points = score});
             switch(next.action) {
                 case Action.MOVE:
-                    move(c, next.direction);
+                    move(c, (int)next.direction);
                     break;
                 case Action.THROW:
-                    attack(c, next.direction);
+                    attack(c, (int)next.direction);
                     break;
                 default:
-                    move(c, Action.STAY);
+                    move(c, (int)Action.STAY);
                     break;
             }
         }
 
         private static Cell[][] getCells(string[] field) {
-            Cell[][] cells = new Cell[5][5];
+            Cell[][] cells = new Cell[5][];
             int rowIndex = 0;
             foreach (string row in field) {
+                cells[rowIndex] = new Cell[5];
                 for (int i = 0; i < row.Length; i++) {
                     string cellString = row.Substring(i*2, 2);
                     cells[rowIndex][i] = getCell(cellString);
@@ -205,14 +206,14 @@ namespace junglestate {
             }
         }
 
-        static async Task ProgramMain(string[] args, Monkey monkey) {
+        public static async Task ProgramMain(string[] args, Monkey monkey) {
             // start the process
             Tuple<string, string, bool> rawConfigs = loadConfigs(monkey);
             Console.Clear();
             if (rawConfigs.Item3 == false) {
                 // normal start
                 Tuple<string?, string?> configs = new Tuple<string?, string?>(rawConfigs.Item1, rawConfigs.Item2);
-                await joinGame(configs);
+                await joinGame(monkey, configs);
             }
             else {
                 // app mode start
@@ -230,7 +231,7 @@ namespace junglestate {
                     // start
                     Console.Clear();
                     Tuple<string?, string?> configs = new Tuple<string?, string?>(url, name);
-                    await joinGame(configs);
+                    await joinGame(monkey, configs);
                 }
                 catch {
                     Console.WriteLine("Invalid input.");

@@ -81,7 +81,7 @@
     }
 
     public class BaseMonkey {
-        private string name;
+        public readonly string name;
         
         public BaseMonkey(string name) {
             this.name = name;

@@ -35,7 +35,7 @@ namespace junglestate {
 
         public static async Task Main(string[] args) {
             // starts the the program
-            ProgramMain(args, new Monkey());
+            Program.ProgramMain(args, new Monkey());
         }
     }
 }
