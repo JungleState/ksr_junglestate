@@ -3,6 +3,7 @@ from flask import Flask, jsonify, session, abort, render_template, redirect, url
 from game_logic import Game
 import threading
 import uuid
+import logging
 
 NAME_LENGTH_MAX = 30
 MAX_PLAYER_TIMEOUT = 10
@@ -10,6 +11,9 @@ MAX_PLAYER_TIMEOUT = 10
 app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
 app.secret_key = os.urandom(16)
+
+log=logging.getLogger('werkzeug') #turn off the SPAM
+log.setLevel(logging.ERROR)
 
 app.config.update(
     TEMPLATES_AUTO_RELOAD=True
