@@ -1,13 +1,11 @@
-﻿using System;
-
-namespace junglestate {
-    enum Action {
+﻿namespace junglestate {
+    public enum Action {
         STAY = 0,
         MOVE = 1,
         THROW = 2
     }
 
-    enum Direction {
+    public enum Direction {
         NONE = -1,
         UP = 0,
         UP_RIGHT = 1,
@@ -19,7 +17,7 @@ namespace junglestate {
         UP_LEFT = 7
     }
 
-    enum Item {
+    public enum Item {
         EMPTY,
         FOREST,
         BANANA,
@@ -31,16 +29,17 @@ namespace junglestate {
     public static class DirectionInfo {
         public static (int, int) Coordinates(this Direction dir) {
             switch (dir) {
-                case NONE: return (2,2);
-                case UP: return (1,2);
-                case UP_RIGHT: return (1,3);
-                case RIGHT: return (2,3);
-                case DOWN_RIGHT: return (3,3);
-                case DOWN: return (3,2);
-                case DOWN_LEFT: return (3,1);
-                case LEFT: return (2,1);
-                case UP_LEFT: return (1,1);
+                case Direction.NONE: return (2,2);
+                case Direction.UP: return (1,2);
+                case Direction.UP_RIGHT: return (1,3);
+                case Direction.RIGHT: return (2,3);
+                case Direction.DOWN_RIGHT: return (3,3);
+                case Direction.DOWN: return (3,2);
+                case Direction.DOWN_LEFT: return (3,1);
+                case Direction.LEFT: return (2,1);
+                case Direction.UP_LEFT: return (1,1);
             }
+            return (2,2);
         }
 
         public static Cell GetCell(this Direction dir, GameState state) {
@@ -49,46 +48,46 @@ namespace junglestate {
         }
     }
 
-    class Move {
-        public readonly Action action = Action.STAY;
-        public readonly Direction direction = Direction.NONE;
-        public readonly string message = "";
-        public readonly int nextRound = -1;
+    public class Move {
+        public Action action = Action.STAY;
+        public Direction direction = Direction.NONE;
+        public string message = "";
+        public int nextRound = -1;
     }
 
-    class PlayerInfo {
-        public readonly string name;
-        public readonly int lives;
-        public readonly int coconuts;
-        public readonly int points;
+    public class PlayerInfo {
+        public string name;
+        public int lives;
+        public int coconuts;
+        public int points;
     }
 
-    class Cell {
-        public readonly Item item;
-        public readonly PlayerInfo playerInfo;
+    public class Cell {
+        public Item item;
+        public PlayerInfo playerInfo;
         public bool isMoveable() {
-            HashSet<Item> moveables = new HashSet<Item>(Item.EMPTY, Item.BANANA, Item.COCONUT, Item.PINEAPPLE);
+            HashSet<Item> moveables = new HashSet<Item>(){Item.EMPTY, Item.BANANA, Item.COCONUT, Item.PINEAPPLE};
             return moveables.Contains(item);
         }
     }
 
-    class GameState {
+    public class GameState {
         // 5x5 array of visible cells
-        public readonly Cell[][] cells;
-        public readonly int round;
-        public readonly int lives;
-        public readonly int coconuts;
-        public readonly int points;
+        public Cell[][] cells;
+        public int round;
+        public int lives;
+        public int coconuts;
+        public int points;
     }
 
-    class BaseMonkey {
+    public class BaseMonkey {
         private string name;
         
-        BaseMonkey(string name) {
+        public BaseMonkey(string name) {
             this.name = name;
         }
 
-        public Move nextMove(GameState state) {
+        public virtual Move nextMove(GameState state) {
             return new Move{action = Action.STAY, direction = Direction.NONE};
         }
     }
