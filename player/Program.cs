@@ -1,5 +1,4 @@
-using System;
-using Newtonsof.Json;
+using Newtonsoft.Json;
 
 namespace junglestate {
         class Program {
@@ -165,25 +164,20 @@ namespace junglestate {
             Move next = monkey.nextMove(new GameState{cells = getCells(field), round = round, lives = health, coconuts = ammo, points = score});
             switch(next.action) {
                 case Action.MOVE:
-                    switch(next.direction) {
-                        case Direction.UP:
-                            
-                    }
+                    move(c, next.direction);
                     break;
                 case Action.THROW:
-                    switch(next.direction) {
-
-                    }
+                    attack(c, next.direction);
                     break;
                 default:
-                    move(c, -1);
+                    move(c, Action.STAY);
                     break;
             }
         }
 
         private static Cell[][] getCells(string[] field) {
             Cell[][] cells = new Cell[5][5];
-            rowIndex = 0;
+            int rowIndex = 0;
             foreach (string row in field) {
                 for (int i = 0; i < row.Length; i++) {
                     string cellString = row.Substring(i*2, 2);

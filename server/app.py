@@ -240,6 +240,7 @@ def view():
         for game in game_list:
             if game.id == user.game_id:
                 response = GetJSON(user.game_id, user)
+                print(game.updated)
                 return jsonify(response)
 
         app.logger.info("View error: game not available")

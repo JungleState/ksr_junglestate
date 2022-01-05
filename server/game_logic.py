@@ -11,7 +11,6 @@ class Item:
     def __str__(self) -> str:
         return self.id
 
-
 class Rules:
     TIME_TO_MOVE = 0.5
     SIGHT = 2
@@ -140,7 +139,7 @@ class Game:
         self.player_list = []
         self.safed_items_list = []
         self.last_moves = []
-        self.updated = True
+        self.updated = False
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
@@ -216,6 +215,7 @@ class Game:
         if len(self.move_list) == 0:
             timer = threading.Timer(Rules.TIME_TO_MOVE, self.doNextRound)
             timer.start()
+            self.updated = False
 
         for move in self.move_list:
             if move[0] == player_id:
@@ -256,6 +256,8 @@ class Game:
 
     def doNextRound(self):
         move_list = list(self.move_list)
+        self.last_moves = move_list
+        self.updated = True
         self.move_list.clear()
         for move in move_list:  # check for moving
             if move[1] == 1:
