@@ -322,14 +322,17 @@ class Game:
             self.handlePlayerDamage(player2, Rules.Damage.PLAYER)
 
         elif isinstance(checkField, Item):
+            item_picked_up = False
             if checkField == Items.PINEAPPLE:
                 self.handleScore(player, Rules.Scores.PINEAPPLE)
+                item_picked_up = True
 
             elif checkField == Items.BANANA:
                 if player.lives < 3:
                     player.lives += 1
                 else:
                     self.handleScore(player, Rules.Scores.BANANA)
+                item_picked_up = True
 
             elif checkField == Items.COCONUT:
                 print(player.coconuts)
@@ -339,6 +342,7 @@ class Game:
                         if safed_item[1] == toCoordinates:
                             index = self.safed_items_list.index(safed_item)
                             del self.safed_items_list[index]
+                            item_picked_up = True
                             break
                 else:
                     safed_item_in_safed_items_list = False
@@ -352,6 +356,20 @@ class Game:
                 self.setElementAt(player.x, player.y, Items.EMPTY)
                 self.setElementAtCoords(toCoordinates, player)
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
+
+            if item_picked_up:
+                logging.debug("Item picked up")
+                item_list = [Items.BANANA, Items.PINEAPPLE, Items.COCONUT]
+                x = randint(1, self.field_dim[0]-Rules.SIGHT)
+                y = randint(1, self.field_dim[1]-Rules.SIGHT)
+                while not isinstance(self.getElementAt(x, y), Items.EMPTY):
+                    self.setElementAt(x, y, item_list[randint(0, len(item_list)-1)])
+                    x = randint(1, self.field_dim[0]-Rules.SIGHT)
+                    y = randint(1, self.field_dim[1]-Rules.SIGHT)
+
+                
+
+                
 
     def handlePlayerDamage(self, player, damage=1):
         """Inflicts damage on the given player and returns True if the player is knocked out."""

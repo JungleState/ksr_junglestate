@@ -136,11 +136,6 @@ namespace junglestate {
 
         private static void playerBehaviour(Tuple<string, string> c, string[] field, int health, int ammo, int score, int round) {   
         // get user written algorithm
-
-            Move next = monkey.nextMove(new GameState{cells = getCells(field), round = round, lives = health, coconuts = ammo, points = score});
-            
-            
-
         // attack:  attack(c, DIRECTION)   options for DIRECTION: [0, 7]
         // move:    move(c, DIRECTION)     options for DIRECTION: -1, 0, 2, 4, 6
         // DIRECTION: integer
@@ -167,11 +162,11 @@ namespace junglestate {
         // int round: round of the game
         // Tuple<string, string> c: configurations, can be ignored but must be given as an argument for attack() and move()
 
-        // custom mehtods can be added in the next section.
-        // DON'T DO IT HERE!
-
-
-
+            Move next = monkey.nextMove(new GameState{cells = getCells(field), round = round, lives = health, coconuts = ammo, points = score});
+            switch(next.action) {
+                case Action.STAY:
+                    move(-1)
+            }
         }
 
         private static Cell[][] getCells(string[] field) {
