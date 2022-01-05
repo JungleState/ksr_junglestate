@@ -1,11 +1,31 @@
 using System;
-using System.Collections.Generic;
 
-namespace junglecamp {
+namespace junglestate {
     enum Action {
         STAY = 0,
         MOVE = 1,
         THROW = 2
+    }
+
+    enum Direction {
+        NONE = -1,
+        UP = 0,
+        UP_RIGHT = 1,
+        RIGHT = 2,
+        DOWN_RIGHT = 3,
+        DOWN = 4,
+        DOWN_LEFT = 5,
+        LEFT = 6,
+        UP_LEFT = 7
+    }
+
+    enum Item {
+        EMPTY,
+        FOREST,
+        BANANA,
+        COCONUT,
+        PINEAPPLE,
+        PLAYER
     }
 
     public static class DirectionInfo {
@@ -28,32 +48,12 @@ namespace junglecamp {
             return state.cells[coords.Item1][coords.Item2];
         }
     }
-    enum Direction {
-        NONE = -1,
-        UP = 0,
-        UP_RIGHT = 1,
-        RIGHT = 2,
-        DOWN_RIGHT = 3,
-        DOWN = 4,
-        DOWN_LEFT = 5,
-        LEFT = 6,
-        UP_LEFT = 7
-    }
 
     class Move {
         public readonly Action action = Action.STAY;
         public readonly Direction direction = Direction.NONE;
         public readonly string message = "";
         public readonly int nextRound = -1;
-    }
-
-    enum Item {
-        EMPTY,
-        FOREST,
-        BANANA,
-        COCONUT,
-        PINEAPPLE,
-        PLAYER
     }
 
     class PlayerInfo {
@@ -73,7 +73,7 @@ namespace junglecamp {
     }
 
     class GameState {
-        /// 5x5 array of visible cells
+        // 5x5 array of visible cells
         public readonly Cell[][] cells;
         public readonly int round;
         public readonly int lives;
@@ -81,8 +81,14 @@ namespace junglecamp {
         public readonly int points;
     }
 
-    class Monkey {
-        protected Move nextMove(GameState state) {
+    class BaseMonkey {
+        private string name;
+        
+        BaseMonkey(string name) {
+            this.name = name;
+        }
+
+        public Move nextMove(GameState state) {
             return new Move{action = Action.STAY, direction = Direction.NONE};
         }
     }
