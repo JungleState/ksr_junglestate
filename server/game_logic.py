@@ -1,12 +1,7 @@
 from random import randint
 import logging
 import threading
-from app import allPlayersMoved
 logging.getLogger().setLevel("DEBUG")
-
-
-def sendMoveListToApp(moves):
-    allPlayersMoved(moves)
 
 class Item:
     def __init__(self, name, id):
@@ -145,6 +140,7 @@ class Game:
         self.player_list = []
         self.safed_items_list = []
         self.last_moves = []
+        self.updated = True
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
@@ -260,7 +256,6 @@ class Game:
 
     def doNextRound(self):
         move_list = list(self.move_list)
-        sendMoveListToApp(move_list)
         self.move_list.clear()
         for move in move_list:  # check for moving
             if move[1] == 1:
