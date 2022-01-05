@@ -36,6 +36,11 @@ playername{
     overflow: hidden;
     display: block; /*anotherwise width doesn't work*/
 }
+
+projectile{
+  position:relative;
+  background-image: url(sprites/coconut.png);
+}
 #grid{
     font-size: 13px;
     display: inline-block;
