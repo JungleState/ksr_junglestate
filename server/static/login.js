@@ -53,30 +53,26 @@ setInterval(async () => {
         parentElement.removeChild(parentElement.firstChild);
     } 
 
-    var div = document.createElement('div'); 
-    div.textContent = "Server 1 | Spieler Online 1";
-    var img = document.createElement('img');
-    img.style.height = '1vw';
-    img.style.width = '1vw';
-    if(true == false)
-        img.src = 'static//sprites//padlock.png';
-    else
-        img.src = 'static//sprites//open-padlock.png';
-
-    var join_button = document.createElement('button');
-    join_button.textContent = 'JOIN';
-
-    div.appendChild(img);
-    div.appendChild(join_button);
-    parentElement.appendChild(div);
-
     json.games.forEach((item, index) => {
         console.log(`${index} : ${item}`);
+
         var div = document.createElement('div'); 
-        div.textContent = "Server " + index + " | Spieler Online " + item.players;
+        div.textContent = "Server: " + index + " | Spieler Online: " + item.players;
         var img = document.createElement('img');
-        img.src = 'static//sprites//padlock.png';
+        img.style.height = '1vw';
+        img.style.width = '1vw';
+        if(true == false)
+            img.src = 'static//sprites//padlock.png';
+        else
+            img.src = 'static//sprites//open-padlock.png';
         div.appendChild(img);
+    
+        var join_button = document.createElement('button');
+        join_button.textContent = 'JOIN';
+        join_button.addEventListener("click", () => {
+            login('joinExisting');
+        });
+        div.appendChild(join_button);
         parentElement.appendChild(div);
     });
     
