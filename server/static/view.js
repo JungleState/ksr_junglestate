@@ -44,7 +44,7 @@ class View{
         }
         //for the shoot animation if players shoot coconut
         for(let player in json.projectiles){
-            this.shoot(player, json.projectiles.direction) //fix, not right yet
+            this.shoot(player, json.projectiles.direction) //fix, not right yet: do tis<-------------------------------------------------------------------------------------------------------------------------
         }
 
 
@@ -57,9 +57,9 @@ class View{
         }
     }
 
-    shoot(uuidd, direction){ //creates an projectile element with direction property where the player is.
+    shoot(uuid, direction){ //creates an projectile element with direction property where the player is.
 
-        player=document.getElementById(uuid);
+        var player = document.getElementById(uuid);
         var projectile = document.createElement("projectile", {direction: direction});
         player.appendChild(projectile);
         
