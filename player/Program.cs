@@ -164,8 +164,20 @@ namespace junglestate {
 
             Move next = monkey.nextMove(new GameState{cells = getCells(field), round = round, lives = health, coconuts = ammo, points = score});
             switch(next.action) {
-                case Action.STAY:
-                    move(-1)
+                case Action.MOVE:
+                    switch(next.direction) {
+                        case Direction.UP:
+                            
+                    }
+                    break;
+                case Action.THROW:
+                    switch(next.direction) {
+
+                    }
+                    break;
+                default:
+                    move(c, -1);
+                    break;
             }
         }
 
