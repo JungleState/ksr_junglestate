@@ -23,7 +23,7 @@ user_list = []
 game_list = []
 FIELD = (30, 20)
 
-
+# User
 class User:
     def __init__(self, name, mode):
         self.mode = mode
@@ -31,6 +31,7 @@ class User:
         self.active = True
         self.name = self.set_name(name)
         self.game_id = None
+        self.game_pass = None
         self.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [self])
 
     def set_name(self, name):
@@ -47,7 +48,7 @@ class User:
 
         return None
 
-
+# Methods
 def GetJSON(game_id, user):
     for game in game_list:
         if game.id == game_id:
@@ -69,7 +70,6 @@ def GetJSON(game_id, user):
                         "mode": user.mode,
                         "name_list": game.GetPlayers()}
 
-
 def updatePlayerActive(user):
     for game in game_list:
         if game.id == user.game_id:
@@ -77,7 +77,6 @@ def updatePlayerActive(user):
                 if player.uuid == user.uuid:
                     game.player_list[i].active = user.active
                     return
-
 
 def isLoggedIn():
     user = User.get_user_by_id(session.get('playerId'))
@@ -91,8 +90,13 @@ def isLoggedIn():
         user.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [user])
         user.timer.start()
 
-    return user
+        for game in game_list:
+            if game.id == user.game_id:
+                if game.password:
+                    if not user.game_pass:
+                        return None
 
+    return user
 
 def checkLogInData(name, mode):
     err = None
@@ -113,6 +117,15 @@ def checkLogInData(name, mode):
 
     return err
 
+def checkPassword(game, password, user):
+    if game.password:
+        if password == game.password:
+            user.game_pass = True
+            return True
+        else:
+            user.game_pass = False
+    
+    return False
 
 def kickPlayer(user):
     app.logger.debug(f"Kicked {user.name}")
@@ -121,6 +134,14 @@ def kickPlayer(user):
             game.kickPlayer(user.name)
     user_list.remove(user)
 
+def allPlayersMoved(game, moves):
+    if moves:
+        if moves != game.last_moves:
+            game.last_moves = moves
+
+            return moves
+
+    return None
 
 ### JSON ENDPOINTS ###
 
@@ -182,22 +203,32 @@ def joinGame():
         game = Game(str(uuid.uuid4()), FIELD)
         game_list.append(game)
         game.password = password
+        if game.password:
+            print("New Secured Server")
         user.game_id = game.id
+        user.game_pass = True
         if player_mode == 'client':
             game.join(user.name, user.uuid)
+        return jsonify(ok=True)
     elif game_mode == 'joinExisting':
         game_id = data['game_id']
-        print("Available: ")
-        for game in game_list:
-            print(f"ID: {game.id}, Match: {game.id == game_id}")
-        print("Join Server: " + game_id)
         user.game_id = game_id
         for game in game_list:
             if game.id == game_id:
-                if player_mode == 'client':
+                validPass = True
+                if game.password:
+                    print("Password Secured")
+                    validPass = checkPassword(game, password, user)
+                    if not validPass:
+                        kickPlayer(user)
+                    print(f"Access: {validPass}")
+                if player_mode == 'client' and validPass:
                     game.join(user.name, user.uuid)
+                    return jsonify(ok=True)
+                elif player_mode == 'spec' and validPass:
+                    return jsonify(ok=True)
 
-    return jsonify(ok=True)
+    return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
 

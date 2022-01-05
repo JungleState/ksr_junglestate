@@ -4,6 +4,7 @@ import threading
 logging.getLogger().setLevel("DEBUG")
 
 
+
 class Item:
     def __init__(self, name, id):
         self.name = name
@@ -140,6 +141,8 @@ class Game:
         self.move_list = []
         self.player_list = []
         self.safed_items_list = []
+        self.last_moves = []
+        self.updated = False
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
@@ -212,9 +215,10 @@ class Game:
         5: down left
         6: left
         7: up left"""
-        if len(self.move_list) == 0:
+        if len(self.move_list) == 1:
             timer = threading.Timer(Rules.TIME_TO_MOVE, self.doNextRound)
             timer.start()
+            self.updated = False
 
         for move in self.move_list:
             if move[0] == player_id:
@@ -255,6 +259,8 @@ class Game:
 
     def doNextRound(self):
         move_list = list(self.move_list)
+        self.last_moves = move_list
+        self.updated = True
         self.move_list.clear()
         for move in move_list:  # check for moving
             if move[1] == 1:

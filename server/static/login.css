@@ -41,34 +41,48 @@ body {
 }
 
 .window {
-  transform: translate(0%, -65vh);
-  border-width: thick;
-  border: solid;
-  margin: auto;
-  width: 30vw;
-  /* height: 33vh; */
+    
+    /* border-width: thick;
+    border: solid; */
+    
+    
+    /* height: 33vh; */
+    
 }
 
-.title {
-  /* border-color: saddlebrown;
-    border-width: thin;
-    border: solid; */
-  background-color: rgba(148, 147, 81, 0.8);
-  text-align: center;
-  color: white;
-  padding-top: 1vh;
-  padding-bottom: 1vh;
-}
+
 
 .login {
   /* border: solid;
     border-top: transparent; */
-  padding-top: 5%;
-  padding-bottom: 5%;
-  background-color: rgba(67, 88, 55, 0.8);
-  padding-left: 5%;
-  color: rgb(214, 214, 214);
+
+    background-color: rgb(236, 236, 236);
+    padding:3vh;
+    color: black;
+    height: 35vh;
+    border-radius: 7px;
+    transform: translate(0%, -75vh);
+    margin: auto;
+    width: 25vw;
+    
 }
+
+.login input{
+    margin-left: 10vh;
+    width: 15vw;
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+}
+
+.login h1 {
+    text-align: center;
+}
+
+.login .org {
+    font-style: italic;
+    color: grey;
+}
+
 
 .server {
   display: flex;
