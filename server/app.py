@@ -154,7 +154,7 @@ def joinGame():
     player_name = data['player_name']
     player_mode = data['player_mode']
     password = data['password']
-    mode = data['mode']
+    game_mode = data['mode']
 
     err = checkLogInData(player_name, player_mode)
 
@@ -168,14 +168,14 @@ def joinGame():
     user_list.append(user)
     session['playerId'] = user.uuid
 
-    if mode == 'newGame':
+    if game_mode == 'newGame':
         game = Game(uuid.uuid4(), FIELD)
         game_list.append(game)
         game.password = password
         user.game_id = game.id
         if player_mode == 'client':
             game.join(user.name, user.uuid)
-    elif mode == 'joinExisting':
+    elif game_mode == 'joinExisting':
         game_id = data['game_id']
         user.game_id = game_id
         for game in game_list:
