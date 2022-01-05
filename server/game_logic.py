@@ -3,8 +3,6 @@ import logging
 import threading
 logging.getLogger().setLevel("DEBUG")
 
-
-
 class Item:
     def __init__(self, name, id):
         self.name = name
@@ -12,7 +10,6 @@ class Item:
 
     def __str__(self) -> str:
         return self.id
-
 
 class Rules:
     TIME_TO_MOVE = 0.5
@@ -215,7 +212,7 @@ class Game:
         5: down left
         6: left
         7: up left"""
-        if len(self.move_list) == 1:
+        if len(self.move_list) == 0:
             timer = threading.Timer(Rules.TIME_TO_MOVE, self.doNextRound)
             timer.start()
             self.updated = False
