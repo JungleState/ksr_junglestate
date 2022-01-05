@@ -1,3 +1,8 @@
+@font-face {
+  font-family: JungleFont;
+  src: url(fonts/EvilEmpire-4BBVK.ttf);
+}
+
 /* body {
     text-align: center;
     margin-left: 35%;
@@ -63,4 +68,26 @@ body {
   background-color: rgba(67, 88, 55, 0.8);
   padding-left: 5%;
   color: rgb(214, 214, 214);
+}
+
+.server {
+  display: flex;
+  background-color: gray;
+  margin: 10px;
+  text-align: center;
+  font-family: JungleFont;
+  border-radius: 10px;
+}
+
+.lockimage {
+  padding-top: 16px;
+}
+
+.serverinfo {
+  margin-top: 0px;
+}
+
+.joinbutton {
+  height: 2vh;
+  background-color: rgb(55, 0, 252);
 }

@@ -1,4 +1,4 @@
-async function login(join_mode) {
+async function login(join_mode, game_id) {
     let name = document.getElementById('name').value;
     let mode = document.getElementById('mode').checked;
     let password = document.getElementById('password').value;
@@ -19,12 +19,11 @@ async function login(join_mode) {
     // Set options
     let options = {
         method: 'POST',
-        body: JSON.stringify({"mode": join_mode, "password": password, "player_name": name, "player_mode": player_mode}),
+        body: JSON.stringify({"mode": join_mode, "password": password, "player_name": name, "player_mode": player_mode, "game_id": game_id}),
         headers: {
             'Content-Type': 'application/json'
         }
     }
-
 
     // Login
     let response = await fetch('/joinGame', options);
@@ -53,25 +52,36 @@ setInterval(async () => {
         parentElement.removeChild(parentElement.firstChild);
     } 
 
-    var div = document.createElement('div'); 
-    div.textContent = "Server 1 | Spieler Online 1";
-    var img = document.createElement('img');
-    img.style.height = '1vw';
-    img.style.width = '1vw';
-    if(true == false)
-        img.src = 'static//sprites//padlock.png';
-    else
-        img.src = 'static//sprites//open-padlock.png';
-    div.appendChild(img);
-    parentElement.appendChild(div);
-
     json.games.forEach((item, index) => {
         console.log(`${index} : ${item}`);
+
         var div = document.createElement('div'); 
-        div.textContent = "Server " + index + " | Spieler Online " + item.players;
+        div.classList.add('server');
+
         var img = document.createElement('img');
-        img.src = 'static//sprites//padlock.png';
+        img.classList.add('lockimage');
+        img.style.height = '1vw';
+        img.style.width = '1vw';
+        if(item.secured == true)
+            img.src = 'static//sprites//padlock.png';
+        else
+            img.src = 'static//sprites//open-padlock.png';
         div.appendChild(img);
+
+        var text = document.createElement('p');
+        img.classList.add('serverinfo');
+        text.textContent = "Server: " + index + " | Spieler Online: " + item.players;
+        div.appendChild(text);
+    
+        var join_button = document.createElement('button');
+        join_button.classList.add('joinbutton');
+        join_button.textContent = 'Join';
+        join_button.addEventListener("click", () => {
+            login('joinExisting', item.id);
+        });
+
+        div.appendChild(join_button);
+
         parentElement.appendChild(div);
     });
     

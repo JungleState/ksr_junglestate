@@ -12,7 +12,7 @@ app = Flask(__name__, template_folder='templates')
 app.logger.setLevel("DEBUG")
 app.secret_key = os.urandom(16)
 
-log=logging.getLogger('werkzeug') #turn off the SPAM
+log = logging.getLogger('werkzeug')  # turn off the SPAM
 log.setLevel(logging.ERROR)
 
 app.config.update(
@@ -23,7 +23,7 @@ user_list = []
 game_list = []
 FIELD = (30, 20)
 
-
+# User
 class User:
     def __init__(self, name, mode):
         self.mode = mode
@@ -31,8 +31,9 @@ class User:
         self.active = True
         self.name = self.set_name(name)
         self.game_id = None
+        self.game_pass = None
         self.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [self])
-    
+
     def set_name(self, name):
         if self.mode == 'spec':
             return 'Spectator'
@@ -47,26 +48,27 @@ class User:
 
         return None
 
+# Methods
 def GetJSON(game_id, user):
     for game in game_list:
         if game.id == game_id:
-            if user.mode == "client":#returns JSON file for client
-                return {"field":game.GetFieldOfView(user.uuid),
-                               "coconuts":game.GetPlayerVar(user.uuid, "CC"),
-                               "lives":game.GetPlayerVar(user.uuid, "lives"),
-                               "points":game.GetPlayerVar(user.uuid, "P"),
-                               "round":game.round,
-                               "mode":user.mode,
-                               "name":user.name,
-                               "name_list":game.GetPlayers()}
-            elif user.mode == "spec":#returns JSON file for spectator
-                return {"id":user.uuid, 
-                               "field":game.SerializeMatrix(), 
-                               "state":game.state, 
-                               "round":game.round,
-                               "scoreboard":game.Scoreboard("points", "decr"),
-                               "mode":user.mode,
-                               "name_list":game.GetPlayers()}
+            if user.mode == "client":  # returns JSON file for client
+                return {"field": game.GetFieldOfView(user.uuid),
+                        "coconuts": game.GetPlayerVar(user.uuid, "CC"),
+                        "lives": game.GetPlayerVar(user.uuid, "lives"),
+                        "points": game.GetPlayerVar(user.uuid, "P"),
+                        "round": game.round,
+                        "mode": user.mode,
+                        "name": user.name,
+                        "name_list": game.GetPlayers()}
+            elif user.mode == "spec":  # returns JSON file for spectator
+                return {"id": user.uuid,
+                        "field": game.SerializeMatrix(),
+                        "state": game.state,
+                        "round": game.round,
+                        "scoreboard": game.Scoreboard("points", "decr"),
+                        "mode": user.mode,
+                        "name_list": game.GetPlayers()}
 
 def updatePlayerActive(user):
     for game in game_list:
@@ -74,7 +76,7 @@ def updatePlayerActive(user):
             for i, player in enumerate(game.player_list):
                 if player.uuid == user.uuid:
                     game.player_list[i].active = user.active
-                    return 
+                    return
 
 def isLoggedIn():
     user = User.get_user_by_id(session.get('playerId'))
@@ -87,6 +89,12 @@ def isLoggedIn():
         user.timer.cancel()
         user.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [user])
         user.timer.start()
+
+        for game in game_list:
+            if game.id == user.game_id:
+                if game.password:
+                    if not user.game_pass:
+                        return None
 
     return user
 
@@ -109,6 +117,15 @@ def checkLogInData(name, mode):
 
     return err
 
+def checkPassword(game, password, user):
+    if game.password:
+        if password == game.password:
+            user.game_pass = True
+            return True
+        else:
+            user.game_pass = False
+    
+    return False
 
 def kickPlayer(user):
     app.logger.debug(f"Kicked {user.name}")
@@ -117,6 +134,8 @@ def kickPlayer(user):
             game.kickPlayer(user.name)
     user_list.remove(user)
 
+def allPlayersMoved(moves):
+    pass
 
 ### JSON ENDPOINTS ###
 
@@ -139,6 +158,7 @@ def root():
 def login():
     return render_template('login.html')
 
+
 @app.route('/getGames', methods=['GET'])
 def getGames():
     gamesJson = {"games": []}
@@ -151,10 +171,11 @@ def getGames():
 
     return jsonify(gamesJson)
 
+
 @app.route('/joinGame', methods=['POST'])
 def joinGame():
 
-    data = request.get_json() # Post request arguments
+    data = request.get_json()  # Post request arguments
     player_name = data['player_name']
     player_mode = data['player_mode']
     password = data['password']
@@ -173,21 +194,35 @@ def joinGame():
     session['playerId'] = user.uuid
 
     if game_mode == 'newGame':
-        game = Game(uuid.uuid4(), FIELD)
+        game = Game(str(uuid.uuid4()), FIELD)
         game_list.append(game)
         game.password = password
+        if game.password:
+            print("New Secured Server")
         user.game_id = game.id
+        user.game_pass = True
         if player_mode == 'client':
             game.join(user.name, user.uuid)
+        return jsonify(ok=True)
     elif game_mode == 'joinExisting':
         game_id = data['game_id']
         user.game_id = game_id
         for game in game_list:
             if game.id == game_id:
-                if player_mode == 'client':
+                validPass = True
+                if game.password:
+                    print("Password Secured")
+                    validPass = checkPassword(game, password, user)
+                    if not validPass:
+                        kickPlayer(user)
+                    print(f"Access: {validPass}")
+                if player_mode == 'client' and validPass:
                     game.join(user.name, user.uuid)
+                    return jsonify(ok=True)
+                elif player_mode == 'spec' and validPass:
+                    return jsonify(ok=True)
 
-    return jsonify(ok=True)
+    return jsonify(ok=False)
 
 # View - Server knows if the request comes from a spectator or a player
 
@@ -232,6 +267,7 @@ def action(moveType, direction):
 
 # Inactive - AFK (player will be kicked automatically after timeout)
 
+
 @app.route('/inactive', methods=['POST'])
 def leave():
     user = User.get_user_by_id(session.get('playerId'))
@@ -241,6 +277,7 @@ def leave():
         updatePlayerActive(user)
 
     return jsonify(ok=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5500)))

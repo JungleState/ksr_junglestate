@@ -1,6 +1,7 @@
 from random import randint
 import logging
 import threading
+from app import allPlayersMoved
 logging.getLogger().setLevel("DEBUG")
 
 
@@ -255,6 +256,7 @@ class Game:
 
     def doNextRound(self):
         move_list = list(self.move_list)
+        allPlayersMoved(move_list)
         self.move_list.clear()
         for move in move_list:  # check for moving
             if move[1] == 1:
@@ -358,14 +360,13 @@ class Game:
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
 
             if item_picked_up:
-                logging.debug("Item picked up")
                 item_list = [Items.BANANA, Items.PINEAPPLE, Items.COCONUT]
-                x = randint(1, self.field_dim[0]-Rules.SIGHT)
-                y = randint(1, self.field_dim[1]-Rules.SIGHT)
-                while not isinstance(self.getElementAt(x, y), Items.EMPTY):
-                    self.setElementAt(x, y, item_list[randint(0, len(item_list)-1)])
+                while True:
                     x = randint(1, self.field_dim[0]-Rules.SIGHT)
                     y = randint(1, self.field_dim[1]-Rules.SIGHT)
+                    if self.getElementAt(x, y) == Items.EMPTY:
+                        self.setElementAt(x, y, item_list[randint(0, len(item_list)-1)])
+                        break
 
                 
 
