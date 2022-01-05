@@ -89,19 +89,27 @@ body {
   background-color: gray;
   margin: 10px;
   text-align: center;
-  font-family: JungleFont;
+  /*font-family: JungleFont;*/
   border-radius: 10px;
 }
 
 .lockimage {
-  padding-top: 16px;
+  margin-top: 2.5vh;
+  margin-right: 8px;
+  margin-left: 6x;
 }
 
 .serverinfo {
-  margin-top: 0px;
+  margin-top: 3vh;
+  font-size: 3vh;
+  margin-left: 1vw;
 }
 
 .joinbutton {
-  height: 2vh;
-  background-color: rgb(55, 0, 252);
+  height: 6vh;
+  background-color: gray;
+  margin-top: 2.5vh;
+  margin-left: 3.3vw;
+  border-radius: 10px;
+  width: 6vw;
 }
