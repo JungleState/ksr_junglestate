@@ -134,8 +134,14 @@ def kickPlayer(user):
             game.kickPlayer(user.name)
     user_list.remove(user)
 
-def allPlayersMoved(moves):
-    pass
+def allPlayersMoved(game, moves):
+    if moves:
+        if moves != game.last_moves:
+            game.last_moves = moves
+
+            return moves
+
+    return None
 
 ### JSON ENDPOINTS ###
 
