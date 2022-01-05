@@ -19,12 +19,11 @@ async function login(join_mode, game_id) {
     // Set options
     let options = {
         method: 'POST',
-        body: JSON.stringify({"mode": join_mode, "password": password, "player_name": name, "player_mode": player_mode}),
+        body: JSON.stringify({"mode": join_mode, "password": password, "player_name": name, "player_mode": player_mode, "game_id": game_id}),
         headers: {
             'Content-Type': 'application/json'
         }
     }
-
 
     // Login
     let response = await fetch('/joinGame', options);
@@ -70,7 +69,7 @@ setInterval(async () => {
         var join_button = document.createElement('button');
         join_button.textContent = 'JOIN';
         join_button.addEventListener("click", () => {
-            login('joinExisting');
+            login('joinExisting', item.id);
         });
         div.appendChild(join_button);
         parentElement.appendChild(div);

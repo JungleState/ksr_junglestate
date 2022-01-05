@@ -173,7 +173,7 @@ def joinGame():
     session['playerId'] = user.uuid
 
     if game_mode == 'newGame':
-        game = Game(uuid.uuid4(), FIELD)
+        game = Game(str(uuid.uuid4()), FIELD)
         game_list.append(game)
         game.password = password
         user.game_id = game.id
@@ -181,6 +181,10 @@ def joinGame():
             game.join(user.name, user.uuid)
     elif game_mode == 'joinExisting':
         game_id = data['game_id']
+        print("Available: ")
+        for game in game_list:
+            print(f"ID: {game.id}, Match: {game.id == game_id}")
+        print("Join Server: " + game_id)
         user.game_id = game_id
         for game in game_list:
             if game.id == game_id:
