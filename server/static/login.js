@@ -1,4 +1,4 @@
-async function login(join_mode) {
+async function login(join_mode, game_id) {
     let name = document.getElementById('name').value;
     let mode = document.getElementById('mode').checked;
     let password = document.getElementById('password').value;
