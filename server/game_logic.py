@@ -141,11 +141,8 @@ class Game:
         self.move_list = []
         self.player_list = []
         self.safed_items_list = []
-<<<<<<< HEAD
-=======
         self.last_moves = []
         self.updated = False
->>>>>>> bc54d17d63dedbfefefe31444dc9c7bdcd0af8dc
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
