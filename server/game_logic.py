@@ -5,6 +5,9 @@ from app import allPlayersMoved
 logging.getLogger().setLevel("DEBUG")
 
 
+def sendMoveListToApp(moves):
+    allPlayersMoved(moves)
+
 class Item:
     def __init__(self, name, id):
         self.name = name
@@ -256,7 +259,7 @@ class Game:
 
     def doNextRound(self):
         move_list = list(self.move_list)
-        allPlayersMoved(move_list)
+        sendMoveListToApp(move_list)
         self.move_list.clear()
         for move in move_list:  # check for moving
             if move[1] == 1:
