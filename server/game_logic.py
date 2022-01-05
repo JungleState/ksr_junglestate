@@ -260,11 +260,7 @@ class Game:
 
     def doNextRound(self):
         move_list = list(self.move_list)
-<<<<<<< HEAD
-        allPlayersMoved(self, move_list)
-=======
         sendMoveListToApp(move_list)
->>>>>>> c3de2191ab5ae481e2ff196bf76341886f20c48a
         self.move_list.clear()
         for move in move_list:  # check for moving
             if move[1] == 1:
