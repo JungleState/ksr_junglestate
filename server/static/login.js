@@ -12,7 +12,7 @@ async function login(join_mode) {
         player_mode = 'client';
     }
 
-    if (!name) {
+    if (!name || (mode == 'spec' && join_mode == 'newGame')) {
         return;
     }
 
