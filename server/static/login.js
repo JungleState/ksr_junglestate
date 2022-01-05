@@ -12,7 +12,7 @@ async function login(join_mode) {
         player_mode = 'client';
     }
 
-    if (!name) {
+    if (!name || (mode == 'spec' && join_mode == 'newGame')) {
         return;
     }
 
@@ -53,11 +53,26 @@ setInterval(async () => {
         parentElement.removeChild(parentElement.firstChild);
     } 
 
+    var div = document.createElement('div'); 
+    div.textContent = "Server 1 | Spieler Online 1";
+    var img = document.createElement('img');
+    img.style.height = '1vw';
+    img.style.width = '1vw';
+    if(true == false)
+        img.src = 'static//sprites//padlock.png';
+    else
+        img.src = 'static//sprites//open-padlock.png';
+    div.appendChild(img);
+    parentElement.appendChild(div);
+
     json.games.forEach((item, index) => {
         console.log(`${index} : ${item}`);
         var div = document.createElement('div'); 
-        div.textContent = "Server " + item.id;
-        parentElement.appendChild(div)  
+        div.textContent = "Server " + index + " | Spieler Online " + item.players;
+        var img = document.createElement('img');
+        img.src = 'static//sprites//padlock.png';
+        div.appendChild(img);
+        parentElement.appendChild(div);
     });
     
 }, 1000);
