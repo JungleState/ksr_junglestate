@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 
 namespace junglestate {
-        class Program {
+    class Program {
         private static readonly HttpClient client = new HttpClient();
 
         private static async Task joinGame(BaseMonkey monkey, Tuple<string?, string?> configs) {
@@ -161,7 +161,7 @@ namespace junglestate {
         // int round: round of the game
         // Tuple<string, string> c: configurations, can be ignored but must be given as an argument for attack() and move()
 
-            Move next = monkey.nextMove(new GameState{cells = getCells(field), round = round, lives = health, coconuts = ammo, points = score});
+            Move next = monkey.nextMove(new GameState(getCells(field), round, health, ammo, score));
             switch(next.action) {
                 case Action.MOVE:
                     move(c, (int)next.direction);
@@ -190,20 +190,13 @@ namespace junglestate {
         }
 
         private static Cell getCell(string cellString) {
-            switch (cellString) {
-                case "FF":
-                    return new Cell{item = Item.FOREST};
-                case "  ":
-                    return new Cell{item = Item.EMPTY};
-                case "PP":
-                    return new Cell{item = Item.PINEAPPLE};
-                case "BB":
-                    return new Cell{item = Item.BANANA};
-                case "CC":
-                    return new Cell{item = Item.COCONUT};
-                default:
-                    return new Cell{item = Item.PLAYER};
+            Item item = ItemInfo.fromCode(cellString);
+            if (item == Item.PLAYER) {
+                // TODO create player info from json response.
+                PlayerInfo info = new PlayerInfo("player", 3, 2, 25);
+                return Cell.PlayerCell(info);
             }
+            return Cell.ItemCell(item);
         }
 
         public static async Task ProgramMain(string[] args, Monkey monkey) {
