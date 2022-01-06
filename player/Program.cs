@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace junglestate {
     public sealed class JungleConfig {
-        public string serverAddress = "http://localhost:5500/";
+        public Uri serverAddress = new Uri("http://localhost:5500/");
     }
 
     ///<summary>The main program for junglecamp monkey bots.</summary>
@@ -26,7 +26,7 @@ namespace junglestate {
             int SLEEP_TIME = 50;
 
             // join game (fetch request)
-            var response = await client.PostAsync(config.serverAddress+"joinGame/client/"+monkey.name, new StringContent(""));
+            var response = await client.PostAsync(new Uri(config.serverAddress, "joinGame/client/"+monkey.name), new StringContent(""));
             var json = await response.Content.ReadAsStringAsync();
             dynamic? data = JsonConvert.DeserializeObject(json);
 
@@ -60,7 +60,7 @@ namespace junglestate {
         }
         private async Task<Tuple<bool, int>> getData() {
             // get the map
-            var stringTask = client.GetStringAsync(config.serverAddress+"view");
+            var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "view"));
             var json = await stringTask;
             dynamic? data = JsonConvert.DeserializeObject(json);
 
@@ -116,7 +116,7 @@ namespace junglestate {
         private async void sendCommand(int type, int direction) {
             // send the chosen action to the server
             try {
-                var response = await client.PostAsync(config.serverAddress+"action/"+type+"/"+direction, new StringContent(""));
+                var response = await client.PostAsync(new Uri(config.serverAddress, "action/"+type+"/"+direction), new StringContent(""));
                 
                 string[] actionsArray = new string[] {"stay", "move", "attack"};
                 string[] directionsArray = new string[] {"up", "up right", "right", "down right", "down", "down left", "left", "up left", "on the spot"};
@@ -207,7 +207,7 @@ namespace junglestate {
                     Console.WriteLine("e.g. http://localhost:5500/");
                     string? url = Console.ReadLine();
                     if (url != null) {
-                        config.serverAddress = url;
+                        config.serverAddress = new Uri(url);
                     }
                 } catch {
                     Console.WriteLine("Invalid input.");
