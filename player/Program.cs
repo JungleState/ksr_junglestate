@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using CommandLine;
 
 namespace junglestate {
     public sealed class JungleConfig {
@@ -210,9 +211,28 @@ namespace junglestate {
             return Cell.ItemCell(item);
         }
 
-        public static async Task ProgramMain(JungleConfig config, Monkey monkey) {
-            Program program = new Program(monkey, config);
-            await program.joinGame();
+        public class Options {
+            [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://localhost:5500/")]
+            public string Server { get; set; }
+            [Option('g', "game", Required = false, HelpText = "Game id (none to create a new game).", Default = "")]
+            public string GameId { get; set; }
+            [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
+            public string Password { get; set; }
+            [Option('d', "delay", Required = false, HelpText = "Update delay in millis.", Default = 500)]
+            public int Delay { get; set; }
+        }
+        public static async Task ProgramMain(string[] args, BaseMonkey monkey) {
+            JungleConfig config = new JungleConfig();
+            await Parser.Default.ParseArguments<Options>(args)
+                   .WithParsedAsync<Options>(o =>
+                   {
+                        config.serverAddress = new Uri(o.Server);
+                        config.gameId = o.GameId;
+                        config.password = o.Password;
+                        config.delay_ms = o.Delay;
+                        Program program = new Program(monkey, config);
+                        return program.joinGame();
+                   });
         }
     }
 }

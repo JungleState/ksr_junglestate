@@ -1,6 +1,4 @@
-﻿using CommandLine;
-
-// For usage in Visual Studio Code:
+﻿// For usage in Visual Studio Code:
 //     - Download C# extension
 //     - Download NET: https://dotnet.microsoft.com/download
 //     - Open Terminal
@@ -34,30 +32,9 @@ namespace junglestate {
         }
 
 
-        public class Options {
-            [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://localhost:5500/")]
-            public string Server { get; set; }
-            [Option('n', "name", Required = false, HelpText = "Monkey name.", Default = "Huey")]
-            public string Name { get; set; }
-            [Option('g', "game", Required = false, HelpText = "Game id (none to create a new game).", Default = "")]
-            public string GameId { get; set; }
-            [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
-            public string Password { get; set; }
-            [Option('d', "delay", Required = false, HelpText = "Update delay in millis.", Default = 500)]
-            public int Delay { get; set; }
-        }
         public static async Task Main(string[] args) {
-            JungleConfig config = new JungleConfig();
-            await Parser.Default.ParseArguments<Options>(args)
-                   .WithParsedAsync<Options>(o =>
-                   {
-                        config.serverAddress = new Uri(o.Server);
-                        config.gameId = o.GameId;
-                        config.password = o.Password;
-                        config.delay_ms = o.Delay;
-                        Monkey monkey = new Monkey(o.Name);
-                        return Program.ProgramMain(config, monkey);
-                   });
+            Monkey monkey = new Monkey("Hooey");
+            await Program.ProgramMain(args, monkey);
         }
     }
 }
