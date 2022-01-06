@@ -161,7 +161,7 @@ namespace junglestate {
         // int round: round of the game
         // Tuple<string, string> c: configurations, can be ignored but must be given as an argument for attack() and move()
 
-            Move next = monkey.nextMove(new GameState(getCells(field), round, health, ammo, score));
+            Move next = monkey.nextMove(new GameState(getCells(field), round, new PlayerInfo(monkey.name, health, ammo, score)));
             switch(next.action) {
                 case Action.MOVE:
                     move(c, (int)next.direction);

@@ -2,12 +2,14 @@
 using System.Collections.Immutable;
 
 namespace junglestate {
+    /// <summary>The possible actions of a monkey in a round.</summary>
     public enum Action {
         STAY = 0,
         MOVE = 1,
         THROW = 2
     }
 
+    /// <summary>The possible directions of an <see cref="Action"/>.</summary>
     public enum Direction {
         NONE = -1,
         UP = 0,
@@ -20,13 +22,17 @@ namespace junglestate {
         UP_LEFT = 7
     }
 
+    /// <summary>Utility methods pertaining to <see cref="Item"/>.</summary>
     public static class ItemInfo {
         private static readonly ISet<Item> MOVEABLE_ITEMS = ImmutableHashSet.Create(Item.EMPTY, Item.BANANA, Item.COCONUT, Item.PINEAPPLE);
 
+        /// <summary>Returns true exactly if a monkey can move to a <see cref="Cell"/> containing this item.</summary>
         public static bool isMoveable(this Item item) {
             return MOVEABLE_ITEMS.Contains(item);
         }
 
+        /// <summary>Returns an <see cref="Item"/> matching the given two-letter code.</summary>
+        /// <exception cref="ArgumentExceptoin">if the given code is unknown.</exception>
         public static Item fromCode(string code) {
             switch (code) {
                 case "FF":
@@ -49,6 +55,7 @@ namespace junglestate {
         }
     }
 
+    /// <summary>The possible contents of a <see cref="Cell"/>.</summary>
     public enum Item {
         EMPTY,
         FOREST,
@@ -58,7 +65,9 @@ namespace junglestate {
         PLAYER
     }
 
+    /// <summary>Utility methods pertaining to <see cref="Direction"/>.</summary>
     public static class DirectionInfo {
+        /// <summary>Returns the x and y coordinates into a 5x5 cell array corresponding to <paramref name="dir"/>.</summary>
         public static (int, int) Coordinates(this Direction dir) {
             switch (dir) {
                 case Direction.NONE: return (2,2);
@@ -73,20 +82,27 @@ namespace junglestate {
             }
             return (2,2);
         }
-
-        public static Cell GetCell(this Direction dir, GameState state) {
-            var coords = dir.Coordinates();
-            return state.cells[coords.Item1][coords.Item2];
-        }
     }
 
+    /// <summary>The description of a monkey's move in the next round.</summary>
     public sealed class Move {
-        public Action action = Action.STAY;
-        public Direction direction = Direction.NONE;
-        public string message = "";
-        public int nextRound = -1;
+        public Move(Action action, Direction direction, int nextRound = -1, string message = "") {
+            this.action = action;
+            this.direction = direction;
+            this.nextRound = nextRound;
+            this.message = message;
+        }
+        ///<summary>The <see cref="Action"/> to take.</summary>
+        public readonly Action action = Action.STAY;
+        ///<summary>The <see cref="Direction"/> into which to act.</summary>
+        public readonly Direction direction = Direction.NONE;
+        ///<summary>The optional message to display in this round.</summary>
+        public readonly string message = "";
+        ///<summary>The round identifier - allows the game manager to detect out-of-sync moves.</summary>
+        public readonly int nextRound = -1;
     }
 
+    /// <summary>The description of another player in the monkey's view.</summary>
     public sealed class PlayerInfo {
         public PlayerInfo(string name, int lives, int coconuts, int points) {
             this.name = name;
@@ -94,17 +110,23 @@ namespace junglestate {
             this.coconuts = coconuts;
             this.points = points;
         }
+        /// <summary>The name of the player.</summary>
         public readonly string name;
+        /// <summary>The number of lives remaining for the player.</summary>
         public readonly int lives;
+        /// <summary>The number of coconuts remaining for the player.</summary>
         public readonly int coconuts;
+        /// <summary>The number of points scored by player.</summary>
         public readonly int points;
     }
 
+    /// <summary>The description of a Cell in the monkey's environment.</summary>
     public sealed class Cell {
         private static readonly Cell EMPTY = new Cell(Item.EMPTY, null);
         private static readonly Cell PINEAPPLE = new Cell(Item.PINEAPPLE, null);
         private static readonly Cell BANANA = new Cell(Item.BANANA, null);
         private static readonly Cell COCONUT = new Cell(Item.COCONUT, null);
+        /// <summary>Creates a cell containing a regular item (or empty), not a player.</summary>
         public static Cell ItemCell(Item item) {
             switch(item) {
                 case Item.EMPTY:
@@ -119,6 +141,7 @@ namespace junglestate {
             throw new ArgumentException($"Unknown item type: {item}");
         }
 
+        /// <summary>Creates a cell containing a player.</summary>
         public static Cell PlayerCell(PlayerInfo playerInfo) {
             return new Cell(Item.PLAYER, playerInfo);
         }
@@ -126,38 +149,52 @@ namespace junglestate {
             this.item = item;
             this.playerInfo = playerInfo;
         }
+        ///<summary>The item kind contained by this cell.</summary>
         public readonly Item item;
+        ///<summary>The optional player info, <c>null</c> unless <see cref="item"/> is <see cref="Item.PLAYER"/>.</summary>
         public readonly PlayerInfo? playerInfo;
+        ///<summary>Returns true exactly if this cell can probably be moved to in this round.</summary>
         public bool isMoveable() {
             return item.isMoveable();
         }
     }
 
+    ///<summary>The description of the game state visible to the monkey in a given round.</summary>
     public sealed class GameState {
-        public GameState(Cell[][] cells, int round, int lives, int coconuts, int points) {
+        public GameState(Cell[][] cells, int round, PlayerInfo playerInfo) {
             this.cells = cells;
             this.round = round;
-            this.lives = lives;
-            this.coconuts = coconuts;
-            this.points = points;
+            this.playerInfo = playerInfo;
         }
-        // 5x5 array of visible cells
+        ///<summary>The 5x5 array of cells visible around the monkey's position.</summary>
         public readonly Cell[][] cells;
+        ///<summary>The game round identifier.</summary>
         public readonly int round;
-        public readonly int lives;
-        public readonly int coconuts;
-        public readonly int points;
+        ///<summary>The monkey's own player information.</summary>
+        public readonly PlayerInfo playerInfo;
+
+        /// <summary>Returns the <see cref="Cell"/> at the given direction from the center of this state's 5x5 view.</summary>
+        public Cell getCell(Direction dir) {
+            var coords = dir.Coordinates();
+            return cells[coords.Item1][coords.Item2];
+        }
     }
 
+    /// <summary>The most trivial monkey implementation that will always <see cref="Action.STAY"/> where it is.</summary>
+    /// <remarks>Extend this class to make it smarter.</remarks>
+    /// <seealso cref="Monkey"/>
     public class BaseMonkey {
+        ///<summary>The monkey's name.</summary>
         public readonly string name;
         
         public BaseMonkey(string name) {
             this.name = name;
         }
 
+        /// <summary>Defines the move that the monkey takes in a given round.</summary>
+        /// <remarks>Override or extend this method to refine the monkey's behavior.</remarks>
         public virtual Move nextMove(GameState state) {
-            return new Move{action = Action.STAY, direction = Direction.NONE};
+            return new Move(Action.STAY, Direction.NONE, state.round);
         }
     }
 }
