@@ -47,7 +47,7 @@ namespace junglestate {
 
             // check if joining was successful
             if (data != null){
-                if (!data.ok) {
+                if (data.ok == false) {
                     Console.WriteLine("Connection to game failed!");
                     Console.WriteLine((string) data.msg);
                 }
