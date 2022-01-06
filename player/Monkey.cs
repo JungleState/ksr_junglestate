@@ -43,6 +43,8 @@ namespace junglestate {
             public string GameId { get; set; }
             [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
             public string Password { get; set; }
+            [Option('d', "delay", Required = false, HelpText = "Update delay in millis.", Default = 500)]
+            public int Delay { get; set; }
         }
         public static async Task Main(string[] args) {
             JungleConfig config = new JungleConfig();
@@ -52,6 +54,7 @@ namespace junglestate {
                         config.serverAddress = new Uri(o.Server);
                         config.gameId = o.GameId;
                         config.password = o.Password;
+                        config.delay_ms = o.Delay;
                         Monkey monkey = new Monkey(o.Name);
                         return Program.ProgramMain(config, monkey);
                    });

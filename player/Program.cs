@@ -5,6 +5,7 @@ namespace junglestate {
         public Uri serverAddress = new Uri("http://localhost:5500/");
         public string gameId = "";
         public string password = "";
+        public int delay_ms = 500;
     }
 
     ///<summary>The main program for junglecamp monkey bots.</summary>
@@ -24,9 +25,6 @@ namespace junglestate {
         }
 
         private async Task joinGame() {
-            // non-user configs
-            int SLEEP_TIME = 100;
-
             // join game (fetch request)
             var joinData = new {
                 player_name = monkey.name,
@@ -57,7 +55,7 @@ namespace junglestate {
                     // loop with regular request for the field followed by an instruction for the server what to do
                     while (true) {
                         Tuple<bool, int> returnedData = await getData();
-                        Thread.Sleep(SLEEP_TIME);
+                        Thread.Sleep(config.delay_ms);
                         if (returnedData.Item1) {
                             score = returnedData.Item2;
                             break;
