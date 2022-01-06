@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 namespace junglestate {
     public sealed class JungleConfig {
         public Uri serverAddress = new Uri("http://localhost:5500/");
+        public string gameId = "";
+        public string password = "";
     }
 
     ///<summary>The main program for junglecamp monkey bots.</summary>
@@ -26,8 +28,21 @@ namespace junglestate {
             int SLEEP_TIME = 50;
 
             // join game (fetch request)
-            var response = await client.PostAsync(new Uri(config.serverAddress, "joinGame/client/"+monkey.name), new StringContent(""));
+            var joinData = new {
+                player_name = monkey.name,
+                player_mode = "client",
+                password = config.password,
+                game_mode = String.IsNullOrEmpty(config.gameId) ? "newGame" : "joinExisting",
+                game_id = config.gameId
+            };
+            string jsonData = JsonConvert.SerializeObject(joinData);
+
+            var response = await client.PostAsync(new Uri(config.serverAddress, "joinGame"), new StringContent(jsonData));
             var json = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode) {
+                Console.WriteLine(json);
+                return;
+            }
             dynamic? data = JsonConvert.DeserializeObject(json);
 
             // check if joining was successful
@@ -195,27 +210,7 @@ namespace junglestate {
             return Cell.ItemCell(item);
         }
 
-        public static async Task ProgramMain(string[] args, Monkey monkey) {
-            // start the process
-            JungleConfig config = new JungleConfig();
-
-            if (true) {
-                // FIXME make CLI dependent on flags
-                try {
-                    // ask url
-                    Console.WriteLine("Enter url of server");
-                    Console.WriteLine("e.g. http://localhost:5500/");
-                    string? url = Console.ReadLine();
-                    if (url != null) {
-                        config.serverAddress = new Uri(url);
-                    }
-                } catch (Exception e) {
-                    Console.WriteLine("Invalid input.");
-                    Console.WriteLine(e.ToString());
-                    return;
-                }
-            }
-            Console.Clear();
+        public static async Task ProgramMain(JungleConfig config, Monkey monkey) {
             Program program = new Program(monkey, config);
             await program.joinGame();
         }

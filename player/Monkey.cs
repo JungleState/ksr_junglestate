@@ -1,4 +1,6 @@
-﻿// For usage in Visual Studio Code:
+﻿using CommandLine;
+
+// For usage in Visual Studio Code:
 //     - Download C# extension
 //     - Download NET: https://dotnet.microsoft.com/download
 //     - Open Terminal
@@ -8,7 +10,7 @@
 
 namespace junglestate {
     public class Monkey : BaseMonkey {
-        public Monkey() : base("Max Mustermann") {}
+        public Monkey(string name) : base(name) {}
         public override Move nextMove(GameState state) {
             Direction direction = selectRandomDirection(state);
             return new Move(Action.MOVE, direction, state.round);
@@ -31,9 +33,29 @@ namespace junglestate {
             return result;
         }
 
+
+        public class Options {
+            [Option('s', "server", Required = false, HelpText = "Select server URL.", Default = "http://localhost:5500/")]
+            public string Server { get; set; }
+            [Option('n', "name", Required = false, HelpText = "Select name.", Default = "Huey")]
+            public string Name { get; set; }
+            [Option('g', "game", Required = false, HelpText = "Select game (none to create a new game).", Default = "")]
+            public string GameId { get; set; }
+            [Option('p', "password", Required = false, HelpText = "The password.", Default = "")]
+            public string Password { get; set; }
+            //string server = "http://localhost:5500/", string name = "Huey", string gameId = "", string password = ""
+        }
         public static async Task Main(string[] args) {
-            // starts the the program
-            await Program.ProgramMain(args, new Monkey());
+            JungleConfig config = new JungleConfig();
+            await Parser.Default.ParseArguments<Options>(args)
+                   .WithParsedAsync<Options>(o =>
+                   {
+                        config.serverAddress = new Uri(o.Server);
+                        config.gameId = o.GameId;
+                        config.password = o.Password;
+                        Monkey monkey = new Monkey(o.Name);
+                        return Program.ProgramMain(config, monkey);
+                   });
         }
     }
 }
