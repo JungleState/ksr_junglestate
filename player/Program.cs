@@ -104,7 +104,12 @@ namespace junglestate {
         }
 
         private GameState parseGameState(dynamic data) {
-            return new GameState(getCells(data.field), data.round, new PlayerInfo(monkey.name, data.lives, data.coconuts, data.points));
+            return new GameState(getCells(data.field.ToObject<string[]>()),
+                                 data.round.ToObject<int>(),
+                                 new PlayerInfo(monkey.name,
+                                        data.lives.ToObject<int>(),
+                                        data.coconuts.ToObject<int>(),
+                                        data.points.ToObject<int>()));
         }
 
         private async void sendCommand(Action action, Direction direction) {
