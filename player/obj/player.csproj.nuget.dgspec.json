@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/phdoenni/g/ksr_junglestate/player/player.csproj": {}
+    "/Users/tom/git/ksr_junglestate/player/player.csproj": {}
   },
   "projects": {
-    "/home/phdoenni/g/ksr_junglestate/player/player.csproj": {
+    "/Users/tom/git/ksr_junglestate/player/player.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/phdoenni/g/ksr_junglestate/player/player.csproj",
+        "projectUniqueName": "/Users/tom/git/ksr_junglestate/player/player.csproj",
         "projectName": "player",
-        "projectPath": "/home/phdoenni/g/ksr_junglestate/player/player.csproj",
-        "packagesPath": "/home/phdoenni/.nuget/packages/",
-        "outputPath": "/home/phdoenni/g/ksr_junglestate/player/obj/",
+        "projectPath": "/Users/tom/git/ksr_junglestate/player/player.csproj",
+        "packagesPath": "/Users/tom/.nuget/packages/",
+        "outputPath": "/Users/tom/git/ksr_junglestate/player/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/phdoenni/.nuget/NuGet/NuGet.Config"
+          "/Users/tom/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -58,7 +58,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.101/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.101/RuntimeIdentifierGraph.json"
         }
       }
     }
