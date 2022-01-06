@@ -32,12 +32,13 @@ namespace junglestate {
                 player_name = monkey.name,
                 player_mode = "client",
                 password = config.password,
-                game_mode = String.IsNullOrEmpty(config.gameId) ? "newGame" : "joinExisting",
+                mode = String.IsNullOrEmpty(config.gameId) ? "newGame" : "joinExisting",
                 game_id = config.gameId
             };
             string jsonData = JsonConvert.SerializeObject(joinData);
+            var content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await client.PostAsync(new Uri(config.serverAddress, "joinGame"), new StringContent(jsonData));
+            var response = await client.PostAsync(new Uri(config.serverAddress, "joinGame"), content);
             var json = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) {
                 Console.WriteLine(json);
