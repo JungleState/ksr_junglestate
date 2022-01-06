@@ -1,5 +1,0 @@
-/Users/tom/git/ksr_junglestate/player/obj/Debug/net5.0/player.csproj.AssemblyReference.cache
-/Users/tom/git/ksr_junglestate/player/obj/Debug/net5.0/player.GeneratedMSBuildEditorConfig.editorconfig
-/Users/tom/git/ksr_junglestate/player/obj/Debug/net5.0/player.AssemblyInfoInputs.cache
-/Users/tom/git/ksr_junglestate/player/obj/Debug/net5.0/player.AssemblyInfo.cs
-/Users/tom/git/ksr_junglestate/player/obj/Debug/net5.0/player.csproj.CoreCompileInputs.cache
