@@ -209,8 +209,9 @@ namespace junglestate {
                     if (url != null) {
                         config.serverAddress = new Uri(url);
                     }
-                } catch {
+                } catch (Exception e) {
                     Console.WriteLine("Invalid input.");
+                    Console.WriteLine(e.ToString());
                     return;
                 }
             }
