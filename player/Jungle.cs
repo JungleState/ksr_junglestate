@@ -82,6 +82,18 @@ namespace junglestate {
             }
             return (2,2);
         }
+
+        public static bool isMoveable(this Direction dir) {
+            switch (dir) {
+                case Direction.NONE:
+                case Direction.UP:
+                case Direction.RIGHT:
+                case Direction.DOWN:
+                case Direction.LEFT:
+                    return true;
+            }
+            return false;
+        }
     }
 
     /// <summary>The description of a monkey's move in the next round.</summary>
@@ -157,7 +169,7 @@ namespace junglestate {
         ///<summary>The optional player info, <c>null</c> unless <see cref="item"/> is <see cref="Item.PLAYER"/>.</summary>
         public readonly PlayerInfo? playerInfo;
         ///<summary>Returns true exactly if this cell can probably be moved to in this round.</summary>
-        public bool isMoveable() {
+        public bool isFree() {
             return item.isMoveable();
         }
     }

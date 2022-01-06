@@ -7,6 +7,7 @@
 //     - Run: "dotnet run"
 
 namespace junglestate {
+    ///<summary>A simple monkey that moves randomly in free directions.</summary>
     public class Monkey : BaseMonkey {
         public Monkey(string name) : base(name) {}
         public override Move nextMove(GameState state) {
@@ -24,7 +25,7 @@ namespace junglestate {
         private List<Direction> computeFreeDirections(GameState state) {
             List<Direction> result = new List<Direction>();
             foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
-                if (state.getCell(dir).isMoveable()) {
+                if (dir.isMoveable() && state.getCell(dir).isFree()) {
                     result.Add(dir);
                 }
             }

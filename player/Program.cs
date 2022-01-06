@@ -105,84 +105,30 @@ namespace junglestate {
             return new Tuple<bool, int>(gameOver, score);
         }
 
-        private void move(int direction) {
-            // option for user written algorithm
-            // direction defines the direction the player moves
-            if (direction == 0 || direction == 2 || direction == 4 || direction == 6) {
-                sendCommand(1, direction);
-            }
-            // if an invalid direction is given or -1 is stated the character does nothing
-            else {
-                sendCommand(0, -1);
-            }
-        }
-
-        private void attack(int direction) {
-            // option for user written algorithm
-            // direction defines the direction the player shoots
-            if (direction >= 0 && direction <= 7) {
-                sendCommand(2, direction);
-            }
-            // if an invalid direction is given the character does nothing
-            else {
-                sendCommand(0, -1);
-            }
-        }
-
-        private async void sendCommand(int type, int direction) {
+        private async void sendCommand(Action action, Direction direction) {
             // send the chosen action to the server
             try {
-                var response = await client.PostAsync(new Uri(config.serverAddress, "action/"+type+"/"+direction), new StringContent(""));
-                
-                string[] actionsArray = new string[] {"stay", "move", "attack"};
-                string[] directionsArray = new string[] {"up", "up right", "right", "down right", "down", "down left", "left", "up left", "on the spot"};
-                if (direction < 0) {
-                    direction = 8;
-                }
-                Console.WriteLine("-> Action: "+actionsArray[type]+" "+directionsArray[direction]);
+                var response = await client.PostAsync(new Uri(config.serverAddress, "action/"+(int)action+"/"+(int)direction), new StringContent(""));
+                Console.WriteLine("-> Action: "+action.ToString()+" "+direction.ToString());
             }
-            catch {
-                // Console.WriteLine("");
-                // Console.WriteLine("Command could not be sent");
+            catch (Exception e) {
+                Console.WriteLine(e.ToString());
             }
         }
 
         private void playerBehaviour(string[] field, int health, int ammo, int score, int round) {   
-        // get user written algorithm
-        // attack:  attack(c, DIRECTION)   options for DIRECTION: [0, 7]
-        // move:    move(c, DIRECTION)     options for DIRECTION: -1, 0, 2, 4, 6
-        // DIRECTION: integer
-        //    -1: No direction
-        //    0: up
-        //    1: up right
-        //    2: right
-        //    3: down right
-        //    4: down
-        //    5: down left
-        //    6: left
-        //    7: up left
-
-        // "  ": plain:     empty
-        // "FF": jungle:    wall
-        // "CC": coconut:   +1 ammo
-        // "BB": banana:    +1 health
-        // "PP": pineapple: +1 score
-
-        // string field: 5x5 matrix of surrounding
-        // int health: health of character
-        // int ammo: amount of ammo left
-        // int score: score of player
-        // int round: round of the game
             Move next = monkey.nextMove(new GameState(getCells(field), round, new PlayerInfo(monkey.name, health, ammo, score)));
             switch(next.action) {
                 case Action.MOVE:
-                    move((int)next.direction);
+                    if (next.direction.isMoveable()) {
+                        sendCommand(next.action, next.direction);
+                    }
                     break;
                 case Action.THROW:
-                    attack((int)next.direction);
+                    sendCommand(next.action, next.direction);
                     break;
                 default:
-                    move((int)Action.STAY);
+                    sendCommand(Action.STAY, Direction.NONE);
                     break;
             }
         }
