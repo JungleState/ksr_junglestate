@@ -8,8 +8,7 @@
 
 namespace junglestate {
     public class Monkey : BaseMonkey {
-        public Monkey() : base("Max Mustermann") {
-        }
+        public Monkey() : base("Max Mustermann") {}
         public override Move nextMove(GameState state) {
             Direction direction = selectRandomDirection(state);
             return new Move{action = Action.MOVE, direction = direction, nextRound = state.round};
@@ -35,7 +34,7 @@ namespace junglestate {
 
         public static async Task Main(string[] args) {
             // starts the the program
-            Program.ProgramMain(args, new Monkey());
+            await Program.ProgramMain(args, new Monkey());
         }
     }
 }
