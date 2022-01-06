@@ -47,7 +47,7 @@ namespace junglestate {
 
             // check if joining was successful
             if (data != null){
-                if (data.ok == false) {
+                if (!data.ok) {
                     Console.WriteLine("Connection to game failed!");
                     Console.WriteLine((string) data.msg);
                 }
@@ -83,16 +83,14 @@ namespace junglestate {
             int score = 0;
 
             if (data != null) {
-                score = data.points.ToObject<int>(); //, System.Globalization.NumberStyles.Integer
-                // ask user written algorithm about what to do
+                GameState state = parseGameState(data);
                 if (data.lives > 0) {
-                    Console.WriteLine("");
                     Console.WriteLine("Field: "+data.field);
                     Console.WriteLine("Round: "+data.round);
                     Console.WriteLine("Health: "+data.lives);
                     Console.WriteLine("Ammo: "+data.coconuts);
                     Console.WriteLine("Score: "+data.points);
-                    playerBehaviour(data.field.ToObject<string[]>(), data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
+                    playerBehaviour(state);
                 }
                 else {
                     // end loop from joinGame
@@ -105,19 +103,23 @@ namespace junglestate {
             return new Tuple<bool, int>(gameOver, score);
         }
 
+        private GameState parseGameState(dynamic data) {
+            return new GameState(getCells(data.field), data.round, new PlayerInfo(monkey.name, data.lives, data.coconuts, data.points));
+        }
+
         private async void sendCommand(Action action, Direction direction) {
             // send the chosen action to the server
             try {
-                var response = await client.PostAsync(new Uri(config.serverAddress, "action/"+(int)action+"/"+(int)direction), new StringContent(""));
                 Console.WriteLine("-> Action: "+action.ToString()+" "+direction.ToString());
+                await client.PostAsync(new Uri(config.serverAddress, "action/"+(int)action+"/"+(int)direction), new StringContent(""));
             }
             catch (Exception e) {
                 Console.WriteLine(e.ToString());
             }
         }
 
-        private void playerBehaviour(string[] field, int health, int ammo, int score, int round) {   
-            Move next = monkey.nextMove(new GameState(getCells(field), round, new PlayerInfo(monkey.name, health, ammo, score)));
+        private void playerBehaviour(GameState state) {   
+            Move next = monkey.nextMove(state);
             switch(next.action) {
                 case Action.MOVE:
                     if (next.direction.isMoveable()) {
