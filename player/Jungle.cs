@@ -124,6 +124,7 @@ namespace junglestate {
     public sealed class Cell {
         private static readonly Cell EMPTY = new Cell(Item.EMPTY, null);
         private static readonly Cell PINEAPPLE = new Cell(Item.PINEAPPLE, null);
+        private static readonly Cell FOREST = new Cell(Item.FOREST, null);
         private static readonly Cell BANANA = new Cell(Item.BANANA, null);
         private static readonly Cell COCONUT = new Cell(Item.COCONUT, null);
         /// <summary>Creates a cell containing a regular item (or empty), not a player.</summary>
@@ -133,6 +134,8 @@ namespace junglestate {
                     return EMPTY;
                 case Item.PINEAPPLE:
                     return PINEAPPLE;
+                case Item.FOREST:
+                    return FOREST;
                 case Item.BANANA:
                     return BANANA;
                 case Item.COCONUT:

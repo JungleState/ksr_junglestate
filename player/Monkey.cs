@@ -35,15 +35,14 @@ namespace junglestate {
 
 
         public class Options {
-            [Option('s', "server", Required = false, HelpText = "Select server URL.", Default = "http://localhost:5500/")]
+            [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://localhost:5500/")]
             public string Server { get; set; }
-            [Option('n', "name", Required = false, HelpText = "Select name.", Default = "Huey")]
+            [Option('n', "name", Required = false, HelpText = "Monkey name.", Default = "Huey")]
             public string Name { get; set; }
-            [Option('g', "game", Required = false, HelpText = "Select game (none to create a new game).", Default = "")]
+            [Option('g', "game", Required = false, HelpText = "Game id (none to create a new game).", Default = "")]
             public string GameId { get; set; }
-            [Option('p', "password", Required = false, HelpText = "The password.", Default = "")]
+            [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
             public string Password { get; set; }
-            //string server = "http://localhost:5500/", string name = "Huey", string gameId = "", string password = ""
         }
         public static async Task Main(string[] args) {
             JungleConfig config = new JungleConfig();

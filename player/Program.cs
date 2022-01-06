@@ -25,7 +25,7 @@ namespace junglestate {
 
         private async Task joinGame() {
             // non-user configs
-            int SLEEP_TIME = 50;
+            int SLEEP_TIME = 100;
 
             // join game (fetch request)
             var joinData = new {
@@ -50,7 +50,7 @@ namespace junglestate {
             if (data != null){
                 if (data.ok == false) {
                     Console.WriteLine("Connection to game failed!");
-                    Console.WriteLine(data.msg);
+                    Console.WriteLine((string) data.msg);
                 }
                 else {
                     int score = 0;
@@ -88,11 +88,12 @@ namespace junglestate {
                 // ask user written algorithm about what to do
                 if (data.lives > 0) {
                     Console.WriteLine("");
+                    Console.WriteLine("Field: "+data.field);
                     Console.WriteLine("Round: "+data.round);
                     Console.WriteLine("Health: "+data.lives);
                     Console.WriteLine("Ammo: "+data.coconuts);
                     Console.WriteLine("Score: "+data.points);
-                    playerBehaviour(data.field, data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
+                    playerBehaviour(data.field.ToObject<string[]>(), data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
                 }
                 else {
                     // end loop from joinGame
@@ -192,7 +193,7 @@ namespace junglestate {
             int rowIndex = 0;
             foreach (string row in field) {
                 cells[rowIndex] = new Cell[5];
-                for (int i = 0; i < row.Length; i++) {
+                for (int i = 0; i < row.Length / 2; i++) {
                     string cellString = row.Substring(i*2, 2);
                     cells[rowIndex][i] = getCell(cellString);
                 }
