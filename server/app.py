@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, session, abort, render_template, redirect, url_for, request
+from flask import Flask, json, jsonify, session, abort, render_template, redirect, url_for, request
 from game_logic import Game
 import threading
 import uuid
@@ -70,6 +70,10 @@ def GetJSON(game_id, user):
                         "mode": user.mode,
                         "name_list": game.GetPlayers()}
 
+def invalidPost():
+    app.logger.info('Invalid / missing POST arguments')
+    return jsonify(ok=False, msg='Invalid / missing POST arguments')
+
 def updatePlayerActive(user):
     for game in game_list:
         if game.id == user.game_id:
@@ -90,11 +94,8 @@ def isLoggedIn():
         user.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [user])
         user.timer.start()
 
-        for game in game_list:
-            if game.id == user.game_id:
-                if game.password:
-                    if not user.game_pass:
-                        return None
+        if not user.game_pass:
+            return None
 
     return user
 
@@ -117,13 +118,10 @@ def checkLogInData(name, mode):
 
     return err
 
-def checkPassword(game, password, user):
+def checkPassword(game, password):
     if game.password:
         if password == game.password:
-            user.game_pass = True
             return True
-        else:
-            user.game_pass = False
     
     return False
 
@@ -133,15 +131,6 @@ def kickPlayer(user):
         if game.id == user.game_id:
             game.kickPlayer(user.name)
     user_list.remove(user)
-
-def allPlayersMoved(game, moves):
-    if moves:
-        if moves != game.last_moves:
-            game.last_moves = moves
-
-            return moves
-
-    return None
 
 ### JSON ENDPOINTS ###
 
@@ -180,55 +169,77 @@ def getGames():
 
 @app.route('/joinGame', methods=['POST'])
 def joinGame():
+    # Post request arguments
+    data = request.get_json()
 
-    data = request.get_json()  # Post request arguments
-    player_name = data['player_name']
-    player_mode = data['player_mode']
-    password = data['password']
-    game_mode = data['mode']
+    try:
+        player_name = data['player_name']
+        player_mode = data['player_mode']
+        password = data['password']
+        game_mode = data['mode']
+    except:
+        invalidPost()
+        # Return error
 
-    err = checkLogInData(player_name, player_mode)
-
-    if err:
-        # Invalid name or mode
-        app.logger.info(err)
-        return jsonify(ok=False, msg=err)
-
-    # Login data valid
-    user = User(player_name, player_mode)
-    user_list.append(user)
-    session['playerId'] = user.uuid
-
+    # Create new game
     if game_mode == 'newGame':
+        err = checkLogInData(player_name, player_mode)
+        if err:
+            app.logger.info(err)
+            return jsonify(ok=False, msg=err)
+
+        ### Login data valid
+        # New game
         game = Game(str(uuid.uuid4()), FIELD)
         game_list.append(game)
         game.password = password
-        if game.password:
-            print("New Secured Server")
+
+        # New user
+        user = User(player_name, player_mode)
+        user_list.append(user)
+        session['playerId'] = user.uuid
         user.game_id = game.id
         user.game_pass = True
+
         if player_mode == 'client':
             game.join(user.name, user.uuid)
+
         return jsonify(ok=True)
+
+    # Join Game
     elif game_mode == 'joinExisting':
-        game_id = data['game_id']
-        user.game_id = game_id
+        game_id = None
+        try:
+            game_id = data['game_id']
+        except:
+            invalidPost()
+            # Return error
+
         for game in game_list:
             if game.id == game_id:
-                validPass = True
                 if game.password:
-                    print("Password Secured")
-                    validPass = checkPassword(game, password, user)
+                    validPass = checkPassword(game, password)
                     if not validPass:
-                        kickPlayer(user)
-                    print(f"Access: {validPass}")
-                if player_mode == 'client' and validPass:
-                    game.join(user.name, user.uuid)
-                    return jsonify(ok=True)
-                elif player_mode == 'spec' and validPass:
-                    return jsonify(ok=True)
+                        return jsonify(ok=False, msg='Wrong Password')
+                
+                # Password check done
+                err = checkLogInData(player_name, player_mode)
+                if err:
+                    return jsonify(ok=False, msg=err)
+                
+                # Everything fine -> New user
+                user = User(player_name, player_mode)
+                user_list.append(user)
+                session['playerId'] = user.uuid
+                user.game_id = game_id
+                user.game_pass = True
 
-    return jsonify(ok=False)
+                if player_mode == 'client':
+                    game.join(user.name, user.uuid)
+
+                break
+
+    return jsonify(ok=True)
 
 # View - Server knows if the request comes from a spectator or a player
 
@@ -240,7 +251,6 @@ def view():
         for game in game_list:
             if game.id == user.game_id:
                 response = GetJSON(user.game_id, user)
-                print(game.updated)
                 return jsonify(response)
 
         app.logger.info("View error: game not available")
@@ -279,7 +289,7 @@ def action(moveType, direction):
 def leave():
     user = User.get_user_by_id(session.get('playerId'))
     if user:
-        print(f"{user.name} has left the game")
+        app.logger.info(f"{user.name} has left the game")
         user.active = False
         updatePlayerActive(user)
 
