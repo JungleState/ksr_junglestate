@@ -53,11 +53,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player\\player.csproj",
+      "projectUniqueName": "c:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player.old\\player.csproj",
       "projectName": "player",
-      "projectPath": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player\\player.csproj",
+      "projectPath": "c:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player.old\\player.csproj",
       "packagesPath": "C:\\Users\\matth\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player\\obj\\",
+      "outputPath": "c:\\Users\\matth\\Desktop\\WD\\EF_INFORMATIK\\ksr_junglestate\\player.old\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\matth\\AppData\\Roaming\\NuGet\\NuGet.Config",
