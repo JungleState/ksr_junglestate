@@ -183,12 +183,18 @@ namespace junglestate {
             [Option('n', "name", Required = false, HelpText = "The monkey name, must be unique per server.", Default = "Hooey")]
             public string Name { get; set; } = "Hooey";
         }
+
+        [Verb("ask", isDefault: true, HelpText = "Ask for options.")]
+        class AskOptions : GlobalOptions {
+
+        }
         public static async Task ProgramMain(string[] args, BaseMonkey monkey) {
             JungleConfig config = new JungleConfig();
-            await Parser.Default.ParseArguments<JoinOptions, StartOptions>(args)
+            await Parser.Default.ParseArguments<JoinOptions, StartOptions, AskOptions>(args)
                     .MapResult(
                         (JoinOptions joinOpts) => JoinMain(joinOpts, monkey),
                         (StartOptions startOpts) => StartMain(startOpts, monkey),
+                        (AskOptions askOpts) => AskMain(askOpts, monkey),
                         errs => Task.FromResult(1)
                     );
         }
@@ -209,6 +215,38 @@ namespace junglestate {
             config.serverAddress = new Uri(options.Server);
             config.delay_ms = options.Delay;
             monkey.Name = options.Name;
+            Program program = new Program(monkey, config);
+            await program.joinGame();
+        }
+
+        private static async Task AskMain(AskOptions options, BaseMonkey monkey) {
+            JungleConfig config = new JungleConfig();
+            config.serverAddress = new Uri(options.Server);
+            config.delay_ms = options.Delay;
+            monkey.Name = options.Name;
+            
+            HttpClient client = new HttpClient();
+            var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "getGames"));
+            var json = await stringTask;
+            dynamic? data = JsonConvert.DeserializeObject(json);
+            if (data == null) {
+                throw new Exception("No games");
+            }
+
+            dynamic games = data.games;
+            Console.WriteLine("Start your monkey as follows: ");
+            Console.WriteLine("Start new game (0) (default)");
+            int key = 0;
+            foreach (dynamic game in games) {
+                key++;
+                Console.WriteLine($"Join game '{game.id}' ({key})");
+            }
+            string? input = Console.ReadLine();
+            int selection;
+            if (int.TryParse(input, out selection)) {
+                config.gameId = games[selection - 1].id;
+            }
+
             Program program = new Program(monkey, config);
             await program.joinGame();
         }
