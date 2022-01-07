@@ -38,9 +38,9 @@ playername{
 }
 
 projectile{
-  position:relative;
-  background-image: url(sprites/coconut.png);
+  /*projectile stuff (coconut)*/
 }
+
 #grid{
     font-size: 13px;
     display: inline-block;

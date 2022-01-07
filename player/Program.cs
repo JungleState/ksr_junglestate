@@ -1,30 +1,62 @@
 using Newtonsoft.Json;
+using CommandLine;
 
 namespace junglestate {
-        class Program {
-        private static readonly HttpClient client = new HttpClient();
+    public sealed class JungleConfig {
+        public Uri serverAddress = new Uri("http://localhost:5500/");
+        public string gameId = "";
+        public string password = "";
+        public int delay_ms = 500;
+    }
 
-        private static async Task joinGame(Tuple<string?, string?> configs) {
-            // non-user configs
-            int SLEEP_TIME = 50;
+    ///<summary>The main program for junglecamp monkey bots.</summary>
+    ///<remarks>Once a program is started, it maintains a HTTP connection to the game server
+    ///  listens for state updates and calls the monkey's <see cref="BaseMonkey.nextMove(GameState)"/>
+    ///  method determine the monkey's behavior.
+    ///</remarks>
+    class Program {
+        private readonly HttpClient client;
+        private readonly JungleConfig config;
+        private readonly BaseMonkey monkey;
 
+        private Program(BaseMonkey monkey, JungleConfig config) {
+            this.config = config;
+            this.monkey = monkey;
+            this.client = new HttpClient();
+        }
+
+        private async Task joinGame() {
             // join game (fetch request)
-            var response = await client.PostAsync(configs.Item1+"joinGame/client/"+configs.Item2, new StringContent(""));
+            var joinData = new {
+                player_name = monkey.Name,
+                player_mode = "client",
+                password = config.password,
+                mode = String.IsNullOrEmpty(config.gameId) ? "newGame" : "joinExisting",
+                game_id = config.gameId
+            };
+            string jsonData = JsonConvert.SerializeObject(joinData);
+            var content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync(new Uri(config.serverAddress, "joinGame"), content);
             var json = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode) {
+                Console.WriteLine(json);
+                return;
+            }
             dynamic? data = JsonConvert.DeserializeObject(json);
 
             // check if joining was successful
             if (data != null){
                 if (data.ok == false) {
                     Console.WriteLine("Connection to game failed!");
-                    Console.WriteLine(data.msg);
+                    Console.WriteLine((string) data.msg);
                 }
                 else {
                     int score = 0;
                     // loop with regular request for the field followed by an instruction for the server what to do
                     while (true) {
-                        Tuple<bool, int> returnedData = await getData(configs);
-                        Thread.Sleep(SLEEP_TIME);
+                        Tuple<bool, int> returnedData = await getData();
+                        Thread.Sleep(config.delay_ms);
                         if (returnedData.Item1) {
                             score = returnedData.Item2;
                             break;
@@ -41,9 +73,9 @@ namespace junglestate {
                 Console.WriteLine("ERROR: data is null");
             }
         }
-        private static async Task<Tuple<bool, int>> getData(Tuple<string?, string?> configs) {
+        private async Task<Tuple<bool, int>> getData() {
             // get the map
-            var stringTask = client.GetStringAsync(configs.Item1+"view");
+            var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "view"));
             var json = await stringTask;
             dynamic? data = JsonConvert.DeserializeObject(json);
 
@@ -51,15 +83,15 @@ namespace junglestate {
             int score = 0;
 
             if (data != null) {
-                score = data.points.ToObject<int>(); //, System.Globalization.NumberStyles.Integer
-                // ask user written algorithm about what to do
+                GameState state = parseGameState(data);
                 if (data.lives > 0) {
-                    Console.WriteLine("");
+                    Console.Clear();
+                    Console.WriteLine("Field: "+data.field);
                     Console.WriteLine("Round: "+data.round);
                     Console.WriteLine("Health: "+data.lives);
                     Console.WriteLine("Ammo: "+data.coconuts);
                     Console.WriteLine("Score: "+data.points);
-                    playerBehaviour(configs, data.field, data.lives.ToObject<int>(), data.coconuts.ToObject<int>(), data.points.ToObject<int>(), data.round.ToObject<int>());
+                    playerBehaviour(state);
                 }
                 else {
                     // end loop from joinGame
@@ -72,114 +104,49 @@ namespace junglestate {
             return new Tuple<bool, int>(gameOver, score);
         }
 
-        private static void move(Tuple<string, string> configs, int direction) {
-            // option for user written algorithm
-            // direction defines the direction the player moves
-            if (direction == 0 || direction == 2 || direction == 4 || direction == 6) {
-                sendCommand(configs, 1, direction);
-            }
-            // if an invalid direction is given or -1 is stated the character does nothing
-            else {
-                sendCommand(configs, 0, -1);
-            }
+        private GameState parseGameState(dynamic data) {
+            return new GameState(getCells(data.field.ToObject<string[]>()),
+                                 data.round.ToObject<int>(),
+                                 new PlayerInfo(monkey.Name,
+                                        data.lives.ToObject<int>(),
+                                        data.coconuts.ToObject<int>(),
+                                        data.points.ToObject<int>()));
         }
 
-        private static void attack(Tuple<string, string> configs, int direction) {
-            // option for user written algorithm
-            // direction defines the direction the player shoots
-            if (direction >= 0 && direction <= 7) {
-                sendCommand(configs, 2, direction);
-            }
-            // if an invalid direction is given the character does nothing
-            else {
-                sendCommand(configs, 0, -1);
-            }
-        }
-
-        private static async void sendCommand(Tuple<string, string> configs, int type, int direction) {
+        private async void sendCommand(Action action, Direction direction) {
             // send the chosen action to the server
             try {
-                var response = await client.PostAsync(configs.Item1+"action/"+type+"/"+direction, new StringContent(""));
-                
-                string[] actionsArray = new string[] {"stay", "move", "attack"};
-                string[] directionsArray = new string[] {"up", "up right", "right", "down right", "down", "down left", "left", "up left", "on the spot"};
-                if (direction < 0) {
-                    direction = 8;
-                }
-                Console.WriteLine("-> Action: "+actionsArray[type]+" "+directionsArray[direction]);
+                Console.WriteLine("-> Action: "+action.ToString()+" "+direction.ToString());
+                await client.PostAsync(new Uri(config.serverAddress, "action/"+(int)action+"/"+(int)direction), new StringContent(""));
             }
-            catch {
-                // Console.WriteLine("");
-                // Console.WriteLine("Command could not be sent");
+            catch (Exception e) {
+                Console.WriteLine(e.ToString());
             }
         }
 
-        private static Tuple<string, string, bool> loadConfigs(Monkey monkey) {
-            // configurations
-
-            // url of server
-            // e.g. http://localhost:5500/
-            string url = "http://localhost:5500/";
-
-            // name of player
-            // e.g. Max Mustermann
-            string name = monkey.name;
-
-            // debug mode
-            // app mode requires you to enter url and name after starting app
-            bool appMode = true;
-
-            Tuple<string, string, bool> configs = new Tuple<string, string, bool>(url, name, appMode);
-            return configs;
-        }
-
-        private static void playerBehaviour(Tuple<string, string> c, string[] field, int health, int ammo, int score, int round) {   
-        // get user written algorithm
-        // attack:  attack(c, DIRECTION)   options for DIRECTION: [0, 7]
-        // move:    move(c, DIRECTION)     options for DIRECTION: -1, 0, 2, 4, 6
-        // DIRECTION: integer
-        //    -1: No direction
-        //    0: up
-        //    1: up right
-        //    2: right
-        //    3: down right
-        //    4: down
-        //    5: down left
-        //    6: left
-        //    7: up left
-
-        // "  ": plain:     empty
-        // "FF": jungle:    wall
-        // "CC": coconut:   +1 ammo
-        // "BB": banana:    +1 health
-        // "PP": pineapple: +1 score
-
-        // string field: 5x5 matrix of surrounding
-        // int health: health of character
-        // int ammo: amount of ammo left
-        // int score: score of player
-        // int round: round of the game
-        // Tuple<string, string> c: configurations, can be ignored but must be given as an argument for attack() and move()
-
-            Move next = monkey.nextMove(new GameState{cells = getCells(field), round = round, lives = health, coconuts = ammo, points = score});
+        private void playerBehaviour(GameState state) {   
+            Move next = monkey.nextMove(state);
             switch(next.action) {
                 case Action.MOVE:
-                    move(c, next.direction);
+                    if (next.direction.isMoveable()) {
+                        sendCommand(next.action, next.direction);
+                    }
                     break;
                 case Action.THROW:
-                    attack(c, next.direction);
+                    sendCommand(next.action, next.direction);
                     break;
                 default:
-                    move(c, Action.STAY);
+                    sendCommand(Action.STAY, Direction.NONE);
                     break;
             }
         }
 
         private static Cell[][] getCells(string[] field) {
-            Cell[][] cells = new Cell[5][5];
+            Cell[][] cells = new Cell[5][];
             int rowIndex = 0;
             foreach (string row in field) {
-                for (int i = 0; i < row.Length; i++) {
+                cells[rowIndex] = new Cell[5];
+                for (int i = 0; i < row.Length / 2; i++) {
                     string cellString = row.Substring(i*2, 2);
                     cells[rowIndex][i] = getCell(cellString);
                 }
@@ -189,53 +156,120 @@ namespace junglestate {
         }
 
         private static Cell getCell(string cellString) {
-            switch (cellString) {
-                case "FF":
-                    return new Cell{item = Item.FOREST};
-                case "  ":
-                    return new Cell{item = Item.EMPTY};
-                case "PP":
-                    return new Cell{item = Item.PINEAPPLE};
-                case "BB":
-                    return new Cell{item = Item.BANANA};
-                case "CC":
-                    return new Cell{item = Item.COCONUT};
-                default:
-                    return new Cell{item = Item.PLAYER};
+            Item item = ItemInfo.fromCode(cellString);
+            if (item == Item.PLAYER) {
+                // TODO create player info from json response.
+                PlayerInfo info = new PlayerInfo("player", 3, 2, 25);
+                return Cell.PlayerCell(info);
             }
+            return Cell.ItemCell(item);
         }
 
-        static async Task ProgramMain(string[] args, Monkey monkey) {
-            // start the process
-            Tuple<string, string, bool> rawConfigs = loadConfigs(monkey);
-            Console.Clear();
-            if (rawConfigs.Item3 == false) {
-                // normal start
-                Tuple<string?, string?> configs = new Tuple<string?, string?>(rawConfigs.Item1, rawConfigs.Item2);
-                await joinGame(configs);
-            }
-            else {
-                // app mode start
-                try {
-                    // ask url
-                    Console.WriteLine("Enter url of server");
-                    Console.WriteLine("e.g. http://localhost:5500/");
-                    string? url = Console.ReadLine();
-
-                    // ask name
-                    Console.Clear();
-                    Console.WriteLine("Enter name of player");
-                    string? name = Console.ReadLine();
-
-                    // start
-                    Console.Clear();
-                    Tuple<string?, string?> configs = new Tuple<string?, string?>(url, name);
-                    await joinGame(configs);
-                }
-                catch {
-                    Console.WriteLine("Invalid input.");
-                }
-            }
+        [Verb("join", HelpText = "Join an existing game.")]
+        class JoinOptions : GlobalOptions {
+            [Option('g', "game", Required = true, HelpText = "Game id.", Default = "")]
+            public string GameId { get; set; } = "";
+            [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
+            public string Password { get; set; } = "";
         }
+        [Verb("start", HelpText = "Start a new game.")]
+        class StartOptions : GlobalOptions {
+            //start options here
+        }
+        class GlobalOptions {
+            [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://localhost:5500/")]
+            public string Server { get; set; } = "http://localhost:5500/";
+            [Option('d', "delay", Required = false, HelpText = "Update delay in millis.", Default = 500)]
+            public int Delay { get; set; } = 500;
+            [Option('n', "name", Required = false, HelpText = "The monkey name, must be unique per server.", Default = "Hooey")]
+            public string Name { get; set; } = "Hooey";
+        }
+
+        [Verb("ask", isDefault: true, HelpText = "Ask for options.")]
+        class AskOptions : GlobalOptions {
+
+        }
+        public static async Task ProgramMain(string[] args, BaseMonkey monkey) {
+            JungleConfig config = new JungleConfig();
+            await Parser.Default.ParseArguments<JoinOptions, StartOptions, AskOptions>(args)
+                    .MapResult(
+                        (JoinOptions joinOpts) => JoinMain(joinOpts, monkey),
+                        (StartOptions startOpts) => StartMain(startOpts, monkey),
+                        (AskOptions askOpts) => AskMain(askOpts, monkey),
+                        errs => Task.FromResult(1)
+                    );
+        }
+
+        private static async Task JoinMain(JoinOptions options, BaseMonkey monkey) {
+            JungleConfig config = new JungleConfig();
+            config.serverAddress = new Uri(options.Server);
+            config.gameId = options.GameId;
+            config.password = options.Password;
+            config.delay_ms = options.Delay;
+            monkey.Name = options.Name;
+            Program program = new Program(monkey, config);
+            await program.joinGame();
+        }
+
+        private static async Task StartMain(StartOptions options, BaseMonkey monkey) {
+            JungleConfig config = new JungleConfig();
+            config.serverAddress = new Uri(options.Server);
+            config.delay_ms = options.Delay;
+            monkey.Name = options.Name;
+            Program program = new Program(monkey, config);
+            await program.joinGame();
+        }
+
+        private static async Task AskMain(AskOptions options, BaseMonkey monkey) {
+            JungleConfig config = new JungleConfig();
+            Console.WriteLine($"Select server (default: {options.Server}): ");
+            string? server = Console.ReadLine();
+            if (String.IsNullOrEmpty(server)) {
+                server = options.Server;
+            }
+            config.serverAddress = new Uri(server);
+
+            Console.WriteLine($"Update delay in millis (default: {options.Delay}): ");
+            string? delay = Console.ReadLine();
+            if (!String.IsNullOrEmpty(delay)) {
+                int delayVal = options.Delay;
+                int.TryParse(delay, out delayVal);
+                options.Delay = delayVal;
+            }
+            config.delay_ms = options.Delay;
+
+            Console.WriteLine($"Monkey name (default: {options.Name}): ");
+            string? name = Console.ReadLine();
+            if (String.IsNullOrEmpty(name)) {
+                name = options.Name;
+            }
+            monkey.Name = name;
+            
+            HttpClient client = new HttpClient();
+            var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "getGames"));
+            var json = await stringTask;
+            dynamic? data = JsonConvert.DeserializeObject(json);
+            if (data == null) {
+                throw new Exception("No games");
+            }
+
+            dynamic games = data.games;
+            Console.WriteLine("Start your monkey as follows: ");
+            Console.WriteLine("Start new game (0) (default)");
+            int key = 0;
+            foreach (dynamic game in games) {
+                key++;
+                Console.WriteLine($"Join game '{game.id}' ({key})");
+            }
+            string? input = Console.ReadLine();
+            int selection;
+            if (int.TryParse(input, out selection) && selection > 0) {
+                config.gameId = games[selection - 1].id;
+            }
+
+            Program program = new Program(monkey, config);
+            await program.joinGame();
+        }
+
     }
 }
