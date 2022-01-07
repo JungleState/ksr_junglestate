@@ -164,13 +164,20 @@ namespace junglestate {
             return Cell.ItemCell(item);
         }
 
-        public class Options {
-            [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://localhost:5500/")]
-            public string Server { get; set; } = "http://localhost:5500/";
-            [Option('g', "game", Required = false, HelpText = "Game id (none to create a new game).", Default = "")]
+        [Verb("join", HelpText = "Join an existing game.")]
+        class JoinOptions : GlobalOptions {
+            [Option('g', "game", Required = true, HelpText = "Game id.", Default = "")]
             public string GameId { get; set; } = "";
             [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
             public string Password { get; set; } = "";
+        }
+        [Verb("start", HelpText = "Start a new game.")]
+        class StartOptions : GlobalOptions {
+            //start options here
+        }
+        class GlobalOptions {
+            [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://localhost:5500/")]
+            public string Server { get; set; } = "http://localhost:5500/";
             [Option('d', "delay", Required = false, HelpText = "Update delay in millis.", Default = 500)]
             public int Delay { get; set; } = 500;
             [Option('n', "name", Required = false, HelpText = "The monkey name, must be unique per server.", Default = "Hooey")]
@@ -178,17 +185,33 @@ namespace junglestate {
         }
         public static async Task ProgramMain(string[] args, BaseMonkey monkey) {
             JungleConfig config = new JungleConfig();
-            await Parser.Default.ParseArguments<Options>(args)
-                   .WithParsedAsync<Options>(o =>
-                   {
-                        config.serverAddress = new Uri(o.Server);
-                        config.gameId = o.GameId;
-                        config.password = o.Password;
-                        config.delay_ms = o.Delay;
-                        monkey.Name = o.Name;
-                        Program program = new Program(monkey, config);
-                        return program.joinGame();
-                   });
+            await Parser.Default.ParseArguments<JoinOptions, StartOptions>(args)
+                    .MapResult(
+                        (JoinOptions joinOpts) => JoinMain(joinOpts, monkey),
+                        (StartOptions startOpts) => StartMain(startOpts, monkey),
+                        errs => Task.FromResult(1)
+                    );
         }
+
+        private static async Task JoinMain(JoinOptions options, BaseMonkey monkey) {
+            JungleConfig config = new JungleConfig();
+            config.serverAddress = new Uri(options.Server);
+            config.gameId = options.GameId;
+            config.password = options.Password;
+            config.delay_ms = options.Delay;
+            monkey.Name = options.Name;
+            Program program = new Program(monkey, config);
+            await program.joinGame();
+        }
+
+        private static async Task StartMain(StartOptions options, BaseMonkey monkey) {
+            JungleConfig config = new JungleConfig();
+            config.serverAddress = new Uri(options.Server);
+            config.delay_ms = options.Delay;
+            monkey.Name = options.Name;
+            Program program = new Program(monkey, config);
+            await program.joinGame();
+        }
+
     }
 }
