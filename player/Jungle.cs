@@ -83,6 +83,8 @@ namespace junglestate {
             return (2,2);
         }
 
+        ///<summary>Returns true exactly if monkeys can move in this direction
+        /// (only straight, no diagonal moves).</summary>
         public static bool isMoveable(this Direction dir) {
             switch (dir) {
                 case Direction.NONE:
