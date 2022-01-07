@@ -1,5 +1,5 @@
 import os
-from flask import Flask, json, jsonify, session, abort, render_template, redirect, url_for, request
+from flask import Flask, jsonify, session, abort, render_template, redirect, url_for, request
 from game_logic import Game
 import threading
 import uuid
@@ -99,7 +99,7 @@ def isLoggedIn():
 
     return user
 
-def checkLogInData(name, mode):
+def checkLogInData(name, mode, in_game):
     err = None
 
     # Check Name
@@ -107,10 +107,13 @@ def checkLogInData(name, mode):
         err = 'Invalid Name'
     elif len(name) > NAME_LENGTH_MAX:
         err = 'Too Many Characters'
-    elif name in [user.name for user in user_list if user.mode == 'client'] and mode == 'client':
-        err = 'Name Already In Use'
     elif session.get('playerId'):
         err = 'Already Logged In'
+    else:
+        if in_game:
+            # Only check in same game
+            if name in [user.name for user in user_list if user.mode == 'client' and user.game_id == in_game] and mode == 'client':
+                err = 'Name Already In Use'
 
     # Check Mode
     if mode != 'client' and mode != 'spec':
@@ -183,7 +186,7 @@ def joinGame():
 
     # Create new game
     if game_mode == 'newGame':
-        err = checkLogInData(player_name, player_mode)
+        err = checkLogInData(player_name, player_mode, False)
         if err:
             app.logger.info(err)
             return jsonify(ok=False, msg=err)
@@ -223,7 +226,7 @@ def joinGame():
                         return jsonify(ok=False, msg='Wrong Password')
                 
                 # Password check done
-                err = checkLogInData(player_name, player_mode)
+                err = checkLogInData(player_name, player_mode, game_id)
                 if err:
                     return jsonify(ok=False, msg=err)
                 
