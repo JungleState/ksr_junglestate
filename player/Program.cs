@@ -28,7 +28,7 @@ namespace junglestate {
         private async Task joinGame() {
             // join game (fetch request)
             var joinData = new {
-                player_name = monkey.name,
+                player_name = monkey.Name,
                 player_mode = "client",
                 password = config.password,
                 mode = String.IsNullOrEmpty(config.gameId) ? "newGame" : "joinExisting",
@@ -106,7 +106,7 @@ namespace junglestate {
         private GameState parseGameState(dynamic data) {
             return new GameState(getCells(data.field.ToObject<string[]>()),
                                  data.round.ToObject<int>(),
-                                 new PlayerInfo(monkey.name,
+                                 new PlayerInfo(monkey.Name,
                                         data.lives.ToObject<int>(),
                                         data.coconuts.ToObject<int>(),
                                         data.points.ToObject<int>()));
@@ -166,13 +166,15 @@ namespace junglestate {
 
         public class Options {
             [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://localhost:5500/")]
-            public string Server { get; set; }
+            public string Server { get; set; } = "http://localhost:5500/";
             [Option('g', "game", Required = false, HelpText = "Game id (none to create a new game).", Default = "")]
-            public string GameId { get; set; }
+            public string GameId { get; set; } = "";
             [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
-            public string Password { get; set; }
+            public string Password { get; set; } = "";
             [Option('d', "delay", Required = false, HelpText = "Update delay in millis.", Default = 500)]
-            public int Delay { get; set; }
+            public int Delay { get; set; } = 500;
+            [Option('n', "name", Required = false, HelpText = "The monkey name, must be unique per server.", Default = "Hooey")]
+            public string Name { get; set; } = "Hooey";
         }
         public static async Task ProgramMain(string[] args, BaseMonkey monkey) {
             JungleConfig config = new JungleConfig();
@@ -183,6 +185,7 @@ namespace junglestate {
                         config.gameId = o.GameId;
                         config.password = o.Password;
                         config.delay_ms = o.Delay;
+                        monkey.Name = o.Name;
                         Program program = new Program(monkey, config);
                         return program.joinGame();
                    });

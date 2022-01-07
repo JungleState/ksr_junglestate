@@ -9,7 +9,6 @@
 namespace junglestate {
     ///<summary>A simple monkey that moves randomly in free directions.</summary>
     public class Monkey : BaseMonkey {
-        public Monkey(string name) : base(name) {}
         public override Move nextMove(GameState state) {
             Direction direction = selectRandomDirection(state);
             return new Move(Action.MOVE, direction, state.round);
@@ -34,7 +33,7 @@ namespace junglestate {
 
 
         public static async Task Main(string[] args) {
-            Monkey monkey = new Monkey("Hooey");
+            Monkey monkey = new Monkey();
             await Program.ProgramMain(args, monkey);
         }
     }

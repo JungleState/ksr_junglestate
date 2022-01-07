@@ -200,12 +200,8 @@ namespace junglestate {
     /// <seealso cref="Monkey"/>
     public class BaseMonkey {
         ///<summary>The monkey's name.</summary>
-        public readonly string name;
+        public string Name { get; set; } = "Hooey";
         
-        public BaseMonkey(string name) {
-            this.name = name;
-        }
-
         /// <summary>Defines the move that the monkey takes in a given round.</summary>
         /// <remarks>Override or extend this method to refine the monkey's behavior.</remarks>
         public virtual Move nextMove(GameState state) {
