@@ -85,6 +85,7 @@ namespace junglestate {
             if (data != null) {
                 GameState state = parseGameState(data);
                 if (data.lives > 0) {
+                    Console.Clear();
                     Console.WriteLine("Field: "+data.field);
                     Console.WriteLine("Round: "+data.round);
                     Console.WriteLine("Health: "+data.lives);
@@ -262,7 +263,7 @@ namespace junglestate {
             }
             string? input = Console.ReadLine();
             int selection;
-            if (int.TryParse(input, out selection)) {
+            if (int.TryParse(input, out selection) && selection > 0) {
                 config.gameId = games[selection - 1].id;
             }
 
