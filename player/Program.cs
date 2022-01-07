@@ -221,9 +221,28 @@ namespace junglestate {
 
         private static async Task AskMain(AskOptions options, BaseMonkey monkey) {
             JungleConfig config = new JungleConfig();
-            config.serverAddress = new Uri(options.Server);
+            Console.WriteLine($"Select server (default: {options.Server}): ");
+            string? server = Console.ReadLine();
+            if (String.IsNullOrEmpty(server)) {
+                server = options.Server;
+            }
+            config.serverAddress = new Uri(server);
+
+            Console.WriteLine($"Update delay in millis (default: {options.Delay}): ");
+            string? delay = Console.ReadLine();
+            if (!String.IsNullOrEmpty(delay)) {
+                int delayVal = options.Delay;
+                int.TryParse(delay, out delayVal);
+                options.Delay = delayVal;
+            }
             config.delay_ms = options.Delay;
-            monkey.Name = options.Name;
+
+            Console.WriteLine($"Monkey name (default: {options.Name}): ");
+            string? name = Console.ReadLine();
+            if (String.IsNullOrEmpty(name)) {
+                name = options.Name;
+            }
+            monkey.Name = name;
             
             HttpClient client = new HttpClient();
             var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "getGames"));
