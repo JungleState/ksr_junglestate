@@ -10,6 +10,8 @@ namespace junglestate {
     }
 
     /// <summary>The possible directions of an <see cref="Action"/>.</summary>
+    /// <remarks>Note that <see cref="Action.MOVE"/> is only allowed in straight direction,
+    /// whereas <see cref="Action.THROW"/> can act in all eight directions. </remarks>
     public enum Direction {
         NONE = -1,
         UP = 0,
@@ -105,6 +107,9 @@ namespace junglestate {
             this.direction = direction;
             this.nextRound = nextRound;
             this.message = message;
+            if (action == Action.MOVE && !direction.isMoveable()) {
+                throw new ArgumentException($"Cannot move in direction {direction}!");
+            }
         }
         ///<summary>The <see cref="Action"/> to take.</summary>
         public readonly Action action = Action.STAY;

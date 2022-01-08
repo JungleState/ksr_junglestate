@@ -245,15 +245,18 @@ namespace junglestate {
             }
             monkey.Name = name;
             
-            HttpClient client = new HttpClient();
-            var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "getGames"));
-            var json = await stringTask;
-            dynamic? data = JsonConvert.DeserializeObject(json);
-            if (data == null) {
-                throw new Exception("No games");
-            }
+            dynamic games;
+            using (HttpClient client = new HttpClient()) {
+                var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "getGames"));
+                var json = await stringTask;
+                dynamic? data = JsonConvert.DeserializeObject(json);
+                if (data == null) {
+                    throw new Exception("No games");
+                }
 
-            dynamic games = data.games;
+                games = data.games;
+            }
+            
             Console.WriteLine("Start your monkey as follows: ");
             Console.WriteLine("Start new game (0) (default)");
             int key = 0;
