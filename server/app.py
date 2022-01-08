@@ -31,7 +31,6 @@ class User:
         self.active = True
         self.name = self.set_name(name)
         self.game_id = None
-        self.game_pass = None
         self.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [self])
 
     def set_name(self, name):
@@ -88,14 +87,13 @@ def isLoggedIn():
     if not user:
         session['playerId'] = None
     else:
-        user.active = True
-        updatePlayerActive(user)
+        if not user.active:
+            user.active = True
+            updatePlayerActive(user)
+        # Individual timer
         user.timer.cancel()
         user.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [user])
         user.timer.start()
-
-        if not user.game_pass:
-            return None
 
     return user
 
@@ -110,10 +108,9 @@ def checkLogInData(name, mode, in_game):
     elif session.get('playerId'):
         err = 'Already Logged In'
     else:
-        if in_game:
-            # Only check in same game
-            if name in [user.name for user in user_list if user.mode == 'client' and user.game_id == in_game] and mode == 'client':
-                err = 'Name Already In Use'
+        # Only check in same game
+        if in_game and name in [user.name for user in user_list if user.mode == 'client' and user.game_id == in_game] and mode == 'client':
+            err = 'Name Already In Use'
 
     # Check Mode
     if mode != 'client' and mode != 'spec':
@@ -202,12 +199,9 @@ def joinGame():
         user_list.append(user)
         session['playerId'] = user.uuid
         user.game_id = game.id
-        user.game_pass = True
 
         if player_mode == 'client':
             game.join(user.name, user.uuid)
-
-        return jsonify(ok=True)
 
     # Join Game
     elif game_mode == 'joinExisting':
@@ -235,7 +229,6 @@ def joinGame():
                 user_list.append(user)
                 session['playerId'] = user.uuid
                 user.game_id = game_id
-                user.game_pass = True
 
                 if player_mode == 'client':
                     game.join(user.name, user.uuid)
