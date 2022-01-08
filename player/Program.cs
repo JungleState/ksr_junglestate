@@ -179,28 +179,34 @@ namespace junglestate {
         class GlobalOptions {
             [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://localhost:5500/")]
             public string Server { get; set; } = "http://localhost:5500/";
+            [Option('m', "monkey", Required = false, HelpText = "The monkey class to use.", Default = "")]
+            public string Monkey { get; set; } = "";
             [Option('d', "delay", Required = false, HelpText = "Update delay in millis.", Default = 500)]
             public int Delay { get; set; } = 500;
-            [Option('n', "name", Required = false, HelpText = "The monkey name, must be unique per server.", Default = "Hooey")]
+            [Option('n', "name", Required = false, HelpText = "The monkey name, must be unique per game.", Default = "Hooey")]
             public string Name { get; set; } = "Hooey";
         }
 
         [Verb("ask", isDefault: true, HelpText = "Ask for options.")]
         class AskOptions : GlobalOptions {
-
         }
-        public static async Task ProgramMain(string[] args, BaseMonkey monkey) {
+        public static async Task Main(string[] args) {
             JungleConfig config = new JungleConfig();
-            await Parser.Default.ParseArguments<JoinOptions, StartOptions, AskOptions>(args)
-                    .MapResult(
-                        (JoinOptions joinOpts) => JoinMain(joinOpts, monkey),
-                        (StartOptions startOpts) => StartMain(startOpts, monkey),
-                        (AskOptions askOpts) => AskMain(askOpts, monkey),
-                        errs => Task.FromResult(1)
-                    );
+            try {
+                await Parser.Default.ParseArguments<JoinOptions, StartOptions, AskOptions>(args)
+                        .MapResult(
+                            (JoinOptions joinOpts) => JoinMain(joinOpts),
+                            (StartOptions startOpts) => StartMain(startOpts),
+                            (AskOptions askOpts) => AskMain(askOpts),
+                            errs => Task.FromResult(1)
+                        );
+            } catch (Exception e) {
+                Console.WriteLine(e.Message);
+            }
         }
 
-        private static async Task JoinMain(JoinOptions options, BaseMonkey monkey) {
+        private static async Task JoinMain(JoinOptions options) {
+            BaseMonkey monkey = instantiateMonkey(options, false);
             JungleConfig config = new JungleConfig();
             config.serverAddress = new Uri(options.Server);
             config.gameId = options.GameId;
@@ -211,7 +217,8 @@ namespace junglestate {
             await program.joinGame();
         }
 
-        private static async Task StartMain(StartOptions options, BaseMonkey monkey) {
+        private static async Task StartMain(StartOptions options) {
+            BaseMonkey monkey = instantiateMonkey(options, false);
             JungleConfig config = new JungleConfig();
             config.serverAddress = new Uri(options.Server);
             config.delay_ms = options.Delay;
@@ -220,7 +227,9 @@ namespace junglestate {
             await program.joinGame();
         }
 
-        private static async Task AskMain(AskOptions options, BaseMonkey monkey) {
+        private static async Task AskMain(AskOptions options) {
+            BaseMonkey monkey = instantiateMonkey(options, true);
+
             JungleConfig config = new JungleConfig();
             Console.WriteLine($"Select server (default: {options.Server}): ");
             string? server = Console.ReadLine();
@@ -244,7 +253,7 @@ namespace junglestate {
                 name = options.Name;
             }
             monkey.Name = name;
-            
+
             dynamic games;
             using (HttpClient client = new HttpClient()) {
                 var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "getGames"));
@@ -256,7 +265,7 @@ namespace junglestate {
 
                 games = data.games;
             }
-            
+
             Console.WriteLine("Start your monkey as follows: ");
             Console.WriteLine("Start new game (0) (default)");
             int key = 0;
@@ -274,5 +283,47 @@ namespace junglestate {
             await program.joinGame();
         }
 
+        private static BaseMonkey instantiateMonkey(GlobalOptions options, bool allowAsking) {
+            var monkeyClasses =
+                from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                from type in assembly.GetTypes()
+                where type.IsSubclassOf(typeof(BaseMonkey))
+                select type;
+
+            int monkeyCandidateCount = monkeyClasses.Count();
+            Type monkeyType;
+            if (monkeyCandidateCount == 0) {
+                throw new Exception("No classes extending BaseMonkey found.");
+            } else if (monkeyCandidateCount == 1) {
+                monkeyType = monkeyClasses.Single();
+            } else {
+                if (!allowAsking) {
+                    throw new Exception("multiple possible monkeys, select one with --monkey");
+                }
+                // multiple monkey class candidates
+                int selection = 0;
+                int key = 0;
+                monkeyType = monkeyClasses.First();
+                foreach (Type type in monkeyClasses) {
+                    Console.WriteLine($"{key} Use class '{type.Name}'");
+                    if (type.Name == options.Monkey) {
+                        monkeyType = type;
+                        selection = key;
+                    }
+                    key++;
+                }
+                Console.Write($"Select monkey class [{selection} - {monkeyType.Name}]): ");
+                string? input = Console.ReadLine();
+                if (int.TryParse(input, out selection) && selection >= 0 && selection < monkeyCandidateCount) {
+                    monkeyType = monkeyClasses.ElementAt(selection);
+                }
+            }
+            Console.WriteLine($"Using monkey class {monkeyType.Name}");
+            BaseMonkey? monkey = (BaseMonkey)Activator.CreateInstance(monkeyType);
+            if (monkey == null) {
+                throw new Exception($"Unable to instantiate monkey class {monkeyType}");
+            }
+            return monkey;
+        }
     }
 }

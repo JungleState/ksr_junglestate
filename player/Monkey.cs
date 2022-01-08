@@ -30,11 +30,5 @@ namespace junglestate {
             }
             return result;
         }
-
-
-        public static async Task Main(string[] args) {
-            Monkey monkey = new Monkey();
-            await Program.ProgramMain(args, monkey);
-        }
     }
 }
