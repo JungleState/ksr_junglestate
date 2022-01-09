@@ -298,7 +298,7 @@ namespace junglestate {
                 monkeyType = monkeyClasses.Single();
             } else {
                 if (!allowAsking) {
-                    throw new Exception("multiple possible monkeys, select one with --monkey");
+                    throw new Exception("multiple possible monkeys, select one with --monkey or use 'ask'");
                 }
                 // multiple monkey class candidates
                 int selection = 0;
