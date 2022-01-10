@@ -14,6 +14,8 @@ class GlobalOptions {
     public string Name { get; set; } = "Hooey";
     [Option('q', "quiet", Required = false, HelpText = "Do not show game behavior in console.", Default = false)]
     public bool Quiet { get; set; } = false;
+    [Option('t', "time", Required = false, HelpText = "Show average latency of HTTP calls.", Default = false)]
+    public bool Time { get; set; } = false;
 }
 
 [Verb("ask", isDefault: true, HelpText = "Ask for options.")]
@@ -48,13 +50,17 @@ class MonkeyCommandLine {
         }
     }
 
+    private async Task joinGame(JungleConnection connection, JungleConfig config, string gameId) {
+        await connection.joinGame(gameId);
+    }
+
     private async Task JoinMain(JoinOptions options) {
         BaseMonkey monkey = instantiateMonkey(options, false);
         JungleConfig config = readGlobalOptions(options);
         config.password = options.Password;
         monkey.Name = options.Name;
         using JungleConnection connection = new JungleConnection(monkey, config);
-        await connection.joinGame(options.GameId);
+        await joinGame(connection, config, options.GameId);
     }
 
     private async Task StartMain(StartOptions options) {
@@ -63,7 +69,7 @@ class MonkeyCommandLine {
         config.serverAddress = new Uri(options.Server);
         monkey.Name = options.Name;
         using JungleConnection connection = new JungleConnection(monkey, config);
-        await connection.joinGame("");
+        await joinGame(connection, config, "");
     }
 
     private JungleConfig readGlobalOptions(GlobalOptions options) {
@@ -71,6 +77,7 @@ class MonkeyCommandLine {
         config.delay_ms = options.Delay;
         config.serverAddress = new Uri(options.Server);
         config.useConsole = !options.Quiet;
+        config.showTimers = !options.Time;
         using var loggerFactory = LoggerFactory.Create(builder => {
             builder
                 .AddSimpleConsole(options => {
@@ -123,7 +130,7 @@ class MonkeyCommandLine {
             gameId = games[selection - 1].id;
         }
 
-        await connection.joinGame(gameId);
+        await joinGame(connection, config, gameId);
     }
 
     private static BaseMonkey instantiateMonkey(GlobalOptions options, bool allowAsking) {

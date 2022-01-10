@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
 namespace junglestate {
     /// <summary>The possible actions of a monkey in a round.</summary>

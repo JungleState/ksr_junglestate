@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
-using CommandLine;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace junglestate;
 sealed class JungleConfig {
@@ -8,6 +8,7 @@ sealed class JungleConfig {
     internal string password = "";
     internal int delay_ms = 500;
     internal bool useConsole = true;
+    internal bool showTimers = false;
     internal ILogger logger;
 }
 
@@ -20,6 +21,9 @@ class JungleConnection : IDisposable {
     private readonly HttpClient client;
     private readonly JungleConfig config;
     private readonly BaseMonkey monkey;
+
+    public readonly TaskMeasurer viewMeasurer = new TaskMeasurer("view");
+    public readonly TaskMeasurer actionMeasurer = new TaskMeasurer("action");
 
     internal JungleConnection(BaseMonkey monkey, JungleConfig config) {
         this.config = config;
@@ -94,8 +98,7 @@ class JungleConnection : IDisposable {
 
     private async Task<Tuple<bool, int>> getData() {
         // get the map
-        var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "view"));
-        var json = await stringTask;
+        var json = await viewMeasurer.measureTask(client.GetStringAsync(new Uri(config.serverAddress, "view")));
         dynamic? data = JsonConvert.DeserializeObject(json);
 
         bool gameOver = false;
@@ -108,6 +111,7 @@ class JungleConnection : IDisposable {
             if (data.lives > 0) {
                 printState(data);
                 playerBehaviour(state);
+                logTimers();
             } else {
                 // end loop from joinGame
                 gameOver = true;
@@ -127,14 +131,10 @@ class JungleConnection : IDisposable {
         }
     }
 
-    private async void sendCommand(Action action, Direction direction) {
-        try {
-            if (config.useConsole) {
-                Console.WriteLine("-> Action: " + action.ToString() + " " + direction.ToString());
-            }
-            await client.PostAsync(new Uri(config.serverAddress, "action/" + (int)action + "/" + (int)direction), new StringContent(""));
-        } catch (Exception e) {
-            config.logger.LogError(e, "Problem sending command.");
+    private void logTimers() {
+        if (config.showTimers) {
+            config.logger.LogInformation($"View: {viewMeasurer.average().TotalMilliseconds}ms");
+            config.logger.LogInformation($"Action: {actionMeasurer.average().TotalMilliseconds}ms");
         }
     }
 
@@ -152,6 +152,17 @@ class JungleConnection : IDisposable {
             default:
                 sendCommand(Action.STAY, Direction.NONE);
                 break;
+        }
+    }
+
+    private async void sendCommand(Action action, Direction direction) {
+        try {
+            if (config.useConsole) {
+                Console.WriteLine("-> Action: " + action.ToString() + " " + direction.ToString());
+            }
+            await actionMeasurer.measureTask(client.PostAsync(new Uri(config.serverAddress, "action/" + (int)action + "/" + (int)direction), new StringContent("")));
+        } catch (Exception e) {
+            config.logger.LogError(e, "Problem sending command.");
         }
     }
 
@@ -186,5 +197,33 @@ class JungleConnection : IDisposable {
             return Cell.PlayerCell(info);
         }
         return Cell.ItemCell(item);
+    }
+}
+
+public sealed class TaskMeasurer {
+    public TimeSpan total {get; private set;} = TimeSpan.Zero;
+    public long count {get; private set;} = 0;
+
+    public readonly string operation;
+
+    public TaskMeasurer(string operation) {
+        this.operation = operation;
+    }
+
+    public async Task<T> measureTask<T>(Task<T> task) {
+        Stopwatch stopWatch = Stopwatch.StartNew();
+        count++;
+        T result = await task;
+        stopWatch.Stop();
+        // Get the elapsed time as a TimeSpan value.
+        total = total + stopWatch.Elapsed;
+        return result;
+    }
+
+    public TimeSpan average() {
+        if (count == 0) {
+            return TimeSpan.Zero;
+        }
+        return total / count;
     }
 }
