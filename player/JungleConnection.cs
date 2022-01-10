@@ -31,6 +31,7 @@ class JungleConnection : IDisposable {
         client.Dispose();
     }
 
+    ///<summary>Lists the games running on the server, possibly none.</summary>
     internal async Task<dynamic> listGames() {
         var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "getGames"));
         var json = await stringTask;
@@ -42,6 +43,7 @@ class JungleConnection : IDisposable {
         return data.games;
     }
 
+    ///<summary>Joins the given game, or starts a new if gameId is empty.</summary>
     internal async Task joinGame(string gameId) {
         // join game (fetch request)
         var joinData = new {
@@ -104,14 +106,7 @@ class JungleConnection : IDisposable {
         } else {
             GameState state = parseGameState(data);
             if (data.lives > 0) {
-                if (config.useConsole) {
-                    Console.Clear();
-                    Console.WriteLine("Field: " + data.field);
-                    Console.WriteLine("Round: " + data.round);
-                    Console.WriteLine("Health: " + data.lives);
-                    Console.WriteLine("Ammo: " + data.coconuts);
-                    Console.WriteLine("Score: " + data.points);
-                }
+                printState(data);
                 playerBehaviour(state);
             } else {
                 // end loop from joinGame
@@ -121,13 +116,15 @@ class JungleConnection : IDisposable {
         return new Tuple<bool, int>(gameOver, score);
     }
 
-    private GameState parseGameState(dynamic data) {
-        return new GameState(getCells(data.field.ToObject<string[]>()),
-                                data.round.ToObject<int>(),
-                                new PlayerInfo(monkey.Name,
-                                    data.lives.ToObject<int>(),
-                                    data.coconuts.ToObject<int>(),
-                                    data.points.ToObject<int>()));
+    private void printState(dynamic data) {
+        if (config.useConsole) {
+            Console.Clear();
+            Console.WriteLine("Field: " + data.field);
+            Console.WriteLine("Round: " + data.round);
+            Console.WriteLine("Health: " + data.lives);
+            Console.WriteLine("Ammo: " + data.coconuts);
+            Console.WriteLine("Score: " + data.points);
+        }
     }
 
     private async void sendCommand(Action action, Direction direction) {
@@ -156,6 +153,15 @@ class JungleConnection : IDisposable {
                 sendCommand(Action.STAY, Direction.NONE);
                 break;
         }
+    }
+
+    private GameState parseGameState(dynamic data) {
+        return new GameState(getCells(data.field.ToObject<string[]>()),
+                                data.round.ToObject<int>(),
+                                new PlayerInfo(monkey.Name,
+                                    data.lives.ToObject<int>(),
+                                    data.coconuts.ToObject<int>(),
+                                    data.points.ToObject<int>()));
     }
 
     private static Cell[][] getCells(string[] field) {
