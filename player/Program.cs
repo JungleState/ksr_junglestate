@@ -16,7 +16,7 @@ sealed class JungleConfig {
 ///  listens for state updates and calls the monkey's <see cref="BaseMonkey.nextMove(GameState)"/>
 ///  method determine the monkey's behavior.
 ///</remarks>
-class Program {
+class Program : IDisposable {
     private readonly HttpClient client;
     private readonly JungleConfig config;
     private readonly BaseMonkey monkey;
@@ -25,6 +25,10 @@ class Program {
         this.config = config;
         this.monkey = monkey;
         this.client = new HttpClient();
+    }
+
+    public void Dispose() {
+        client.Dispose();
     }
 
     internal async Task<dynamic> listGames() {
