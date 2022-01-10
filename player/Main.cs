@@ -28,6 +28,8 @@ class JoinOptions : GlobalOptions {
     public string GameId { get; set; } = "";
     [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
     public string Password { get; set; } = "";
+    [Option('P', "performance", Required = false, HelpText = "Start that many monkeys in parallel.", Default = 1)]
+    public int PerformanceCount { get; set; } = 1;
 }
 [Verb("start", HelpText = "Start a new game.")]
 class StartOptions : GlobalOptions {
@@ -58,9 +60,19 @@ class MonkeyCommandLine {
         BaseMonkey monkey = instantiateMonkey(options, false);
         JungleConfig config = readGlobalOptions(options);
         config.password = options.Password;
-        monkey.Name = options.Name;
-        using JungleConnection connection = new JungleConnection(monkey, config);
-        await joinGame(connection, config, options.GameId);
+        if (options.PerformanceCount > 1) {
+            List<Task> connections = new List<Task>();
+            for (int i = 0; i < options.PerformanceCount; i++) {
+                monkey.Name = options.Name + $"_{i}";
+                JungleConnection connection = new JungleConnection(monkey, config);
+                connections.Add(joinGame(connection, config, options.GameId));
+            }
+            Task.WaitAll(connections.ToArray());
+        } else {
+            monkey.Name = options.Name;
+            using JungleConnection connection = new JungleConnection(monkey, config);
+            await joinGame(connection, config, options.GameId);
+        }
     }
 
     private async Task StartMain(StartOptions options) {
