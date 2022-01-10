@@ -53,8 +53,8 @@ class MonkeyCommandLine {
         JungleConfig config = readGlobalOptions(options);
         config.password = options.Password;
         monkey.Name = options.Name;
-        using Program program = new Program(monkey, config);
-        await program.joinGame(options.GameId);
+        using JungleConnection connection = new JungleConnection(monkey, config);
+        await connection.joinGame(options.GameId);
     }
 
     private async Task StartMain(StartOptions options) {
@@ -62,8 +62,8 @@ class MonkeyCommandLine {
         JungleConfig config = readGlobalOptions(options);
         config.serverAddress = new Uri(options.Server);
         monkey.Name = options.Name;
-        using Program program = new Program(monkey, config);
-        await program.joinGame("");
+        using JungleConnection connection = new JungleConnection(monkey, config);
+        await connection.joinGame("");
     }
 
     private JungleConfig readGlobalOptions(GlobalOptions options) {
@@ -77,7 +77,7 @@ class MonkeyCommandLine {
                     options.SingleLine = true;
                 });
         });
-        config.logger = loggerFactory.CreateLogger<Program>();
+        config.logger = loggerFactory.CreateLogger<JungleConnection>();
         return config;
     }
 
@@ -107,8 +107,8 @@ class MonkeyCommandLine {
         }
         monkey.Name = name;
 
-        using Program program = new Program(monkey, config);
-        dynamic games = await program.listGames();
+        using JungleConnection connection = new JungleConnection(monkey, config);
+        dynamic games = await connection.listGames();
         Console.WriteLine("Start your monkey as follows: ");
         Console.WriteLine("Start new game (0) (default)");
         int key = 0;
@@ -123,7 +123,7 @@ class MonkeyCommandLine {
             gameId = games[selection - 1].id;
         }
 
-        await program.joinGame(gameId);
+        await connection.joinGame(gameId);
     }
 
     private static BaseMonkey instantiateMonkey(GlobalOptions options, bool allowAsking) {

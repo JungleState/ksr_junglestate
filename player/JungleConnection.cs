@@ -16,12 +16,12 @@ sealed class JungleConfig {
 ///  listens for state updates and calls the monkey's <see cref="BaseMonkey.nextMove(GameState)"/>
 ///  method determine the monkey's behavior.
 ///</remarks>
-class Program : IDisposable {
+class JungleConnection : IDisposable {
     private readonly HttpClient client;
     private readonly JungleConfig config;
     private readonly BaseMonkey monkey;
 
-    internal Program(BaseMonkey monkey, JungleConfig config) {
+    internal JungleConnection(BaseMonkey monkey, JungleConfig config) {
         this.config = config;
         this.monkey = monkey;
         this.client = new HttpClient();
