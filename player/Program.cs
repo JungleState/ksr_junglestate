@@ -26,7 +26,7 @@ namespace junglestate {
             this.config = config;
             this.monkey = monkey;
             this.client = new HttpClient();
-        }
+        }ß
 
         private async Task joinGame() {
             // join game (fetch request)
@@ -92,11 +92,11 @@ namespace junglestate {
                 if (data.lives > 0) {
                     if (config.useConsole) {
                         Console.Clear();
-                        Console.WriteLine("Field: "+data.field);
-                        Console.WriteLine("Round: "+data.round);
-                        Console.WriteLine("Health: "+data.lives);
-                        Console.WriteLine("Ammo: "+data.coconuts);
-                        Console.WriteLine("Score: "+data.points);
+                        Console.WriteLine("Field: " + data.field);
+                        Console.WriteLine("Round: " + data.round);
+                        Console.WriteLine("Health: " + data.lives);
+                        Console.WriteLine("Ammo: " + data.coconuts);
+                        Console.WriteLine("Score: " + data.points);
                     }
                     playerBehaviour(state);
                 } else {
@@ -127,9 +127,9 @@ namespace junglestate {
             }
         }
 
-        private void playerBehaviour(GameState state) {   
+        private void playerBehaviour(GameState state) {
             Move next = monkey.nextMove(state);
-            switch(next.action) {
+            switch (next.action) {
                 case Action.MOVE:
                     if (next.direction.isMoveable()) {
                         sendCommand(next.action, next.direction);
@@ -150,7 +150,7 @@ namespace junglestate {
             foreach (string row in field) {
                 cells[rowIndex] = new Cell[5];
                 for (int i = 0; i < row.Length / 2; i++) {
-                    string cellString = row.Substring(i*2, 2);
+                    string cellString = row.Substring(i * 2, 2);
                     cells[rowIndex][i] = getCell(cellString);
                 }
                 rowIndex++;

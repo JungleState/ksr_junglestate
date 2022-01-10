@@ -72,17 +72,17 @@ namespace junglestate {
         /// <summary>Returns the x and y coordinates into a 5x5 cell array corresponding to <paramref name="dir"/>.</summary>
         public static (int, int) Coordinates(this Direction dir) {
             switch (dir) {
-                case Direction.NONE: return (2,2);
-                case Direction.UP: return (1,2);
-                case Direction.UP_RIGHT: return (1,3);
-                case Direction.RIGHT: return (2,3);
-                case Direction.DOWN_RIGHT: return (3,3);
-                case Direction.DOWN: return (3,2);
-                case Direction.DOWN_LEFT: return (3,1);
-                case Direction.LEFT: return (2,1);
-                case Direction.UP_LEFT: return (1,1);
+                case Direction.NONE: return (2, 2);
+                case Direction.UP: return (1, 2);
+                case Direction.UP_RIGHT: return (1, 3);
+                case Direction.RIGHT: return (2, 3);
+                case Direction.DOWN_RIGHT: return (3, 3);
+                case Direction.DOWN: return (3, 2);
+                case Direction.DOWN_LEFT: return (3, 1);
+                case Direction.LEFT: return (2, 1);
+                case Direction.UP_LEFT: return (1, 1);
             }
-            return (2,2);
+            return (2, 2);
         }
 
         ///<summary>Returns true exactly if monkeys can move in this direction
@@ -148,7 +148,7 @@ namespace junglestate {
         private static readonly Cell COCONUT = new Cell(Item.COCONUT, null);
         /// <summary>Creates a cell containing a regular item (or empty), not a player.</summary>
         public static Cell ItemCell(Item item) {
-            switch(item) {
+            switch (item) {
                 case Item.EMPTY:
                     return EMPTY;
                 case Item.PINEAPPLE:
@@ -208,7 +208,7 @@ namespace junglestate {
     public class BaseMonkey {
         ///<summary>The monkey's name.</summary>
         public string Name { get; set; } = "Hooey";
-        
+
         /// <summary>Defines the move that the monkey takes in a given round.</summary>
         /// <remarks>Override or extend this method to refine the monkey's behavior.</remarks>
         public virtual Move nextMove(GameState state) {
