@@ -12,8 +12,8 @@ class GlobalOptions {
     public int Delay { get; set; } = 500;
     [Option('n', "name", Required = false, HelpText = "The monkey name, must be unique per game.", Default = "Hooey")]
     public string Name { get; set; } = "Hooey";
-    [Option('c', "console", Required = false, HelpText = "Output responses and actions to console.", Default = true)]
-    public bool Console { get; set; } = true;
+    [Option('q', "quiet", Required = false, HelpText = "Do not show game behavior in console.", Default = false)]
+    public bool Quiet { get; set; } = false;
 }
 
 [Verb("ask", isDefault: true, HelpText = "Ask for options.")]
@@ -34,59 +34,56 @@ class StartOptions : GlobalOptions {
 
 class MonkeyCommandLine {
     public static async Task Main(string[] args) {
+        MonkeyCommandLine cli = new MonkeyCommandLine();
+        try {
+            await Parser.Default.ParseArguments<JoinOptions, StartOptions, AskOptions>(args)
+                    .MapResult(
+                        (JoinOptions joinOpts) => cli.JoinMain(joinOpts),
+                        (StartOptions startOpts) => cli.StartMain(startOpts),
+                        (AskOptions askOpts) => cli.AskMain(askOpts),
+                        errs => Task.FromResult(1)
+                    );
+        } catch (Exception e) {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    private async Task JoinMain(JoinOptions options) {
+        BaseMonkey monkey = instantiateMonkey(options, false);
+        JungleConfig config = readGlobalOptions(options);
+        config.password = options.Password;
+        monkey.Name = options.Name;
+        using Program program = new Program(monkey, config);
+        await program.joinGame(options.GameId);
+    }
+
+    private async Task StartMain(StartOptions options) {
+        BaseMonkey monkey = instantiateMonkey(options, false);
+        JungleConfig config = readGlobalOptions(options);
+        config.serverAddress = new Uri(options.Server);
+        monkey.Name = options.Name;
+        using Program program = new Program(monkey, config);
+        await program.joinGame("");
+    }
+
+    private JungleConfig readGlobalOptions(GlobalOptions options) {
+        JungleConfig config = new JungleConfig();
+        config.delay_ms = options.Delay;
+        config.serverAddress = new Uri(options.Server);
+        config.useConsole = !options.Quiet;
         using var loggerFactory = LoggerFactory.Create(builder => {
             builder
                 .AddSimpleConsole(options => {
                     options.SingleLine = true;
                 });
         });
-
-        JungleConfig config = new JungleConfig();
         config.logger = loggerFactory.CreateLogger<Program>();
-        try {
-            await Parser.Default.ParseArguments<JoinOptions, StartOptions, AskOptions>(args)
-                    .MapResult(
-                        (JoinOptions joinOpts) => JoinMain(joinOpts),
-                        (StartOptions startOpts) => StartMain(startOpts),
-                        (AskOptions askOpts) => AskMain(askOpts),
-                        errs => Task.FromResult(1)
-                    );
-        } catch (Exception e) {
-            config.logger.LogWarning(e.Message);
-            config.logger.LogDebug(e, "Error running program");
-        }
+        return config;
     }
 
-    private static async Task JoinMain(JoinOptions options) {
-        BaseMonkey monkey = instantiateMonkey(options, false);
-        JungleConfig config = new JungleConfig();
-        readGlobalOptions(options, config);
-        config.password = options.Password;
-        monkey.Name = options.Name;
-        Program program = new Program(monkey, config);
-        await program.joinGame(options.GameId);
-    }
-
-    private static async Task StartMain(StartOptions options) {
-        BaseMonkey monkey = instantiateMonkey(options, false);
-        JungleConfig config = new JungleConfig();
-        readGlobalOptions(options, config);
-        config.serverAddress = new Uri(options.Server);
-        monkey.Name = options.Name;
-        Program program = new Program(monkey, config);
-        await program.joinGame("");
-    }
-
-    private static void readGlobalOptions(GlobalOptions options, JungleConfig config) {
-        config.delay_ms = options.Delay;
-        config.serverAddress = new Uri(options.Server);
-        config.useConsole = options.Console;
-    }
-
-    private static async Task AskMain(AskOptions options) {
+    private async Task AskMain(AskOptions options) {
         BaseMonkey monkey = instantiateMonkey(options, true);
-        JungleConfig config = new JungleConfig();
-        readGlobalOptions(options, config);
+        JungleConfig config = readGlobalOptions(options);
         Console.WriteLine($"Select server (default: {options.Server}): ");
         string? server = Console.ReadLine();
         if (String.IsNullOrEmpty(server)) {
@@ -110,7 +107,7 @@ class MonkeyCommandLine {
         }
         monkey.Name = name;
 
-        Program program = new Program(monkey, config);
+        using Program program = new Program(monkey, config);
         dynamic games = await program.listGames();
         Console.WriteLine("Start your monkey as follows: ");
         Console.WriteLine("Start new game (0) (default)");
@@ -171,5 +168,4 @@ class MonkeyCommandLine {
         }
         return monkey;
     }
-
 }
