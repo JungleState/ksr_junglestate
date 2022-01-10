@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 namespace junglestate {
     sealed class JungleConfig {
         internal Uri serverAddress = new Uri("http://localhost:5500/");
-        internal string gameId = "";
         internal string password = "";
         internal int delay_ms = 500;
         internal bool useConsole = true;
@@ -28,14 +27,25 @@ namespace junglestate {
             this.client = new HttpClient();
         }
 
-        private async Task joinGame() {
+        private async Task<string[]> listGames() {
+            var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "getGames"));
+            var json = await stringTask;
+            dynamic? data = JsonConvert.DeserializeObject(json);
+            if (data == null) {
+                throw new Exception("No games");
+            }
+
+            return data.games;
+        }
+
+        private async Task joinGame(string gameId) {
             // join game (fetch request)
             var joinData = new {
                 player_name = monkey.Name,
                 player_mode = "client",
                 password = config.password,
-                mode = String.IsNullOrEmpty(config.gameId) ? "newGame" : "joinExisting",
-                game_id = config.gameId
+                mode = String.IsNullOrEmpty(gameId) ? "newGame" : "joinExisting",
+                game_id = gameId
             };
             string jsonData = JsonConvert.SerializeObject(joinData);
             var content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
@@ -214,7 +224,8 @@ namespace junglestate {
                             errs => Task.FromResult(1)
                         );
             } catch (Exception e) {
-                config.logger.LogError(e, "Error running program");
+                config.logger.LogWarning(e.Message);
+                config.logger.LogDebug(e, "Error running program");
             }
         }
 
@@ -222,11 +233,10 @@ namespace junglestate {
             BaseMonkey monkey = instantiateMonkey(options, false);
             JungleConfig config = new JungleConfig();
             readGlobalOptions(options, config);
-            config.gameId = options.GameId;
             config.password = options.Password;
             monkey.Name = options.Name;
             Program program = new Program(monkey, config);
-            await program.joinGame();
+            await program.joinGame(options.GameId);
         }
 
         private static async Task StartMain(StartOptions options) {
@@ -236,7 +246,7 @@ namespace junglestate {
             config.serverAddress = new Uri(options.Server);
             monkey.Name = options.Name;
             Program program = new Program(monkey, config);
-            await program.joinGame();
+            await program.joinGame("");
         }
 
         private static void readGlobalOptions(GlobalOptions options, JungleConfig config) {
@@ -272,18 +282,8 @@ namespace junglestate {
             }
             monkey.Name = name;
 
-            dynamic games;
-            using (HttpClient client = new HttpClient()) {
-                var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "getGames"));
-                var json = await stringTask;
-                dynamic? data = JsonConvert.DeserializeObject(json);
-                if (data == null) {
-                    throw new Exception("No games");
-                }
-
-                games = data.games;
-            }
-
+            Program program = new Program(monkey, config);
+            dynamic games = await program.listGames();
             Console.WriteLine("Start your monkey as follows: ");
             Console.WriteLine("Start new game (0) (default)");
             int key = 0;
@@ -293,12 +293,12 @@ namespace junglestate {
             }
             string? input = Console.ReadLine();
             int selection;
+            string gameId = "";
             if (int.TryParse(input, out selection) && selection > 0) {
-                config.gameId = games[selection - 1].id;
+                gameId = games[selection - 1].id;
             }
 
-            Program program = new Program(monkey, config);
-            await program.joinGame();
+            await program.joinGame(gameId);
         }
 
         private static BaseMonkey instantiateMonkey(GlobalOptions options, bool allowAsking) {
