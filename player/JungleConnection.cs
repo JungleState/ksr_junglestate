@@ -23,6 +23,8 @@ class JungleConnection : IDisposable {
     private readonly JungleConfig config;
     private readonly BaseMonkey monkey;
 
+    private int lastRound = -1;
+
     public readonly TaskMeasurer viewMeasurer = new TaskMeasurer("view");
     public readonly TaskMeasurer actionMeasurer = new TaskMeasurer("action");
 
@@ -110,9 +112,14 @@ class JungleConnection : IDisposable {
         } else {
             GameState state = parseGameState(data);
             if (data.lives > 0) {
-                printState(data);
-                playerBehaviour(state);
-                logTimers();
+                if (data.round != lastRound) {
+                    lastRound = data.round;
+                    printState(data);
+                    playerBehaviour(state);
+                    logTimers();
+                } else {
+                    config.logger.LogWarning("no update, same round");
+                }
             } else {
                 // end loop from joinGame
                 gameOver = true;
