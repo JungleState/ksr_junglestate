@@ -1,16 +1,19 @@
 using Newtonsoft.Json;
 using CommandLine;
+using Microsoft.Extensions.Logging;
 
 namespace junglestate {
-    public sealed class JungleConfig {
-        public Uri serverAddress = new Uri("http://localhost:5500/");
-        public string gameId = "";
-        public string password = "";
-        public int delay_ms = 500;
+    sealed class JungleConfig {
+        internal Uri serverAddress = new Uri("http://localhost:5500/");
+        internal string gameId = "";
+        internal string password = "";
+        internal int delay_ms = 500;
+        internal bool useConsole = true;
+        internal ILogger logger;
     }
 
     ///<summary>The main program for junglecamp monkey bots.</summary>
-    ///<remarks>Once a program is started, it maintains a HTTP connection to the game server
+    ///<remarks>Once a program is started, it maintains a HTTP connection to the game server,
     ///  listens for state updates and calls the monkey's <see cref="BaseMonkey.nextMove(GameState)"/>
     ///  method determine the monkey's behavior.
     ///</remarks>
@@ -40,39 +43,39 @@ namespace junglestate {
             var response = await client.PostAsync(new Uri(config.serverAddress, "joinGame"), content);
             var json = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode) {
-                Console.WriteLine(json);
+                config.logger.LogError(json);
                 return;
             }
             dynamic? data = JsonConvert.DeserializeObject(json);
 
             // check if joining was successful
-            if (data != null){
-                if (data.ok == false) {
-                    Console.WriteLine("Connection to game failed!");
-                    Console.WriteLine((string) data.msg);
-                }
-                else {
-                    int score = 0;
-                    // loop with regular request for the field followed by an instruction for the server what to do
-                    while (true) {
-                        Tuple<bool, int> returnedData = await getData();
-                        Thread.Sleep(config.delay_ms);
-                        if (returnedData.Item1) {
-                            score = returnedData.Item2;
-                            break;
-                        }
-                    }
-                    Console.WriteLine("");
-                    Console.WriteLine("!!!!!!!!!!!");
-                    Console.WriteLine("!GAME OVER!");
-                    Console.WriteLine("!!!!!!!!!!!");
-                    Console.WriteLine("Score: "+score);
-                }   
-            }
-            else {
+            if (data == null) {
                 Console.WriteLine("ERROR: data is null");
+                return;
+            }
+            if (data.ok == false) {
+                config.logger.LogError($"Connection to game failed! {data.msg}");
+                return;
+            }
+            int score = 0;
+            // loop with regular request for the field followed by an instruction for the server what to do
+            while (true) {
+                Tuple<bool, int> returnedData = await getData();
+                Thread.Sleep(config.delay_ms);
+                if (returnedData.Item1) {
+                    score = returnedData.Item2;
+                    break;
+                }
+            }
+            if (config.useConsole) {
+                Console.WriteLine("");
+                Console.WriteLine("!!!!!!!!!!!");
+                Console.WriteLine("!GAME OVER!");
+                Console.WriteLine("!!!!!!!!!!!");
+                Console.WriteLine("Score: " + score);
             }
         }
+
         private async Task<Tuple<bool, int>> getData() {
             // get the map
             var stringTask = client.GetStringAsync(new Uri(config.serverAddress, "view"));
@@ -82,24 +85,24 @@ namespace junglestate {
             bool gameOver = false;
             int score = 0;
 
-            if (data != null) {
+            if (data == null) {
+                config.logger.LogError("ERROR: view data is null");
+            } else {
                 GameState state = parseGameState(data);
                 if (data.lives > 0) {
-                    Console.Clear();
-                    Console.WriteLine("Field: "+data.field);
-                    Console.WriteLine("Round: "+data.round);
-                    Console.WriteLine("Health: "+data.lives);
-                    Console.WriteLine("Ammo: "+data.coconuts);
-                    Console.WriteLine("Score: "+data.points);
+                    if (config.useConsole) {
+                        Console.Clear();
+                        Console.WriteLine("Field: "+data.field);
+                        Console.WriteLine("Round: "+data.round);
+                        Console.WriteLine("Health: "+data.lives);
+                        Console.WriteLine("Ammo: "+data.coconuts);
+                        Console.WriteLine("Score: "+data.points);
+                    }
                     playerBehaviour(state);
-                }
-                else {
+                } else {
                     // end loop from joinGame
                     gameOver = true;
                 }
-            }
-            else {
-                Console.WriteLine("ERROR: data is null");
             }
             return new Tuple<bool, int>(gameOver, score);
         }
@@ -114,13 +117,13 @@ namespace junglestate {
         }
 
         private async void sendCommand(Action action, Direction direction) {
-            // send the chosen action to the server
             try {
-                Console.WriteLine("-> Action: "+action.ToString()+" "+direction.ToString());
-                await client.PostAsync(new Uri(config.serverAddress, "action/"+(int)action+"/"+(int)direction), new StringContent(""));
-            }
-            catch (Exception e) {
-                Console.WriteLine(e.ToString());
+                if (config.useConsole) {
+                    Console.WriteLine("-> Action: " + action.ToString() + " " + direction.ToString());
+                }
+                await client.PostAsync(new Uri(config.serverAddress, "action/" + (int)action + "/" + (int)direction), new StringContent(""));
+            } catch (Exception e) {
+                config.logger.LogError(e, "Problem sending command.");
             }
         }
 
@@ -191,7 +194,17 @@ namespace junglestate {
         class AskOptions : GlobalOptions {
         }
         public static async Task Main(string[] args) {
+            using var loggerFactory = LoggerFactory.Create(builder => {
+                builder
+                    .AddFilter("Microsoft", LogLevel.Warning)
+                    .AddFilter("System", LogLevel.Warning)
+                    .AddSimpleConsole(options => {
+                        options.SingleLine = true;
+                    });
+            });
+
             JungleConfig config = new JungleConfig();
+            config.logger = loggerFactory.CreateLogger<Program>();
             try {
                 await Parser.Default.ParseArguments<JoinOptions, StartOptions, AskOptions>(args)
                         .MapResult(
@@ -201,7 +214,7 @@ namespace junglestate {
                             errs => Task.FromResult(1)
                         );
             } catch (Exception e) {
-                Console.WriteLine(e.Message);
+                config.logger.LogError(e, "Error running program");
             }
         }
 
@@ -319,7 +332,7 @@ namespace junglestate {
                 }
             }
             Console.WriteLine($"Using monkey class {monkeyType.Name}");
-            BaseMonkey? monkey = (BaseMonkey)Activator.CreateInstance(monkeyType);
+            BaseMonkey? monkey = (BaseMonkey?)Activator.CreateInstance(monkeyType);
             if (monkey == null) {
                 throw new Exception($"Unable to instantiate monkey class {monkeyType}");
             }
