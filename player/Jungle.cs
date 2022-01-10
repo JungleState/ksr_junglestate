@@ -97,6 +97,21 @@ namespace junglestate {
             }
             return false;
         }
+
+        public static Direction opposite(this Direction dir) {
+            switch (dir) {
+                case Direction.NONE: return Direction.NONE;
+                case Direction.UP: return Direction.DOWN;
+                case Direction.UP_RIGHT: return Direction.DOWN_LEFT;
+                case Direction.RIGHT: return Direction.LEFT;
+                case Direction.DOWN_RIGHT: return Direction.UP_LEFT;
+                case Direction.DOWN: return Direction.UP;
+                case Direction.DOWN_LEFT: return Direction.UP_RIGHT;
+                case Direction.LEFT: return Direction.RIGHT;
+                case Direction.UP_LEFT: return Direction.DOWN_RIGHT;
+            }
+            throw new Exception($"Unknown direction: {dir}");
+        }
     }
 
     /// <summary>The description of a monkey's move in the next round.</summary>
