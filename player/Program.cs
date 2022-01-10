@@ -26,7 +26,7 @@ namespace junglestate {
             this.config = config;
             this.monkey = monkey;
             this.client = new HttpClient();
-        }ß
+        }
 
         private async Task joinGame() {
             // join game (fetch request)
