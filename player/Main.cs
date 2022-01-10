@@ -89,7 +89,7 @@ class MonkeyCommandLine {
         config.delay_ms = options.Delay;
         config.serverAddress = new Uri(options.Server);
         config.useConsole = !options.Quiet;
-        config.showTimers = !options.Time;
+        config.showTimers = options.Time;
         using var loggerFactory = LoggerFactory.Create(builder => {
             builder
                 .AddSimpleConsole(options => {
