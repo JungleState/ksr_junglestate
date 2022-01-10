@@ -153,15 +153,25 @@ class MonkeyCommandLine {
             select type;
 
         int monkeyCandidateCount = monkeyClasses.Count();
-        Type monkeyType;
+        Type? monkeyType = null;
         if (monkeyCandidateCount == 0) {
             throw new Exception("No classes extending BaseMonkey found.");
         } else if (monkeyCandidateCount == 1) {
             monkeyType = monkeyClasses.Single();
-        } else {
-            if (!allowAsking) {
+        } else if (!allowAsking) {
+            if (String.IsNullOrEmpty(options.Monkey)) {
                 throw new Exception("multiple possible monkeys, select one with --monkey or use 'ask'");
             }
+            foreach (Type type in monkeyClasses) {
+                if (type.Name == options.Monkey) {
+                    monkeyType = type;
+                    break;
+                }
+            }
+            if (monkeyType == null) {
+                throw new Exception("No matching monkey class found");
+            }
+        } else {
             // multiple monkey class candidates
             int selection = 0;
             int key = 0;
