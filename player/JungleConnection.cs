@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.Diagnostics;
 
 namespace junglestate;
@@ -9,7 +10,7 @@ sealed class JungleConfig {
     internal int delay_ms = 500;
     internal bool useConsole = true;
     internal bool showTimers = false;
-    internal ILogger logger;
+    internal ILogger logger = NullLogger.Instance;
 }
 
 ///<summary>The main program for junglecamp monkey bots.</summary>
