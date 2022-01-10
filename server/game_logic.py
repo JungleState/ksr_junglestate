@@ -1,4 +1,5 @@
 from random import randint
+import functools
 import logging
 import threading
 logging.getLogger().setLevel("DEBUG")
@@ -17,8 +18,8 @@ class Rules:
     class Scores:
         KNOCK_OUT = 25
         HIT = 10
-        PINEAPPLE = 50
-        BANANA = 25
+        PINEAPPLE = 5
+        BANANA = 0
 
     class Damage:
         COCONUT = 1
@@ -145,6 +146,9 @@ class Game:
         self.matrix = generator.purge(
             generator.generate(self.field_lengh, self.field_height))
         self.field_dim = [self.field_lengh, self.field_height]
+        self.fullRoundEvent = threading.Event()
+        self.roundMakerThread = threading.Thread(target=self.blockUntilNextRound, name="roundMaker", daemon=True)
+        self.roundMakerThread.start()
 
     def getId(self):
         pass
@@ -213,9 +217,8 @@ class Game:
         6: left
         7: up left"""
         if len(self.move_list) == 0:
-            timer = threading.Timer(Rules.TIME_TO_MOVE, self.doNextRound)
+            timer = threading.Timer(Rules.TIME_TO_MOVE, functools.partial(self.kickOffRound, self.round))
             timer.start()
-            self.updated = False
 
         for move in self.move_list:
             if move[0] == player_id:
@@ -237,8 +240,8 @@ class Game:
                 alive += 1
 
         if len(self.move_list) == alive:
-            logging.debug(f"All players moved - next round!")
-            self.doNextRound()
+            logging.debug("All players moved - next round!")
+            self.fullRoundEvent.set()
         return True
 
     def GetPlayerListForJSON(self):
@@ -253,6 +256,16 @@ class Game:
                                 "coconuts": player.coconuts,
                                 "points": player.points})
         return player_list
+    
+    def kickOffRound(self, round):
+        if round == self.round:
+            logging.debug("Next round after timeout - not all players have moved!")
+            self.fullRoundEvent.set()
+
+    def blockUntilNextRound(self):
+        while self.fullRoundEvent.wait():
+            self.fullRoundEvent.clear()
+            self.doNextRound()
 
     def doNextRound(self):
         move_list = list(self.move_list)
@@ -361,12 +374,11 @@ class Game:
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
 
             if item_picked_up:
-                item_list = [Items.BANANA, Items.PINEAPPLE, Items.COCONUT]
                 while True:
                     x = randint(1, self.field_dim[0]-Rules.SIGHT)
                     y = randint(1, self.field_dim[1]-Rules.SIGHT)
                     if self.getElementAt(x, y) == Items.EMPTY:
-                        self.setElementAt(x, y, item_list[randint(0, len(item_list)-1)])
+                        self.setElementAt(x, y, checkField)
                         break
 
                 
