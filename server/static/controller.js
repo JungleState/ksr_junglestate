@@ -101,7 +101,11 @@ class Controller {
                 type = 2;
                 direction = 6;
                 break;
-            case 97: // l
+            case 75: // k
+                type = 2;
+                direction = 2;
+                break;
+            case 76: // l
                 type = 2;
                 direction = 2;
                 break;

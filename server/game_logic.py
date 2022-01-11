@@ -1,4 +1,5 @@
 from random import randint
+import functools
 import logging
 import threading
 logging.getLogger().setLevel("DEBUG")
@@ -15,10 +16,10 @@ class Rules:
     TIME_TO_MOVE = 0.5
     SIGHT = 2
     class Scores:
-        KNOCK_OUT = 25
-        HIT = 10
-        PINEAPPLE = 50
-        BANANA = 25
+        KNOCK_OUT = 50
+        HIT = 25
+        PINEAPPLE = 15
+        BANANA = 5
 
     class Damage:
         COCONUT = 1
@@ -49,6 +50,7 @@ class Player(Item):
         self.points = 0
         self.state = 0  # 0 = alive ; 1 = dead
         self.active = True
+        self.message = ""
 
     def item_dict(self):
         return {"coconuts": self.coconuts,
@@ -58,7 +60,8 @@ class Player(Item):
                 "name": self.name,
                 "lives": self.lives,
                 "points": self.points,
-                "active": self.active}
+                "active": self.active,
+                "message": self.message}
 
 
 class MapGenerator:
@@ -145,6 +148,9 @@ class Game:
         self.matrix = generator.purge(
             generator.generate(self.field_lengh, self.field_height))
         self.field_dim = [self.field_lengh, self.field_height]
+        self.fullRoundEvent = threading.Event()
+        self.roundMakerThread = threading.Thread(target=self.blockUntilNextRound, name="roundMaker", daemon=True)
+        self.roundMakerThread.start()
 
     def getId(self):
         pass
@@ -213,9 +219,8 @@ class Game:
         6: left
         7: up left"""
         if len(self.move_list) == 0:
-            timer = threading.Timer(Rules.TIME_TO_MOVE, self.doNextRound)
+            timer = threading.Timer(Rules.TIME_TO_MOVE, functools.partial(self.kickOffRound, self.round))
             timer.start()
-            self.updated = False
 
         for move in self.move_list:
             if move[0] == player_id:
@@ -237,8 +242,8 @@ class Game:
                 alive += 1
 
         if len(self.move_list) == alive:
-            logging.debug(f"All players moved - next round!")
-            self.doNextRound()
+            logging.debug("All players moved - next round!")
+            self.fullRoundEvent.set()
         return True
 
     def GetPlayerListForJSON(self):
@@ -253,6 +258,16 @@ class Game:
                                 "coconuts": player.coconuts,
                                 "points": player.points})
         return player_list
+    
+    def kickOffRound(self, round):
+        if round == self.round:
+            logging.debug("Next round after timeout - not all players have moved!")
+            self.fullRoundEvent.set()
+
+    def blockUntilNextRound(self):
+        while self.fullRoundEvent.wait():
+            self.fullRoundEvent.clear()
+            self.doNextRound()
 
     def doNextRound(self):
         move_list = list(self.move_list)
@@ -282,6 +297,14 @@ class Game:
                     del self.safed_items_list[self.safed_items_list.index(
                         safed_item)]
         self.round += 1
+    
+    def spawnItem(self, item):
+        while True:
+            x = randint(1, self.field_dim[0]-Rules.SIGHT)
+            y = randint(1, self.field_dim[1]-Rules.SIGHT)
+            if self.getElementAt(x, y) == Items.EMPTY:
+                self.setElementAt(x, y, item) 
+                break
 
     def getElementAt(self, x, y):
         return self.matrix[y][x]
@@ -338,14 +361,13 @@ class Game:
                 item_picked_up = True
 
             elif checkField == Items.COCONUT:
-                print(player.coconuts)
                 if player.coconuts < 3:
+                    item_picked_up = True
                     player.coconuts += 1
                     for safed_item in self.safed_items_list:
                         if safed_item[1] == toCoordinates:
                             index = self.safed_items_list.index(safed_item)
                             del self.safed_items_list[index]
-                            item_picked_up = True
                             break
                 else:
                     safed_item_in_safed_items_list = False
@@ -361,13 +383,7 @@ class Game:
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
 
             if item_picked_up:
-                item_list = [Items.BANANA, Items.PINEAPPLE, Items.COCONUT]
-                while True:
-                    x = randint(1, self.field_dim[0]-Rules.SIGHT)
-                    y = randint(1, self.field_dim[1]-Rules.SIGHT)
-                    if self.getElementAt(x, y) == Items.EMPTY:
-                        self.setElementAt(x, y, item_list[randint(0, len(item_list)-1)])
-                        break
+                self.spawnItem(checkField)
 
                 
 
@@ -430,6 +446,7 @@ class Game:
             for safed_item in self.safed_items_list:
                 if safed_item[1] == [player.x, player.y]:
                     player.coconuts += 1
+                    self.spawnItem(Items.COCONUT)
                     del self.safed_items_list[self.safed_items_list.index(
                         safed_item)]
                     break
@@ -470,7 +487,7 @@ class Game:
                     return player.state
 
     def GetPlayers(self):
-        return {player.id: player.name for player in self.player_list}
+        return {self.player_list.index(player): player.name for player in self.player_list}
 
     def Scoreboard(self, sortby, hyrarchy):
         sorted_player_list = [i for i in range(len(self.player_list))]
@@ -480,6 +497,7 @@ class Game:
                           "knockouts": [player.knockouts for player in self.player_list],
                           "hits": [player.hits for player in self.player_list],
                           "name": [player.name[0] for player in self.player_list],
+                          "message": [player.message for player in self.player_list],
                           "active": [player.active for player in self.player_list]}
 
         sorted_list = sorted(item_list_dict[f"{sortby}"])
@@ -499,5 +517,4 @@ class Game:
         elif hyrarchy == "incr":
             if sortby == "name":
                 sorted_player_id_list.reverse()
-        print(sorted_player_id_list)
         return sorted_player_id_list
