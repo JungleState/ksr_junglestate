@@ -377,8 +377,9 @@ class Game:
                 while True:
                     x = randint(1, self.field_dim[0]-Rules.SIGHT)
                     y = randint(1, self.field_dim[1]-Rules.SIGHT)
+                    new_item_list = [Items.COCONUT, Items.BANANA, Items.PINEAPPLE]
                     if self.getElementAt(x, y) == Items.EMPTY:
-                        self.setElementAt(x, y, checkField)
+                        self.setElementAt(x, y, new_item_list[randint(0, len(new_item_list)-1)]) 
                         break
 
                 
