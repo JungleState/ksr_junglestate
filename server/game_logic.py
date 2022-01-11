@@ -351,14 +351,13 @@ class Game:
                 item_picked_up = True
 
             elif checkField == Items.COCONUT:
-                print(player.coconuts)
                 if player.coconuts < 3:
+                    item_picked_up = True
                     player.coconuts += 1
                     for safed_item in self.safed_items_list:
                         if safed_item[1] == toCoordinates:
                             index = self.safed_items_list.index(safed_item)
                             del self.safed_items_list[index]
-                            item_picked_up = True
                             break
                 else:
                     safed_item_in_safed_items_list = False
@@ -377,9 +376,8 @@ class Game:
                 while True:
                     x = randint(1, self.field_dim[0]-Rules.SIGHT)
                     y = randint(1, self.field_dim[1]-Rules.SIGHT)
-                    new_item_list = [Items.COCONUT, Items.BANANA, Items.PINEAPPLE]
                     if self.getElementAt(x, y) == Items.EMPTY:
-                        self.setElementAt(x, y, new_item_list[randint(0, len(new_item_list)-1)]) 
+                        self.setElementAt(x, y, checkField) 
                         break
 
                 
