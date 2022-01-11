@@ -295,6 +295,14 @@ class Game:
                     del self.safed_items_list[self.safed_items_list.index(
                         safed_item)]
         self.round += 1
+    
+    def respawnItem(self, item):
+        while True:
+            x = randint(1, self.field_dim[0]-Rules.SIGHT)
+            y = randint(1, self.field_dim[1]-Rules.SIGHT)
+            if self.getElementAt(x, y) == Items.EMPTY:
+                self.setElementAt(x, y, item) 
+                break
 
     def getElementAt(self, x, y):
         return self.matrix[y][x]
@@ -364,7 +372,6 @@ class Game:
                     for safed_item in self.safed_items_list:
                         if safed_item[0] == toCoordinates:
                             safed_item_in_safed_items_list = True
-                            item_picked_up = True
                     if not safed_item_in_safed_items_list:
                         self.safed_items_list.append(
                             (Items.COCONUT, toCoordinates, self.round))
@@ -374,12 +381,7 @@ class Game:
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
 
             if item_picked_up:
-                while True:
-                    x = randint(1, self.field_dim[0]-Rules.SIGHT)
-                    y = randint(1, self.field_dim[1]-Rules.SIGHT)
-                    if self.getElementAt(x, y) == Items.EMPTY:
-                        self.setElementAt(x, y, checkField) 
-                        break
+                self.respawnItem(checkField)
 
                 
 
@@ -442,6 +444,7 @@ class Game:
             for safed_item in self.safed_items_list:
                 if safed_item[1] == [player.x, player.y]:
                     player.coconuts += 1
+                    self.respawnItem(Items.COCONUT)
                     del self.safed_items_list[self.safed_items_list.index(
                         safed_item)]
                     break
