@@ -11,9 +11,13 @@ async function login(join_mode, game_id) {
     else {
         player_mode = 'client';
     }
-
-    if (!name || (mode == 'spec' && join_mode == 'newGame')) {
+    if ((!name) && player_mode == 'client') {
+        alert("Invalid Login Data");
         return;
+    }
+
+    if (player_mode == 'spec') {
+        name = 'Spectator';
     }
 
     // Set options
