@@ -267,6 +267,10 @@ def action(moveType, direction):
             for game in game_list:
                 if game.id == user.game_id:
                     game.addMove(user.uuid, int(moveType), int(direction))
+                    # Post request arguments
+                    data = request.get_json(silent=True)
+                    message = data['status'] if 'status' in data else ""
+                    game.getPlayerFromID(user.uuid).message = message
 
             return jsonify(ok=True)
 
