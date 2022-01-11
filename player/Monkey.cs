@@ -1,48 +1,48 @@
-﻿namespace junglestate {
-    ///<summary>A simple monkey that moves randomly in free directions.</summary>
-    public class Monkey : BaseMonkey {
+namespace junglestate;
 
-        private Direction defaultDir = Direction.RIGHT;
-        private bool runForLive = false;
+///<summary>A simple monkey that moves randomly in free directions.</summary>
+public class Monkey : BaseMonkey {
 
-        public override Move nextMove(GameState state) {
-            List<Direction> freeDirs = computeFreeDirections(state);
-            Direction nextDir;
+    private Direction defaultDir = Direction.RIGHT;
+    private bool runForLive = false;
 
-            if (freeDirs.Contains(this.defaultDir)) {
-                nextDir = this.defaultDir;
-            }
-            else {
-                while (true) {
-                    Random random = new System.Random();
-                    Random r = new Random();
-                    nextDir = freeDirs[r.Next(freeDirs.Count)];
+    public override Move nextMove(GameState state) {
+        List<Direction> freeDirs = computeFreeDirections(state);
+        Direction nextDir;
 
-                    if (nextDir.opposite() != defaultDir || freeDirs.Count == 1) {
-                        this.defaultDir = nextDir;
-                        break;
-                    }
+        if (freeDirs.Contains(this.defaultDir)) {
+            nextDir = this.defaultDir;
+        }
+        else {
+            while (true) {
+                Random random = new System.Random();
+                Random r = new Random();
+                nextDir = freeDirs[r.Next(freeDirs.Count)];
+
+                if (nextDir.opposite() != defaultDir || freeDirs.Count == 1) {
+                    this.defaultDir = nextDir;
+                    break;
                 }
             }
-
-            return new Move(Action.MOVE, nextDir, state.round);
         }
 
-        private Direction selectRandomDirection(GameState state) {
-            List<Direction> freeDirs = computeFreeDirections(state);
-            Random random = new System.Random();
-            Random r = new Random();
-            return freeDirs[r.Next(freeDirs.Count)];
-        }
+        return new Move(Action.MOVE, nextDir, state.round);
+    }
 
-        private List<Direction> computeFreeDirections(GameState state) {
-            List<Direction> result = new List<Direction>();
-            foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
-                if (dir.isMoveable() && state.getCell(dir).isFree()) {
-                    result.Add(dir);
-                }
+    private Direction selectRandomDirection(GameState state) {
+        List<Direction> freeDirs = computeFreeDirections(state);
+        Random random = new System.Random();
+        Random r = new Random();
+        return freeDirs[r.Next(freeDirs.Count)];
+    }
+
+    private List<Direction> computeFreeDirections(GameState state) {
+        List<Direction> result = new List<Direction>();
+        foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
+            if (dir.isMoveable() && state.getCell(dir).isFree()) {
+                result.Add(dir);
             }
-            return result;
         }
+        return result;
     }
 }
