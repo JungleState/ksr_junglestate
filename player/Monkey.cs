@@ -1,12 +1,4 @@
-﻿// For usage in Visual Studio Code:
-//     - Download C# extension
-//     - Download NET: https://dotnet.microsoft.com/download
-//     - Open Terminal
-//     - Move into "player" folder: "cd player"
-//     - Download Json.NET: "dotnet add package Newtonsoft.Json
-//     - Run: "dotnet run"
-
-namespace junglestate {
+﻿namespace junglestate {
     ///<summary>A simple monkey that moves randomly in free directions.</summary>
     public class Monkey : BaseMonkey {
         public override Move nextMove(GameState state) {
