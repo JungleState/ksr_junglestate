@@ -517,5 +517,4 @@ class Game:
         elif hyrarchy == "incr":
             if sortby == "name":
                 sorted_player_id_list.reverse()
-        print(sorted_player_id_list)
         return sorted_player_id_list
