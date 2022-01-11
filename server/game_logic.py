@@ -16,10 +16,10 @@ class Rules:
     TIME_TO_MOVE = 0.5
     SIGHT = 2
     class Scores:
-        KNOCK_OUT = 25
-        HIT = 10
-        PINEAPPLE = 5
-        BANANA = 0
+        KNOCK_OUT = 50
+        HIT = 25
+        PINEAPPLE = 15
+        BANANA = 5
 
     class Damage:
         COCONUT = 1
@@ -296,7 +296,7 @@ class Game:
                         safed_item)]
         self.round += 1
     
-    def respawnItem(self, item):
+    def spawnItem(self, item):
         while True:
             x = randint(1, self.field_dim[0]-Rules.SIGHT)
             y = randint(1, self.field_dim[1]-Rules.SIGHT)
@@ -381,7 +381,7 @@ class Game:
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
 
             if item_picked_up:
-                self.respawnItem(checkField)
+                self.spawnItem(checkField)
 
                 
 
@@ -444,7 +444,7 @@ class Game:
             for safed_item in self.safed_items_list:
                 if safed_item[1] == [player.x, player.y]:
                     player.coconuts += 1
-                    self.respawnItem(Items.COCONUT)
+                    self.spawnItem(Items.COCONUT)
                     del self.safed_items_list[self.safed_items_list.index(
                         safed_item)]
                     break
