@@ -2,9 +2,16 @@
 
 ///<summary>A simple monkey that moves randomly in free directions.</summary>
 public class Monkey : BaseMonkey {
+    private Direction lastDir = Direction.NONE;
     public override Move nextMove(GameState state) {
+        // Attempt to move in the same direction as last round.
+        if (lastDir.isMoveable() && state.getCell(lastDir).isFree()) {
+            return new Move(Action.MOVE, lastDir, state.round, "it's so boring...");
+        }
+        // Otherwise: random move
         Direction direction = selectRandomDirection(state);
-        return new Move(Action.MOVE, direction, state.round);
+        lastDir = direction;
+        return new Move(Action.MOVE, direction, state.round, "didn't see this coming, eh?");
     }
 
     private Direction selectRandomDirection(GameState state) {
