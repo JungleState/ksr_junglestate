@@ -73,17 +73,18 @@ class View{
 
         let title = document.createElement('div');
         title.classList.add('title');
-        title.innerText = 'Scoreboard - Points';
+        title.innerText = 'Scoreboard - (Points/Lives/Nuts)';
         navigation.appendChild(title);
 
         for (let i = 0; i < l; i++) {
             let div = document.createElement('div');
             div.classList.add('playerSb');
-            if (!json.scoreboard[i].active) {
+            let player = json.scoreboard[i];
+            if (!player.active) {
                 console.log("inactive");
                 div.classList.add('inactive');
             }
-            div.innerText = `${i+1}. ${json.scoreboard[i].name} (${json.scoreboard[i].points})`;
+            div.innerText = `${i+1}. ${player.name} (${player.points}/${player.lives}/${player.coconuts})`;
             navigation.appendChild(div);
         }
     }
