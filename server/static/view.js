@@ -35,7 +35,7 @@ class View{
                     tile.setAttribute('id', Object.keys(json.name_list)[parseInt(charcode)]); //I need to append uuid for coconut throwing
                     var playername = document.createElement("playername");
                     tile.appendChild(playername);
-                    playername.textContent= Object.values(json.name_list)[parseInt(charcode)];
+                    playername.textContent= Object.values(json.name_list)[parseInt(charcode).toString()];
                 }
                 column+=2; //because every tile consists of 2 letters.
                 

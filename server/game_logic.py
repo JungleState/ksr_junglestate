@@ -487,7 +487,7 @@ class Game:
                     return player.state
 
     def GetPlayers(self):
-        return {player.id: player.name for player in self.player_list}
+        return {self.player_list.index(player): player.name for player in self.player_list}
 
     def Scoreboard(self, sortby, hyrarchy):
         sorted_player_list = [i for i in range(len(self.player_list))]
