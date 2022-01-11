@@ -39,19 +39,58 @@
 ## Monkey bot code
 Every turn the method "nextMove(GameState state)" executed. An object of the type "Move" needs to be returned.
 
+### Action
+Following actions exist:
+* Action.STAY: stay on the spot, direction is ignored
+* Action.MOVE: move into given direction, diagonal is NOT possible
+* Action.THROW: throw coconut at given direction, diagonal is possible, range: one field
+
+### Direction
+Following directions exist:
+* Direction.NONE
+* Direction.UP
+* Direciton.UP_RIGHT
+* Direction.RIGHT
+* Direction.DOWN_RIGHT
+* Direction.DOWN
+* Direction.DOWN_LEFT
+* Direction.LEFT
+* Direction.UP_LEFT
+
+### Item
+Following items exist:
+* Item.EMPTY
+* Item.FOREST
+* Item.BANANA
+* Item.COCONUT
+* Item.PINEAPPLE
+* Item.PLAYER
+
+### DirectionInfo
+Methods that can be attached to directions are (here: Direction dir):
+* dir.Cordinates(): returnes the coordinates (from the 5x5 array) of the direction as a Tuple<int, int>
+* dir.isMoveable(): returnes if player can move into given direction as bool (does NOT check if player would take damage etc.)
+* dir.opposite(): gives the opposite direction as Direction
+
+### ItemInfo
+
+### Move
+
+### PlayerInfo
+PlayerInfo types have following attributes:
+* string name: name of the player
+* int lives: lives remaining for the player
+* int coconuts: number of coconuts remianing for the player
+* int points: number of points scored by the player
+
+### Cell
+
 ### Gamestate
 Gamestate types have following attributes:
 * Cell[][] cells: 5x5 array of cells visible around the monkey's position.
 * int round: game round identifier
 * PlayerInfo playerInfo: monkey's own player information
 * getCell(Direction dir): return
-
-
-* PlayerInfo types have following attributes:
-    * string name: name of the player
-    * int lives: lives remaining for the player
-    * int coconuts: number of coconuts remianing for the player
-    * int points: number of points scored by the player
 
 
 ## Bot usage hints
