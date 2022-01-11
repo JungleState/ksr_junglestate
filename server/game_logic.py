@@ -364,6 +364,7 @@ class Game:
                     for safed_item in self.safed_items_list:
                         if safed_item[0] == toCoordinates:
                             safed_item_in_safed_items_list = True
+                            item_picked_up = True
                     if not safed_item_in_safed_items_list:
                         self.safed_items_list.append(
                             (Items.COCONUT, toCoordinates, self.round))
