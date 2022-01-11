@@ -50,6 +50,7 @@ class Player(Item):
         self.points = 0
         self.state = 0  # 0 = alive ; 1 = dead
         self.active = True
+        self.message = ""
 
     def item_dict(self):
         return {"coconuts": self.coconuts,
@@ -59,7 +60,8 @@ class Player(Item):
                 "name": self.name,
                 "lives": self.lives,
                 "points": self.points,
-                "active": self.active}
+                "active": self.active,
+                "message": self.message}
 
 
 class MapGenerator:
@@ -495,6 +497,7 @@ class Game:
                           "knockouts": [player.knockouts for player in self.player_list],
                           "hits": [player.hits for player in self.player_list],
                           "name": [player.name[0] for player in self.player_list],
+                          "message": [player.message for player in self.player_list],
                           "active": [player.active for player in self.player_list]}
 
         sorted_list = sorted(item_list_dict[f"{sortby}"])
