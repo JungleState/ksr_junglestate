@@ -84,7 +84,7 @@ class View{
                 console.log("inactive");
                 div.classList.add('inactive');
             }
-            div.innerText = `${i+1}. ${player.name} (${player.points}/${player.lives}/${player.coconuts})`;
+            div.innerText = `${i+1}. ${player.name} (${player.points}/${player.lives}/${player.coconuts}): ${player.message}`;
             navigation.appendChild(div);
         }
     }
