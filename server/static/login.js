@@ -24,7 +24,14 @@ async function login(join_mode, game_id) {
     // Set options
     const options = {
         method: 'POST',
-        body: JSON.stringify({"mode": join_mode, "password": password, "player_name": name, "player_mode": player_mode, "game_id": game_id}),
+        body: JSON.stringify({
+            "mode": join_mode,
+            "password": password,
+            "player_name": name,
+            "player_mode": player_mode,
+            "game_id": game_id,
+            "serverName": "New Server whooo"
+        }),
         headers: {
             'Content-Type': 'application/json'
         }
@@ -75,7 +82,7 @@ setInterval(async () => {
 
         var text = document.createElement('p');
         text.classList.add('serverinfo');
-        text.textContent = "Server: " + index + " | Spieler Online: " + item.players;
+        text.textContent = "Server: " + item.name + " | Spieler Online: " + item.players;
         div.appendChild(text);
     
         var join_button = document.createElement('button');

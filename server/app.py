@@ -1,5 +1,6 @@
 import os
 from flask import Flask, jsonify, session, abort, render_template, redirect, url_for, request
+from flask.cli import NoAppException
 from game_logic import Game
 import threading
 import uuid
@@ -164,8 +165,11 @@ def getGames():
         gamesJson['games'].append({
             "id": game.id,
             "players": len(game.player_list),
+            "name": game.serverName,
             "secured": bool(game.password)
         })
+
+    print(gamesJson)
 
     return jsonify(gamesJson)
 
@@ -193,7 +197,12 @@ def joinGame():
 
         ### Login data valid
         # New game
-        game = Game(str(uuid.uuid4()), FIELD)
+        serverName = None
+        try:
+            serverName = data['serverName']
+        except:
+            invalidPost()
+        game = Game(str(uuid.uuid4()), FIELD, name=serverName)
         game_list.append(game)
         game.password = password
 
