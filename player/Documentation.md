@@ -1,4 +1,5 @@
 # JungleState Documentation
+This documentation explains how to use JungleState and how to create your own monkey bot. All shortcuts given are based on default settings and may differ.
 
 ## Spectator mode
 * Enter server name into web browser (e.g. https://junglecamp-tfszpy3t2a-oa.a.run.app)
@@ -16,7 +17,8 @@
     * Move: "W", "A", "S", "D"
     * Attack: "U", "I", "O", "J", "K"/"L", "N", "M", ","
 
-## Requirements for bot application (in Visual Studio Code)
+## Requirements for bot application
+* Following instructions are based on Visual Studio Code. Other IDEs may work as well but aren't tested. (Download here (choose option based on your OS): https://code.visualstudio.com/Download OR "sudo apt install code" (may differ depending on package manager))
 * C# Extension (Ctrl+Shift+X, "C#")
 * .NET (Download here: https://dotnet.microsoft.com/download)
 * Json.NET (open terminal (Ctrl+Shift+^), enter: "dotnet add package Newtonsoft.Json")
@@ -37,7 +39,21 @@
     * Replace "[SERVER_NAME]" with the server name (e.g. "https://junglecamp-tfszpy3t2a-oa.a.run.app")
 
 ## Monkey bot code
+Edit the code in Monkey.cs to create your
 Every turn the method "nextMove(GameState state)" executed. An object of the type "Move" needs to be returned.
+
+### Gamestate
+Gamestate types have following attributes:
+* Cell[][] cells: 5x5 array of cells visible around the monkey's position.
+* int round: game round identifier
+* PlayerInfo playerInfo: monkey's own player information
+* getCell(Direction dir): return
+
+### Move
+
+
+
+
 
 ### Action
 Following actions exist:
@@ -73,8 +89,8 @@ Methods that can be attached to directions are (here: Direction dir):
 * dir.opposite(): gives the opposite direction as Direction
 
 ### ItemInfo
-
-### Move
+Methods that can be attached to items are (here: Item item)
+* item.isMoveable():
 
 ### PlayerInfo
 PlayerInfo types have following attributes:
@@ -85,12 +101,6 @@ PlayerInfo types have following attributes:
 
 ### Cell
 
-### Gamestate
-Gamestate types have following attributes:
-* Cell[][] cells: 5x5 array of cells visible around the monkey's position.
-* int round: game round identifier
-* PlayerInfo playerInfo: monkey's own player information
-* getCell(Direction dir): return
 
 
 ## Bot usage hints
