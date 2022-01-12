@@ -40,15 +40,6 @@ body {
   height: 100vh;
 }
 
-.window {
-    
-    /* border-width: thick;
-    border: solid; */
-    
-    
-    /* height: 33vh; */
-    
-}
 
 
 
@@ -68,10 +59,11 @@ body {
 }
 
 .login input{
-    margin-left: 10vh;
-    width: 15vw;
+    margin-left: 2vw;
+    width: 20vw;
     padding-top: 1vh;
     padding-bottom: 1vh;
+    
 }
 
 .login h1 {
@@ -83,6 +75,19 @@ body {
     color: grey;
 }
 
+div .desc {
+  /* padding-top: 1px;
+  padding-bottom: 1px; */
+  margin-left: 2vw;
+  
+}
+
+button {
+  margin-top: 1vh;
+  
+  width: 20vw;
+  margin-left: 2vw;
+}
 
 .server {
   display: flex;
