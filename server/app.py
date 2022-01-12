@@ -295,6 +295,16 @@ def leave():
 
     return jsonify(ok=True)
 
+@app.route('/logOut', methods=['GET'])
+def logOut():
+    user = User.get_user_by_id(session.get('playerId'))
+    print(f"Name:{user.name}")
+    if user:
+        kickPlayer(user)
+        # session['playerId'] = None
+
+    return jsonify(True)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5500)))
