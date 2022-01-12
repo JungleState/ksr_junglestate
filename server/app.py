@@ -1,6 +1,5 @@
 import os
 from flask import Flask, jsonify, session, abort, render_template, redirect, url_for, request
-from flask.cli import NoAppException
 from game_logic import Game
 import threading
 import uuid
@@ -168,8 +167,6 @@ def getGames():
             "name": game.serverName,
             "secured": bool(game.password)
         })
-
-    print(gamesJson)
 
     return jsonify(gamesJson)
 
