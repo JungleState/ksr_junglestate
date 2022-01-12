@@ -50,10 +50,12 @@ Gamestate types have following attributes:
 * getCell(Direction dir): return
 
 ### Move
-
-
-
-
+Move types have following attributes:
+* Action action: action to be executed
+* Direction direction: direction of the action
+* Optional:
+    * string message: message displayed to spectators during round
+    * int nextRound: round identifier that allows the game manager to detect out-of-sync moves
 
 ### Action
 Following actions exist:
@@ -65,7 +67,7 @@ Following actions exist:
 Following directions exist:
 * Direction.NONE
 * Direction.UP
-* Direciton.UP_RIGHT
+* Direction.UP_RIGHT
 * Direction.RIGHT
 * Direction.DOWN_RIGHT
 * Direction.DOWN
@@ -90,7 +92,7 @@ Methods that can be attached to directions are (here: Direction dir):
 
 ### ItemInfo
 Methods that can be attached to items are (here: Item item)
-* item.isMoveable():
+* item.isMoveable(): returns if player can move to a field containing given item as a bool
 
 ### PlayerInfo
 PlayerInfo types have following attributes:
@@ -100,8 +102,9 @@ PlayerInfo types have following attributes:
 * int points: number of points scored by the player
 
 ### Cell
-
-
+Methods and attributes of cells:
+* 1
+* 2
 
 ## Bot usage hints
 * When terminal stops showing inputs:
