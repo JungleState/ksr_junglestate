@@ -1,6 +1,7 @@
 ﻿namespace junglestate;
 
 ///<summary>A simple monkey that moves randomly in free directions.</summary>
+
 public class Monkey : BaseMonkey {
     private Direction lastDir = Direction.NONE;
     public override Move nextMove(GameState state) {
