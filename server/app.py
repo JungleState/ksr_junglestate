@@ -24,6 +24,8 @@ game_list = []
 FIELD = (30, 20)
 
 # User
+
+
 class User:
     def __init__(self, name, mode):
         self.mode = mode
@@ -31,7 +33,6 @@ class User:
         self.active = True
         self.name = self.set_name(name)
         self.game_id = None
-        self.game_pass = None
         self.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [self])
 
     def set_name(self, name):
@@ -49,6 +50,8 @@ class User:
         return None
 
 # Methods
+
+
 def GetJSON(game_id, user):
     for game in game_list:
         if game.id == game_id:
@@ -70,6 +73,12 @@ def GetJSON(game_id, user):
                         "mode": user.mode,
                         "name_list": game.GetPlayers()}
 
+
+def invalidPost():
+    app.logger.info('Invalid / missing POST arguments')
+    return jsonify(ok=False, msg='Invalid / missing POST arguments')
+
+
 def updatePlayerActive(user):
     for game in game_list:
         if game.id == user.game_id:
@@ -78,27 +87,25 @@ def updatePlayerActive(user):
                     game.player_list[i].active = user.active
                     return
 
+
 def isLoggedIn():
     user = User.get_user_by_id(session.get('playerId'))
 
     if not user:
         session['playerId'] = None
     else:
-        user.active = True
-        updatePlayerActive(user)
+        if not user.active:
+            user.active = True
+            updatePlayerActive(user)
+        # Individual timer
         user.timer.cancel()
         user.timer = threading.Timer(MAX_PLAYER_TIMEOUT, kickPlayer, [user])
         user.timer.start()
 
-        for game in game_list:
-            if game.id == user.game_id:
-                if game.password:
-                    if not user.game_pass:
-                        return None
-
     return user
 
-def checkLogInData(name, mode):
+
+def checkLogInData(name, mode, in_game):
     err = None
 
     # Check Name
@@ -106,10 +113,12 @@ def checkLogInData(name, mode):
         err = 'Invalid Name'
     elif len(name) > NAME_LENGTH_MAX:
         err = 'Too Many Characters'
-    elif name in [user.name for user in user_list if user.mode == 'client'] and mode == 'client':
-        err = 'Name Already In Use'
     elif session.get('playerId'):
         err = 'Already Logged In'
+    else:
+        # Only check in same game
+        if in_game and name in [user.name for user in user_list if user.mode == 'client' and user.game_id == in_game] and mode == 'client':
+            err = 'Name Already In Use'
 
     # Check Mode
     if mode != 'client' and mode != 'spec':
@@ -117,31 +126,37 @@ def checkLogInData(name, mode):
 
     return err
 
-def checkPassword(game, password, user):
+
+def checkPassword(game, password):
     if game.password:
         if password == game.password:
-            user.game_pass = True
             return True
-        else:
-            user.game_pass = False
-    
+
     return False
 
+
 def kickPlayer(user):
-    app.logger.debug(f"Kicked {user.name}")
+    try:
+        app.logger.debug(f"Kicked {user.name}")
+        for game in game_list:
+            if game.id == user.game_id:
+                game.kickPlayer(user.name)
+                if(len(game.player_list) == 0):
+                    timer = threading.Timer(10, closeGame, [game])
+                    timer.start()
+        user_list.remove(user)
+    except:
+        return
+
+
+def closeGame(closingGame):
     for game in game_list:
-        if game.id == user.game_id:
-            game.kickPlayer(user.name)
-    user_list.remove(user)
-
-def allPlayersMoved(game, moves):
-    if moves:
-        if moves != game.last_moves:
-            game.last_moves = moves
-
-            return moves
-
-    return None
+        if closingGame.id == game.id:
+            if(len(closingGame.player_list) == 0):
+                app.logger.debug(f"Game {closingGame.id} closed!")
+                game.dispose()
+                game_list.remove(game)
+                break
 
 ### JSON ENDPOINTS ###
 
@@ -172,6 +187,7 @@ def getGames():
         gamesJson['games'].append({
             "id": game.id,
             "players": len(game.player_list),
+            "name": game.serverName,
             "secured": bool(game.password)
         })
 
@@ -180,55 +196,78 @@ def getGames():
 
 @app.route('/joinGame', methods=['POST'])
 def joinGame():
+    # Post request arguments
+    data = request.get_json()
 
-    data = request.get_json()  # Post request arguments
-    player_name = data['player_name']
-    player_mode = data['player_mode']
-    password = data['password']
-    game_mode = data['mode']
+    try:
+        player_name = data['player_name']
+        player_mode = data['player_mode']
+        password = data['password']
+        game_mode = data['mode']
+    except:
+        invalidPost()
+        # Return error
 
-    err = checkLogInData(player_name, player_mode)
-
-    if err:
-        # Invalid name or mode
-        app.logger.info(err)
-        return jsonify(ok=False, msg=err)
-
-    # Login data valid
-    user = User(player_name, player_mode)
-    user_list.append(user)
-    session['playerId'] = user.uuid
-
+    # Create new game
     if game_mode == 'newGame':
-        game = Game(str(uuid.uuid4()), FIELD)
+        err = checkLogInData(player_name, player_mode, False)
+        if err:
+            app.logger.info(err)
+            return jsonify(ok=False, msg=err)
+
+        # Login data valid
+        # New game
+        serverName = None
+        try:
+            serverName = data['serverName']
+        except:
+            invalidPost()
+        game = Game(str(uuid.uuid4()), FIELD, name=serverName)
         game_list.append(game)
         game.password = password
-        if game.password:
-            print("New Secured Server")
+
+        # New user
+        user = User(player_name, player_mode)
+        user_list.append(user)
+        session['playerId'] = user.uuid
         user.game_id = game.id
-        user.game_pass = True
+
         if player_mode == 'client':
             game.join(user.name, user.uuid)
-        return jsonify(ok=True)
+
+    # Join Game
     elif game_mode == 'joinExisting':
-        game_id = data['game_id']
-        user.game_id = game_id
+        game_id = None
+        try:
+            game_id = data['game_id']
+        except:
+            invalidPost()
+            # Return error
+
         for game in game_list:
             if game.id == game_id:
-                validPass = True
                 if game.password:
-                    print("Password Secured")
-                    validPass = checkPassword(game, password, user)
+                    validPass = checkPassword(game, password)
                     if not validPass:
-                        kickPlayer(user)
-                    print(f"Access: {validPass}")
-                if player_mode == 'client' and validPass:
-                    game.join(user.name, user.uuid)
-                    return jsonify(ok=True)
-                elif player_mode == 'spec' and validPass:
-                    return jsonify(ok=True)
+                        return jsonify(ok=False, msg='Wrong Password')
 
-    return jsonify(ok=False)
+                # Password check done
+                err = checkLogInData(player_name, player_mode, game_id)
+                if err:
+                    return jsonify(ok=False, msg=err)
+
+                # Everything fine -> New user
+                user = User(player_name, player_mode)
+                user_list.append(user)
+                session['playerId'] = user.uuid
+                user.game_id = game_id
+
+                if player_mode == 'client':
+                    game.join(user.name, user.uuid)
+
+                break
+
+    return jsonify(ok=True)
 
 # View - Server knows if the request comes from a spectator or a player
 
@@ -260,6 +299,10 @@ def action(moveType, direction):
             for game in game_list:
                 if game.id == user.game_id:
                     game.addMove(user.uuid, int(moveType), int(direction))
+                    # Post request arguments
+                    data = request.get_json(silent=True)
+                    message = data['status'] if 'status' in data else ""
+                    game.getPlayerFromID(user.uuid).message = message
 
             return jsonify(ok=True)
 
@@ -278,11 +321,22 @@ def action(moveType, direction):
 def leave():
     user = User.get_user_by_id(session.get('playerId'))
     if user:
-        print(f"{user.name} has left the game")
+        app.logger.info(f"{user.name} has left the game")
         user.active = False
         updatePlayerActive(user)
 
     return jsonify(ok=True)
+
+
+@app.route('/logOut', methods=['GET'])
+def logOut():
+    user = User.get_user_by_id(session.get('playerId'))
+    print(f"Name:{user.name}")
+    if user:
+        kickPlayer(user)
+        session['playerId'] = None
+
+    return jsonify(True)
 
 
 if __name__ == '__main__':

@@ -12,6 +12,8 @@ class View{
             "BB":"banana",
             "PP":"pineapple"
         }
+
+        this.addButton();
     }
     updateView(json){ //show the field
         //The Matrix should be the same Dimensions as the given field of HTML Elements.   
@@ -35,7 +37,7 @@ class View{
                     tile.setAttribute('id', Object.keys(json.name_list)[parseInt(charcode)]); //I need to append uuid for coconut throwing
                     var playername = document.createElement("playername");
                     tile.appendChild(playername);
-                    playername.textContent= Object.values(json.name_list)[parseInt(charcode)];
+                    playername.textContent= Object.values(json.name_list)[parseInt(charcode).toString()];
                 }
                 column+=2; //because every tile consists of 2 letters.
                 
@@ -44,7 +46,7 @@ class View{
         }
         //for the shoot animation if players shoot coconut
         for(let player in json.projectiles){
-            this.shoot(player, json.projectiles.direction) //fix, not right yet
+            this.shoot(player, json.projectiles.direction) //fix, not right yet: do tis<-------------------------------------------------------------------------------------------------------------------------
         }
 
 
@@ -57,9 +59,9 @@ class View{
         }
     }
 
-    shoot(uuidd, direction){ //creates an projectile element with direction property where the player is.
+    shoot(uuid, direction){ //creates an projectile element with direction property where the player is.
 
-        player=document.getElementById(uuid);
+        var player = document.getElementById(uuid);
         var projectile = document.createElement("projectile", {direction: direction});
         player.appendChild(projectile);
         
@@ -73,19 +75,22 @@ class View{
 
         let title = document.createElement('div');
         title.classList.add('title');
-        title.innerText = 'Scoreboard - Points';
+        title.innerText = 'Scoreboard - (Points/Lives/Nuts)';
         navigation.appendChild(title);
 
         for (let i = 0; i < l; i++) {
             let div = document.createElement('div');
             div.classList.add('playerSb');
-            if (!json.scoreboard[i].active) {
+            let player = json.scoreboard[i];
+            if (!player.active) {
                 console.log("inactive");
                 div.classList.add('inactive');
             }
-            div.innerText = `${i+1}. ${json.scoreboard[i].name} (${json.scoreboard[i].points})`;
+            div.innerText = `${i+1}. ${player.name} (${player.points}/${player.lives}/${player.coconuts}): ${player.message}`;
             navigation.appendChild(div);
         }
+
+        this.addButton();
     }
 
     clientMode(json) {
@@ -94,6 +99,18 @@ class View{
         this.navigation.querySelector('#lives').innerHTML = `Lives: ${json.lives}`;
         this.navigation.querySelector('#points').innerHTML = `Points: ${json.points}`;
         this.navigation.querySelector('#round').innerHTML = `Round: ${json.round}`;
+    }
+
+    addButton() {
+        let navigation = document.getElementById('navigation');
+        let button = document.createElement("button");
+        button.classList.add('leave');
+        button.addEventListener('click', async () => {
+            await fetch('/logOut');
+            window.location.replace('/login');
+        });
+        button.innerText = 'Leave Game';
+        navigation.appendChild(button);
     }
 }
 
