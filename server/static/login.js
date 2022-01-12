@@ -2,7 +2,10 @@ async function login(join_mode, game_id) {
     let name = document.getElementById('name').value;
     let mode = document.getElementById('mode').checked;
     let password = document.getElementById('password').value;
+    let serverName = document.getElementById('serverName').value;
     let player_mode;
+
+    let randomNames = ['New Server Whooo', 'Monkey World', 'Some Random Server', "Don't Join"];
 
     // Set mode
     if (mode) {
@@ -21,6 +24,11 @@ async function login(join_mode, game_id) {
         name = 'Spectator';
     }
 
+    if (!serverName) {
+        serverName = randomNames[Math.floor(Math.random()*randomNames.length)];
+        alert(serverName);
+    }
+
     // Set options
     const options = {
         method: 'POST',
@@ -30,7 +38,7 @@ async function login(join_mode, game_id) {
             "player_name": name,
             "player_mode": player_mode,
             "game_id": game_id,
-            "serverName": "New Server whooo"
+            "serverName": serverName
         }),
         headers: {
             'Content-Type': 'application/json'
