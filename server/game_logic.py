@@ -137,7 +137,7 @@ class RandomGenerator(MapGenerator):
 
 
 class Game:
-    def __init__(self, id, field_dimensions, generator=RandomGenerator(20, 1, 1, 1)):
+    def __init__(self, id, field_dimensions, name, generator=RandomGenerator(20, 1, 1, 1)):
         self.password = ""
         self.id = id
         self.state = 0
@@ -147,6 +147,7 @@ class Game:
         self.safed_items_list = []
         self.last_moves = []
         self.updated = False
+        self.serverName = name
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(

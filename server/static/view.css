@@ -108,9 +108,15 @@ projectile{
 }
 
 .playerSb {
-  padding: 0 5px;
+  padding: 0 5px 5px 0;
+  border-bottom: 1px solid black;
 }
 
 .playerSb.inactive {
   color: grey;
+}
+
+.leave {
+  position: relative;
+  margin-top: 5px;
 }

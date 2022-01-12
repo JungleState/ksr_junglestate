@@ -136,15 +136,17 @@ def checkPassword(game, password):
 
 
 def kickPlayer(user):
-    app.logger.debug(f"Kicked {user.name}")
-    for game in game_list:
-        if game.id == user.game_id:
-            game.kickPlayer(user.name)
-            if(len(game.player_list) == 0):
-                timer = threading.Timer(10, closeGame, [game])
-                timer.start()
-
-    user_list.remove(user)
+    try:
+        app.logger.debug(f"Kicked {user.name}")
+        for game in game_list:
+            if game.id == user.game_id:
+                game.kickPlayer(user.name)
+                if(len(game.player_list) == 0):
+                    timer = threading.Timer(10, closeGame, [game])
+                    timer.start()
+        user_list.remove(user)
+    except:
+        return
 
 
 def closeGame(closingGame):
@@ -185,6 +187,7 @@ def getGames():
         gamesJson['games'].append({
             "id": game.id,
             "players": len(game.player_list),
+            "name": game.serverName,
             "secured": bool(game.password)
         })
 
@@ -214,7 +217,12 @@ def joinGame():
 
         # Login data valid
         # New game
-        game = Game(str(uuid.uuid4()), FIELD)
+        serverName = None
+        try:
+            serverName = data['serverName']
+        except:
+            invalidPost()
+        game = Game(str(uuid.uuid4()), FIELD, name=serverName)
         game_list.append(game)
         game.password = password
 
@@ -318,6 +326,17 @@ def leave():
         updatePlayerActive(user)
 
     return jsonify(ok=True)
+
+
+@app.route('/logOut', methods=['GET'])
+def logOut():
+    user = User.get_user_by_id(session.get('playerId'))
+    print(f"Name:{user.name}")
+    if user:
+        kickPlayer(user)
+        session['playerId'] = None
+
+    return jsonify(True)
 
 
 if __name__ == '__main__':
