@@ -126,11 +126,14 @@ def checkPassword(game, password):
     return False
 
 def kickPlayer(user):
-    app.logger.debug(f"Kicked {user.name}")
-    for game in game_list:
-        if game.id == user.game_id:
-            game.kickPlayer(user.name)
-    user_list.remove(user)
+    try:
+        app.logger.debug(f"Kicked {user.name}")
+        for game in game_list:
+            if game.id == user.game_id:
+                game.kickPlayer(user.name)
+        user_list.remove(user)
+    except:
+        return
 
 ### JSON ENDPOINTS ###
 
@@ -301,7 +304,7 @@ def logOut():
     print(f"Name:{user.name}")
     if user:
         kickPlayer(user)
-        # session['playerId'] = None
+        session['playerId'] = None
 
     return jsonify(True)
 

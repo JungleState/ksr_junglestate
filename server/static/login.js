@@ -21,7 +21,7 @@ async function login(join_mode, game_id) {
     }
 
     // Set options
-    let options = {
+    const options = {
         method: 'POST',
         body: JSON.stringify({"mode": join_mode, "password": password, "player_name": name, "player_mode": player_mode, "game_id": game_id}),
         headers: {

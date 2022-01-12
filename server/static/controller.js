@@ -126,7 +126,15 @@ class Controller {
                 direction = -1;
         }
 
-        const response = await fetch(`/action/${type}/${direction}`, { method: 'POST' });
+        let options = {
+            method: 'POST',
+            body: JSON.stringify({"status":"Hello"}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const response = await fetch(`/action/${type}/${direction}`, options);
         const json = await response.json();
     }
 }
