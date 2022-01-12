@@ -158,7 +158,7 @@ class Game:
             target=self.blockUntilNextRound, name="roundMaker", daemon=True)
         self.roundMakerThread.start()
 
-    def dispose():
+    def dispose(self):
         self.stopEvent.set()
 
     def getId(self):

@@ -140,15 +140,21 @@ def kickPlayer(user):
     for game in game_list:
         if game.id == user.game_id:
             game.kickPlayer(user.name)
+            if(len(game.player_list) == 0):
+                timer = threading.Timer(10, closeGame, [game])
+                timer.start()
+
     user_list.remove(user)
 
 
 def closeGame(closingGame):
-    app.logger.debug(f"Game {closingGame.id} closed!")
     for game in game_list:
         if closingGame.id == game.id:
-            game.
-            game_list.remove(game)
+            if(len(closingGame.player_list) == 0):
+                app.logger.debug(f"Game {closingGame.id} closed!")
+                game.dispose()
+                game_list.remove(game)
+                break
 
 ### JSON ENDPOINTS ###
 
