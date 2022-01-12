@@ -12,6 +12,7 @@ async function login(join_mode, game_id) {
         player_mode = 'client';
     }
     if ((!name) && player_mode == 'client') {
+        document.getElementById('password').value = "";
         alert("Invalid Login Data");
         return;
     }
