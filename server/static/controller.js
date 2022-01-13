@@ -19,6 +19,7 @@ class Controller {
             if (updateTitle) {
                 if (json.mode == 'client') {
                     document.title += ' - Player';
+                    view.addButton(json);
                 }
                 else if (json.mode == 'spec') {
                     document.title += ' - Spectator';

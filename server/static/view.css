@@ -120,3 +120,7 @@ projectile{
   position: relative;
   margin-top: 5px;
 }
+
+#round {
+  border-bottom: 1px solid black;
+}

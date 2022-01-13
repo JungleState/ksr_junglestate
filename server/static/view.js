@@ -12,8 +12,6 @@ class View{
             "BB":"banana",
             "PP":"pineapple"
         }
-
-        this.addButton();
     }
     updateView(json){ //show the field
         //The Matrix should be the same Dimensions as the given field of HTML Elements.   
@@ -90,7 +88,7 @@ class View{
             navigation.appendChild(div);
         }
 
-        this.addButton();
+        this.addButton(json);
     }
 
     clientMode(json) {
@@ -101,8 +99,16 @@ class View{
         this.navigation.querySelector('#round').innerHTML = `Round: ${json.round}`;
     }
 
-    addButton() {
+    addButton(json) {
         let navigation = document.getElementById('navigation');
+
+        // Server Description
+        let descriptionDiv = document.createElement('div');
+        descriptionDiv.classList.add('description');
+        descriptionDiv.innerText = `Server: ${json.serverName} (Id: ${json.serverId})`;
+        navigation.appendChild(descriptionDiv);
+
+        // Leave-Game button
         let button = document.createElement("button");
         button.classList.add('leave');
         button.addEventListener('click', async () => {

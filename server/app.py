@@ -63,7 +63,10 @@ def GetJSON(game_id, user):
                         "round": game.round,
                         "mode": user.mode,
                         "name": user.name,
-                        "name_list": game.GetPlayers()}
+                        "name_list": game.GetPlayers(),
+                        "serverName": game.serverName,
+                        "serverId": game.id
+                        }
             elif user.mode == "spec":  # returns JSON file for spectator
                 return {"id": user.uuid,
                         "field": game.SerializeMatrix(),
@@ -71,7 +74,10 @@ def GetJSON(game_id, user):
                         "round": game.round,
                         "scoreboard": game.Scoreboard("points", "decr"),
                         "mode": user.mode,
-                        "name_list": game.GetPlayers()}
+                        "name_list": game.GetPlayers(),
+                        "serverName": game.serverName,
+                        "serverId": game.id
+                        }
 
 
 def invalidPost():
