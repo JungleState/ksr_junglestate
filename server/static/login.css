@@ -50,9 +50,9 @@ body {
     background-color: rgb(236, 236, 236);
     padding:3vh;
     color: black;
-    height: 35vh;
+    height: 50vh;
     border-radius: 7px;
-    transform: translate(0%, -75vh);
+    transform: translate(0%, -80vh);
     margin: auto;
     width: 25vw;
     
@@ -71,22 +71,24 @@ body {
 }
 
 .login .org {
+  padding-top: 7vh;
     font-style: italic;
     color: grey;
 }
 
 div .desc {
-  /* padding-top: 1px;
-  padding-bottom: 1px; */
+  padding-top: 10px;
+  padding-bottom: 1px;
   margin-left: 2vw;
   
 }
 
 button {
-  margin-top: 1vh;
-  
-  width: 20vw;
+  margin-top: 4vh;
+  width: 20.4vw;
   margin-left: 2vw;
+  padding-top: 1vh;
+  padding-bottom: 1vh;  
 }
 
 .server {
