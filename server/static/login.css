@@ -71,6 +71,7 @@ body {
 }
 
 .login .org {
+  padding-top: 7vh;
     font-style: italic;
     color: grey;
 }
@@ -83,7 +84,7 @@ div .desc {
 }
 
 button {
-  margin-top: 5vh;
+  margin-top: 4vh;
   width: 20.4vw;
   margin-left: 2vw;
   padding-top: 1vh;
