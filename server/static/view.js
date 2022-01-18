@@ -87,6 +87,8 @@ class View{
             div.innerText = `${i+1}. ${player.name} (${player.points}/${player.lives}/${player.coconuts}): ${player.message}`;
             navigation.appendChild(div);
         }
+
+        this.addButton(json);
     }
 
     clientMode(json) {
@@ -95,6 +97,26 @@ class View{
         this.navigation.querySelector('#lives').innerHTML = `Lives: ${json.lives}`;
         this.navigation.querySelector('#points').innerHTML = `Points: ${json.points}`;
         this.navigation.querySelector('#round').innerHTML = `Round: ${json.round}`;
+    }
+
+    addButton(json) {
+        let navigation = document.getElementById('navigation');
+
+        // Server Description
+        let descriptionDiv = document.createElement('div');
+        descriptionDiv.classList.add('description');
+        descriptionDiv.innerText = `Server: ${json.serverName} (Id: ${json.serverId})`;
+        navigation.appendChild(descriptionDiv);
+
+        // Leave-Game button
+        let button = document.createElement("button");
+        button.classList.add('leave');
+        button.addEventListener('click', async () => {
+            await fetch('/logOut');
+            window.location.replace('/login');
+        });
+        button.innerText = 'Leave Game';
+        navigation.appendChild(button);
     }
 }
 
