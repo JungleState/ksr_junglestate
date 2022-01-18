@@ -40,17 +40,17 @@ This documentation explains how to use JungleState and how to create your own mo
 
 ## Monkey bot code
 Edit the code in Monkey.cs to create your
-Every turn the method "nextMove(GameState state)" executed. An object of the type "Move" needs to be returned.
+Every turn the method "nextMove(GameState)" executed. An object of the type "Move" needs to be returned.
 
 ### Gamestate
-Gamestate types have following attributes:
+Gamestate types have following members:
 * Cell[][] cells: 5x5 array of cells visible around the monkey's position.
 * int round: game round identifier
 * PlayerInfo playerInfo: monkey's own player information
-* getCell(Direction dir): return
+* getCell(Direction): returns Cell at the given direction
 
 ### Move
-Move types have following attributes:
+Move types have following members:
 * Action action: action to be executed
 * Direction direction: direction of the action
 * Optional:
@@ -75,7 +75,7 @@ Following directions exist:
 * Direction.LEFT
 * Direction.UP_LEFT
 
-### Item
+### Items
 Following items exist:
 * Item.EMPTY
 * Item.FOREST
@@ -85,26 +85,27 @@ Following items exist:
 * Item.PLAYER
 
 ### DirectionInfo
-Methods that can be attached to directions are (here: Direction dir):
-* dir.Cordinates(): returnes the coordinates (from the 5x5 array) of the direction as a Tuple<int, int>
-* dir.isMoveable(): returnes if player can move into given direction as bool (does NOT check if player would take damage etc.)
-* dir.opposite(): gives the opposite direction as Direction
+Methods that can be attached to directions are:
+* Coordinates(): returnes the coordinates (from the 5x5 array) of the direction as a Tuple<int, int>
+* isMoveable(): returnes if player can move into given direction as bool (does NOT check if player would take damage etc.)
+* opposite(): gives the opposite direction as Direction
 
 ### ItemInfo
-Methods that can be attached to items are (here: Item item)
-* item.isMoveable(): returns if player can move to a field containing given item as a bool
+Methods that can be attached to items are:
+* isMoveable(): returns if player can move to a field containing given item as a bool
 
 ### PlayerInfo
-PlayerInfo types have following attributes:
+PlayerInfo types have following members:
 * string name: name of the player
 * int lives: lives remaining for the player
 * int coconuts: number of coconuts remianing for the player
 * int points: number of points scored by the player
 
 ### Cell
-Methods and attributes of cells:
-* 1
-* 2
+Cell types have following members:
+* isFree(): returns if player can move to as a bool
+* Item item: kind of item contained in cell 
+* PlayerInfo playerinfo: optional info about player in cell
 
 ## Bot usage hints
 * When terminal stops showing inputs:
