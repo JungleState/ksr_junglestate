@@ -16,6 +16,8 @@ class GlobalOptions {
     public bool Quiet { get; set; } = false;
     [Option('t', "time", Required = false, HelpText = "Show average latency of HTTP calls.", Default = false)]
     public bool Time { get; set; } = false;
+    [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
+    public string Password { get; set; } = "";
 }
 
 [Verb("ask", isDefault: true, HelpText = "Ask for options.")]
@@ -26,8 +28,6 @@ class AskOptions : GlobalOptions {
 class JoinOptions : GlobalOptions {
     [Option('g', "game", Required = true, HelpText = "Game id.", Default = "")]
     public string GameId { get; set; } = "";
-    [Option('p', "password", Required = false, HelpText = "Game password.", Default = "")]
-    public string Password { get; set; } = "";
     [Option('P', "performance", Required = false, HelpText = "Start that many monkeys in parallel.", Default = 1)]
     public int PerformanceCount { get; set; } = 1;
 }
@@ -59,7 +59,6 @@ class MonkeyCommandLine {
     private async Task JoinMain(JoinOptions options) {
         BaseMonkey monkey = instantiateMonkey(options, false);
         JungleConfig config = readGlobalOptions(options);
-        config.password = options.Password;
         if (options.PerformanceCount > 1) {
             List<Task> connections = new List<Task>();
             for (int i = 0; i < options.PerformanceCount; i++) {
@@ -89,6 +88,7 @@ class MonkeyCommandLine {
         config.delay_ms = options.Delay;
         config.serverAddress = new Uri(options.Server);
         config.useConsole = !options.Quiet;
+        config.password = options.Password;
         config.showTimers = options.Time;
         using var loggerFactory = LoggerFactory.Create(builder => {
             builder
