@@ -10,26 +10,43 @@ namespace junglestate {
     ///<summary>A simple monkey that moves randomly in free directions.</summary>
     public class Monkey : BaseMonkey {
         private Direction LastDirection = Direction.RIGHT; //some default Direction
+
+        enum Mode{
+            Farm,
+            Hunt,
+            Flee
+        }
         public override Move nextMove(GameState state) {
-            Direction direction = selectDirection(state);
+            Direction direction = selectDirection(state, Mode.Farm);
             return new Move(Action.MOVE, direction, state.round);
         }
 
-        private Direction selectDirection(GameState state) {
+        private Direction selectDirection(GameState state, Mode mode) {
             List<Direction> freeDirs = computeFreeDirections(state);
-            if (freeDirs.Contains(LastDirection)){
-                return LastDirection; //so the movement is in one straight line
+            if(mode == Mode.Farm){ //Farm Mode
+                if(!freeDirs.Contains(LastDirection)){ //! = quasi if not
+                    Random random = new System.Random();
+                    Random r = new Random();
+                    Direction NewDirection = freeDirs[r.Next(freeDirs.Count)];
+
+                    while(LastDirection.opposite() == NewDirection){ //so it doesn't go back the same direction
+
+                        NewDirection=freeDirs[r.Next(freeDirs.Count)];
+                    }
+
+                    LastDirection=NewDirection;
+                    return NewDirection;
+                }
             }
-            else{
-                Random random = new System.Random();
-                Random r = new Random();
-                //System.Console.WriteLine("errör");
-                LastDirection = freeDirs[r.Next(freeDirs.Count)];
-                return LastDirection;
+            if(mode == Mode.Flee){
+                return
+
+            }
+            if(mode == Mode.Hunt){
+
             }
         }
             
-
         private List<Direction> computeFreeDirections(GameState state) {
             List<Direction> result = new List<Direction>();
             foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
