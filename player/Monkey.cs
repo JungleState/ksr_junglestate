@@ -10,12 +10,14 @@ public class Monkey : BaseMonkey {
         List<Direction> freeDirs = computeFreeDirections(state);
         Direction nextDir;
         Random r = new Random();
+        
+        getFood(state, freeDirs);
 
         if (this.monkeyMode == "walk") {
             if (freeDirs.Contains(this.defaultDir)) {
                 nextDir = this.defaultDir;
                 if (r.Next(4) == 0) {
-                    // 20% chance to change direction
+                    // 25% chance to change direction
                     nextDir = newRandomDirection(freeDirs, r);
                 }
             }
@@ -40,6 +42,13 @@ public class Monkey : BaseMonkey {
         }
 
         return nextDir;
+    }
+
+    private Direction getFood(GameState state, List<Direction> freeDirs) {
+        for (int i = 0; i < state.cells.Count; i++) {
+            
+        }
+        return Direction.NONE;
     }
 
     private Direction selectRandomDirection(GameState state) {
