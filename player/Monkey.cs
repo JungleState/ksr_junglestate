@@ -60,6 +60,7 @@ public class Monkey : BaseMonkey
         }
         return new List<int> {-1, -1};
     }
+
     private Move makeRandomMove(GameState state)
     {
         if (lastDir.isMoveable() && state.getCell(lastDir).isFree()) 
@@ -70,7 +71,6 @@ public class Monkey : BaseMonkey
         lastDir = direction;
         return new Move(Action.MOVE, direction, state.round, "I suäch ässä...");
     }
-
 
     private Direction selectRandomDirection(GameState state) 
     {
@@ -93,4 +93,3 @@ public class Monkey : BaseMonkey
         return result;
     }
 }
-
