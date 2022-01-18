@@ -18,12 +18,17 @@ namespace junglestate {
         private Direction selectDirection(GameState state) {
             List<Direction> freeDirs = computeFreeDirections(state);
             if (freeDirs.Contains(LastDirection)){
-                return(LastDirection); //so the movement is in one straight line
+                return LastDirection; //so the movement is in one straight line
             }
-            Random random = new System.Random();
-            Random r = new Random();
-            return freeDirs[r.Next(freeDirs.Count)];
+            else{
+                Random random = new System.Random();
+                Random r = new Random();
+                //System.Console.WriteLine("errör");
+                LastDirection = freeDirs[r.Next(freeDirs.Count)];
+                return LastDirection;
+            }
         }
+            
 
         private List<Direction> computeFreeDirections(GameState state) {
             List<Direction> result = new List<Direction>();
