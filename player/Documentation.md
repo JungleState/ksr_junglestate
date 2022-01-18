@@ -75,7 +75,7 @@ Following directions exist:
 * Direction.LEFT
 * Direction.UP_LEFT
 
-### Items
+### Item
 Following items exist:
 * Item.EMPTY
 * Item.FOREST
