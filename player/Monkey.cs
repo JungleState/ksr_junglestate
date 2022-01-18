@@ -11,6 +11,13 @@ public class Monkey : BaseMonkey
         lastDir = direction;
         //return new Move(Action.MOVE, direction, state.round, "didn't see this coming, eh?");
 
+        List<String> items = getItemList(state);
+
+        foreach (string name in items)
+        {
+            Console.WriteLine(name);
+        }
+
         switch (state.playerInfo.lives)
         {
             case 3:
@@ -32,6 +39,29 @@ public class Monkey : BaseMonkey
         Random random = new System.Random();
         Random r = new Random();
         return freeDirs[r.Next(freeDirs.Count)];
+    }
+
+    private List<string> getItemList(GameState state)
+    {
+        List<Item> ITEM_LIST = new List<Item>{
+            {Item.BANANA},
+            {Item.COCONUT},
+            {Item.PINEAPPLE},
+            {Item.PLAYER}
+        };
+
+        var items = new List<String> { };
+        for (int i = 0; i < state.cells.Length; i++)
+        {
+            for (int j = 0; j < state.cells[i].Length; j++)
+            {
+                if ((ITEM_LIST.Contains(state.cells[i][j].item)) && (state.cells[i][j] != state.getCell(Direction.NONE)))
+                {
+                    items.Add(i + ":" + j + ":" + state.cells[i][j].item);
+                }
+            }
+        }
+        return items;
     }
 
     private List<Direction> computeFreeDirections(GameState state)
