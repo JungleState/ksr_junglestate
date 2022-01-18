@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace junglestate;
 sealed class JungleConfig {
-    internal Uri serverAddress = new Uri("http://localhost:5500/");
+    internal Uri serverAddress = new Uri("http://127.0.0.1:5500/");
     internal string password = "";
     internal int delay_ms = 500;
     internal bool useConsole = true;

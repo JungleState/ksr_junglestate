@@ -4,6 +4,7 @@ import logging
 import threading
 logging.getLogger().setLevel("DEBUG")
 
+
 class Item:
     def __init__(self, name, id):
         self.name = name
@@ -12,9 +13,11 @@ class Item:
     def __str__(self) -> str:
         return self.id
 
+
 class Rules:
     TIME_TO_MOVE = 0.5
     SIGHT = 2
+
     class Scores:
         KNOCK_OUT = 50
         HIT = 25
@@ -43,7 +46,8 @@ class Player(Item):
         self.hits = 0
         self.x = 0
         self.y = 0
-        self.sight = Rules.SIGHT * 2 + 1  # dimension of field of view matrix, needs to be odd
+        # dimension of field of view matrix, needs to be odd
+        self.sight = Rules.SIGHT * 2 + 1
         self.name = name
         self.lives = 3
         self.coconuts = 2
@@ -133,7 +137,7 @@ class RandomGenerator(MapGenerator):
 
 
 class Game:
-    def __init__(self, id, field_dimensions, generator=RandomGenerator(20, 1, 1, 1)):
+    def __init__(self, id, field_dimensions, name, generator=RandomGenerator(20, 1, 1, 1)):
         self.password = ""
         self.id = id
         self.state = 0
@@ -143,14 +147,20 @@ class Game:
         self.safed_items_list = []
         self.last_moves = []
         self.updated = False
+        self.serverName = name
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
             generator.generate(self.field_lengh, self.field_height))
         self.field_dim = [self.field_lengh, self.field_height]
         self.fullRoundEvent = threading.Event()
-        self.roundMakerThread = threading.Thread(target=self.blockUntilNextRound, name="roundMaker", daemon=True)
+        self.stopEvent = threading.Event()
+        self.roundMakerThread = threading.Thread(
+            target=self.blockUntilNextRound, name="roundMaker", daemon=True)
         self.roundMakerThread.start()
+
+    def dispose(self):
+        self.stopEvent.set()
 
     def getId(self):
         pass
@@ -219,7 +229,8 @@ class Game:
         6: left
         7: up left"""
         if len(self.move_list) == 0:
-            timer = threading.Timer(Rules.TIME_TO_MOVE, functools.partial(self.kickOffRound, self.round))
+            timer = threading.Timer(Rules.TIME_TO_MOVE, functools.partial(
+                self.kickOffRound, self.round))
             timer.start()
 
         for move in self.move_list:
@@ -258,15 +269,18 @@ class Game:
                                 "coconuts": player.coconuts,
                                 "points": player.points})
         return player_list
-    
+
     def kickOffRound(self, round):
         if round == self.round:
-            logging.debug("Next round after timeout - not all players have moved!")
+            logging.debug(
+                "Next round after timeout - not all players have moved!")
             self.fullRoundEvent.set()
 
     def blockUntilNextRound(self):
         while self.fullRoundEvent.wait():
             self.fullRoundEvent.clear()
+            if self.stopEvent.is_set():
+                return
             self.doNextRound()
 
     def doNextRound(self):
@@ -297,13 +311,13 @@ class Game:
                     del self.safed_items_list[self.safed_items_list.index(
                         safed_item)]
         self.round += 1
-    
+
     def spawnItem(self, item):
         while True:
             x = randint(1, self.field_dim[0]-Rules.SIGHT)
             y = randint(1, self.field_dim[1]-Rules.SIGHT)
             if self.getElementAt(x, y) == Items.EMPTY:
-                self.setElementAt(x, y, item) 
+                self.setElementAt(x, y, item)
                 break
 
     def getElementAt(self, x, y):
@@ -384,10 +398,6 @@ class Game:
 
             if item_picked_up:
                 self.spawnItem(checkField)
-
-                
-
-                
 
     def handlePlayerDamage(self, player, damage=1):
         """Inflicts damage on the given player and returns True if the player is knocked out."""
