@@ -1,6 +1,7 @@
 class Controller {
     constructor(view) {
         let updateTitle = true;
+        let FPS = 5;
 
         // listen for input
         window.onkeydown = (key) => {
@@ -19,6 +20,7 @@ class Controller {
             if (updateTitle) {
                 if (json.mode == 'client') {
                     document.title += ' - Player';
+                    view.addButton(json);
                 }
                 else if (json.mode == 'spec') {
                     document.title += ' - Spectator';
@@ -28,7 +30,7 @@ class Controller {
             if (json.lives == 0) {
                 document.documentElement.style.setProperty('--visibility' , "visible")
             }
-        }, 500);
+        }, (1000/FPS));
     }
 
     async getData() {
@@ -126,7 +128,15 @@ class Controller {
                 direction = -1;
         }
 
-        const response = await fetch(`/action/${type}/${direction}`, { method: 'POST' });
+        let options = {
+            method: 'POST',
+            body: JSON.stringify({"status":"Hello"}),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const response = await fetch(`/action/${type}/${direction}`, options);
         const json = await response.json();
     }
 }

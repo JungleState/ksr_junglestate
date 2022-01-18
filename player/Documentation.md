@@ -1,5 +1,7 @@
 # JungleState Documentation
 
+This documentation explains how to use JungleState and how to create your own monkey bot. All shortcuts given are based on default settings and may differ.
+
 ## Spectator mode
 
 - Enter server name into web browser (e.g. https://junglecamp-tfszpy3t2a-oa.a.run.app)
@@ -18,11 +20,21 @@
   - Move: "W", "A", "S", "D"
   - Attack: "U", "I", "O", "J", "K"/"L", "N", "M", ","
 
+<<<<<<< HEAD
+
 ## Requirements for bot application (in Visual Studio Code)
 
 - C# Extension (Ctrl+Shift+X, "C#")
 - .NET (Download here: https://dotnet.microsoft.com/download)
+- # Json.NET (open terminal (Ctrl+Shift+^), enter: "dotnet add package Newtonsoft.Json")
+
+## Requirements for bot application
+
+- Following instructions are based on Visual Studio Code. Other IDEs may work as well but aren't tested. (Download here (choose option based on your OS): https://code.visualstudio.com/Download OR "sudo apt install code" (may differ depending on package manager))
+- C# Extension (Ctrl+Shift+X, "C#")
+- .NET (Download here: https://dotnet.microsoft.com/download)
 - Json.NET (open terminal (Ctrl+Shift+^), enter: "dotnet add package Newtonsoft.Json")
+  > > > > > > > 1ebd50573a895bc2ebb7668798e42d957d42506a
 
 ## Start bot application
 
@@ -42,7 +54,27 @@
 
 ## Monkey bot code
 
-Every turn the method "nextMove(GameState state)" executed. An object of the type "Move" needs to be returned.
+Edit the code in Monkey.cs to create your
+Every turn the method "nextMove(GameState)" executed. An object of the type "Move" needs to be returned.
+
+### Gamestate
+
+Gamestate types have following members:
+
+- Cell[][] cells: 5x5 array of cells visible around the monkey's position.
+- int round: game round identifier
+- PlayerInfo playerInfo: monkey's own player information
+- getCell(Direction): returns Cell at the given direction
+
+### Move
+
+Move types have following members:
+
+- Action action: action to be executed
+- Direction direction: direction of the action
+- Optional:
+  - string message: message displayed to spectators during round
+  - int nextRound: round identifier that allows the game manager to detect out-of-sync moves
 
 ### Action
 
@@ -58,7 +90,7 @@ Following directions exist:
 
 - Direction.NONE
 - Direction.UP
-- Direciton.UP_RIGHT
+- Direction.UP_RIGHT
 - Direction.RIGHT
 - Direction.DOWN_RIGHT
 - Direction.DOWN
@@ -79,15 +111,17 @@ Following items exist:
 
 ### DirectionInfo
 
-Methods that can be attached to directions are (here: Direction dir):
+Methods that can be attached to directions are:
 
-- dir.Cordinates(): returnes the coordinates (from the 5x5 array) of the direction as a Tuple<int, int>
-- dir.isMoveable(): returnes if player can move into given direction as bool (does NOT check if player would take damage etc.)
-- dir.opposite(): gives the opposite direction as Direction
+- Coordinates(): returnes the coordinates (from the 5x5 array) of the direction as a Tuple<int, int>
+- isMoveable(): returnes if player can move into given direction as bool (does NOT check if player would take damage etc.)
+- opposite(): gives the opposite direction as Direction
 
 ### ItemInfo
 
-### Move
+Methods that can be attached to items are:
+
+- isMoveable(): returns if player can move to a field containing given item as a bool
 
 ### PlayerInfo
 
@@ -108,6 +142,20 @@ Gamestate types have following attributes:
 - int round: game round identifier
 - PlayerInfo playerInfo: monkey's own player information
 - getCell(Direction dir): return
+  PlayerInfo types have following members:
+
+* string name: name of the player
+* int lives: lives remaining for the player
+* int coconuts: number of coconuts remianing for the player
+* int points: number of points scored by the player
+
+### Cell
+
+Cell types have following members:
+
+- isFree(): returns if player can move to as a bool
+- Item item: kind of item contained in cell
+<!-- * PlayerInfo playerinfo: optional info about player in cell  -->
 
 ## Bot usage hints
 
