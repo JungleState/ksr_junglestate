@@ -4,29 +4,42 @@ namespace junglestate;
 public class Monkey : BaseMonkey {
 
     private Direction defaultDir = Direction.RIGHT;
-    private bool runForLive = false;
+    private string monkeyMode = "walk";
 
     public override Move nextMove(GameState state) {
         List<Direction> freeDirs = computeFreeDirections(state);
         Direction nextDir;
+        Random r = new Random();
 
-        if (freeDirs.Contains(this.defaultDir)) {
-            nextDir = this.defaultDir;
-        }
-        else {
-            while (true) {
-                Random random = new System.Random();
-                Random r = new Random();
-                nextDir = freeDirs[r.Next(freeDirs.Count)];
-
-                if (nextDir.opposite() != defaultDir || freeDirs.Count == 1) {
-                    this.defaultDir = nextDir;
-                    break;
+        if (this.monkeyMode == "walk") {
+            if (freeDirs.Contains(this.defaultDir)) {
+                nextDir = this.defaultDir;
+                if (r.Next(4) == 0) {
+                    // 20% chance to change direction
+                    nextDir = newRandomDirection(freeDirs, r);
                 }
+            }
+            else {
+                nextDir = newRandomDirection(freeDirs, r);
+            }
+
+            return new Move(Action.MOVE, nextDir, state.round);
+        }
+
+        return new Move(Action.MOVE, Direction.NONE, state.round);
+    }
+
+    private Direction newRandomDirection(List<Direction> freeDirs, Random r) {
+        Direction nextDir;
+        while (true) {
+            nextDir = freeDirs[r.Next(freeDirs.Count)];
+            if (nextDir.opposite() != defaultDir || freeDirs.Count == 1) {
+                this.defaultDir = nextDir;
+                break;
             }
         }
 
-        return new Move(Action.MOVE, nextDir, state.round);
+        return nextDir;
     }
 
     private Direction selectRandomDirection(GameState state) {
