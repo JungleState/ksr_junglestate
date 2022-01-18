@@ -11,7 +11,7 @@ public class Monkey : BaseMonkey {
         // Otherwise: random move
         Direction direction = selectRandomDirection(state);
         lastDir = direction;
-        return new Move(Action.MOVE, direction, state.round, "didn't see this coming, eh?");
+        return new Move(Action.MOVE, direction, state.round, "some new text");
     }
 
     private Direction selectRandomDirection(GameState state) {
