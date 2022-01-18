@@ -183,7 +183,6 @@ def root():
 
 @app.route('/login', methods=['GET'])
 def login():
-    session['playerId'] = None
     return render_template('login.html')
 
 
