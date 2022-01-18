@@ -12,6 +12,11 @@ public class Monkey : BaseMonkey {
             }
         }
 
+        // Collect items
+        if (DirectionOfClosestItemOfHighestValue(state) != Direction.NONE) {
+            return new Move(Action.MOVE, DirectionOfEnemyInRangeWithLowestHealth(state), state.round, "Items. Items! ITEMS!!");
+        }
+
         // Otherwise: attempt to move in the same direction as last round
         if (lastDir.isMoveable() && state.getCell(lastDir).isFree()) {
             return new Move(Action.MOVE, lastDir, state.round, "Walking is fun.");
@@ -52,8 +57,25 @@ public class Monkey : BaseMonkey {
                 }
             }
         }
-
-
         return target;
+    }
+
+    private Direction DirectionOfClosestItemOfHighestValue(GameState state) {
+        // returns direction of collectable item that is used most
+        Direction target = Direction.NONE;
+        // look at closest items
+        foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
+            if (dir.isMoveable() && state.getCell(dir).item == Item.PINEAPPLE) {
+                return dir;
+            }
+            else if (dir.isMoveable() && state.getCell(dir).item == Item.BANANA && state.playerInfo.lives < 3) {
+                return dir;
+            }
+        }
+        return target;
+    }
+
+    private Item compareTwoItems(Item item0, Item item1) {
+        return item0;
     }
 }
