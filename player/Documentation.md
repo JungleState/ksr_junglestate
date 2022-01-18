@@ -115,4 +115,6 @@ Gamestate types have following attributes:
   - Enter: "reset" OR
   - Just ignore, it works anyway
 
-dotnet run -- start --name ED Sheeran --server https://junglecamp-tfszpy3t2a-oa.a.run.app
+dotnet run -- start --name ED Sheeran --server http://127.0.0.1:5500/
+
+https://junglecamp-tfszpy3t2a-oa.a.run.app
