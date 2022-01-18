@@ -9,13 +9,17 @@
 namespace junglestate {
     ///<summary>A simple monkey that moves randomly in free directions.</summary>
     public class Monkey : BaseMonkey {
+        private Direction LastDirection = Direction.RIGHT; //some default Direction
         public override Move nextMove(GameState state) {
-            Direction direction = selectRandomDirection(state);
+            Direction direction = selectDirection(state);
             return new Move(Action.MOVE, direction, state.round);
         }
 
-        private Direction selectRandomDirection(GameState state) {
+        private Direction selectDirection(GameState state) {
             List<Direction> freeDirs = computeFreeDirections(state);
+            if (freeDirs.Contains(LastDirection)){
+                return(LastDirection); //so the movement is in one straight line
+            }
             Random random = new System.Random();
             Random r = new Random();
             return freeDirs[r.Next(freeDirs.Count)];
