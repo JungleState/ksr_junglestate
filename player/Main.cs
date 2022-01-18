@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 namespace junglestate;
 
 class GlobalOptions {
-    [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://localhost:5500/")]
-    public string Server { get; set; } = "http://localhost:5500/";
+    [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://127.0.0.1:5500/")]
+    public string Server { get; set; } = "http://127.0.0.1:5500/";
     [Option('m', "monkey", Required = false, HelpText = "The monkey class to use.", Default = "")]
     public string Monkey { get; set; } = "";
     [Option('d', "delay", Required = false, HelpText = "Update delay in millis.", Default = 100)]
