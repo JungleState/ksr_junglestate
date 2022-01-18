@@ -17,13 +17,7 @@ public class Monkey : BaseMonkey
         int y = coords[1];
         if (x == -1)
         {
-            if (lastDir.isMoveable() && state.getCell(lastDir).isFree()) 
-            {
-                return new Move(Action.MOVE, lastDir, state.round, "I suäch ässä...");
-            }
-            Direction direction = selectRandomDirection(state);
-            lastDir = direction;
-            return new Move(Action.MOVE, direction, state.round, "I suäch ässä...");
+           return makeRandomMove(state);
         }
         if (x < 2)
         {
@@ -41,7 +35,13 @@ public class Monkey : BaseMonkey
         {
             dir = Direction.DOWN;
         }
-        return new Move(action, dir, state.round, "I han äs Item gfundä...");
+        List<Direction> freeDirs = computeFreeDirections(state);
+        if (freeDirs.Contains(dir))
+        {
+            return new Move(action, dir, state.round, "I han äs Item gfundä...");
+        }
+        return makeRandomMove(state);
+        
     }
 
     private List<int> getCoordOfNextItem(GameState state)
@@ -60,6 +60,17 @@ public class Monkey : BaseMonkey
         }
         return new List<int> {-1, -1};
     }
+    private Move makeRandomMove(GameState state)
+    {
+        if (lastDir.isMoveable() && state.getCell(lastDir).isFree()) 
+        {
+            return new Move(Action.MOVE, lastDir, state.round, "I suäch ässä...");
+        }
+        Direction direction = selectRandomDirection(state);
+        lastDir = direction;
+        return new Move(Action.MOVE, direction, state.round, "I suäch ässä...");
+    }
+
 
     private Direction selectRandomDirection(GameState state) 
     {
