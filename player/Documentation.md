@@ -75,7 +75,7 @@ Following directions exist:
 * Direction.LEFT
 * Direction.UP_LEFT
 
-### Items
+### Item
 Following items exist:
 * Item.EMPTY
 * Item.FOREST
@@ -104,8 +104,8 @@ PlayerInfo types have following members:
 ### Cell
 Cell types have following members:
 * isFree(): returns if player can move to as a bool
-* Item item: kind of item contained in cell 
-* PlayerInfo playerinfo: optional info about player in cell
+* Item item: kind of item contained in cell
+<!-- * PlayerInfo playerinfo: optional info about player in cell  -->
 
 ## Bot usage hints
 * When terminal stops showing inputs:

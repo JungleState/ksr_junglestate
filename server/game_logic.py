@@ -422,6 +422,8 @@ class Game:
                 "coords": shot[1]
                 })
 
+        self.shooting = []
+
         return shotJson
 
     def executeShooting(self, player, dir):
@@ -450,7 +452,7 @@ class Game:
                 toCoordinates[1] -= 1
                 toCoordinates[0] -= 1
 
-            self.shooting.append((player, toCoordinates))
+            self.shooting.append((player, dir))
 
             checkField = self.getElementAtCoords(toCoordinates)
 
