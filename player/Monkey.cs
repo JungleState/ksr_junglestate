@@ -63,12 +63,15 @@ public class Monkey : BaseMonkey {
         Direction newDir = Direction.NONE;
         for (int i = 0; i < state.cells.Length; i++) {
             for (int j = 0; j < state.cells[i].Length; j++) {
-                if (type == "" && food.Contains(state.cells[i][j].item)) {
+                if (food.Contains(state.cells[i][j].item)) {
                     if (state.cells[i][j].item == Item.COCONUT && state.playerInfo.coconuts < 3) {
                         coords.Add((i, j));
                     }
+                    else if (state.cells[i][j].item == Item.PINEAPPLE || state.cells[i][j].item == Item.BANANA) {
+                        coords.Add((i, j));
+                    }
                 }
-                else if (type == "" && state.cells[i][j].item == Item.PLAYER) {
+                else if (state.cells[i][j].item == Item.PLAYER) {
                     coords.Add((i, j));
                 }
             }
