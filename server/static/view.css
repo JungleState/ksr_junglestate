@@ -38,7 +38,11 @@ playername{
 }
 
 projectile{
-  /*projectile stuff (coconut)*/
+  display: block;
+  position: relative;
+  background-size: cover;
+  background-image: url(sprites/coconut.png);
+  aspect-ratio: 1/1;
 }
 
 #grid{
