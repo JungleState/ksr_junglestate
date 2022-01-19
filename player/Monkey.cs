@@ -4,7 +4,8 @@
 public class Monkey : BaseMonkey 
 {
     private Direction lastDir = Direction.NONE;
-    private List<Direction> lastDirsList = new List<Direction>(); 
+    private bool move_x_priority = true;
+    private bool already_changed_priority = false;
     public override Move nextMove(GameState state) 
     {
         if (state.playerInfo.coconuts > 0)
@@ -12,80 +13,89 @@ public class Monkey : BaseMonkey
             return new Move(Action.THROW, Direction.UP, state.round, "I bin khul...");
         }
         List<int> coords = getCoordOfNextItem(state);
-        Action action = Action.MOVE;
         Direction dir = Direction.UP;
         int x = coords[1];
         int y = coords[0];
         if (x == -1 && y == -1)
         {
-           return makeRandomMove(state);
+            return makeRandomMove(state);
         }
-        if (x < 2)
+        dir = getDirectionToMoveFromItemCoords(x, y);
+        List<Direction> freeDirs = computeFreeDirections(state);
+        if (freeDirs.Contains(dir))
         {
-            dir = Direction.LEFT;
+            already_changed_priority = false;
+            return new Move(Action.MOVE, dir, state.round, "I han äs Item gfundä");
         }
-        else if (x > 2)
+        Random random = new System.Random();
+        Random r = new Random();
+        List<Direction> I_hass_C;
+        Direction random_dir;
+        if (move_x_priority)
         {
-            dir = Direction.RIGHT;
+            I_hass_C = new List<Direction>{Direction.RIGHT, Direction.LEFT};
+            random_dir = I_hass_C[r.Next(I_hass_C.Count)];
+            if (freeDirs.Contains(random_dir))
+            {
+                changeMovePriority();
+                return new Move(Action.MOVE, random_dir, state.round, "I ändärä min wäg");
+            }
+            changeMovePriority();
+            return new Move(Action.MOVE, random_dir.opposite(), state.round, "I ändärä min wäg");
         }
-        else if(y < 2 )
+        I_hass_C = new List<Direction>{Direction.UP, Direction.DOWN};
+        random_dir = I_hass_C[r.Next(I_hass_C.Count)];
+        if (freeDirs.Contains(random_dir))
         {
-            dir = Direction.UP;
+            changeMovePriority();
+            return new Move(Action.MOVE, random_dir, state.round, "I ändärä min wäg");
+        }
+        changeMovePriority();
+        return new Move(Action.MOVE, random_dir.opposite(), state.round, "I ändärä min wäg");
+        
+    }
+
+    private void changeMovePriority()
+    {
+        if (!already_changed_priority)
+        {
+            already_changed_priority = true;
+            move_x_priority = !move_x_priority;
+        }
+    }
+    private Direction getDirectionToMoveFromItemCoords(int x, int y)
+    {
+        if (move_x_priority)
+        {
+            if (x < 2)
+            {
+                return Direction.LEFT;
+            }
+            else if (x > 2)
+            {
+                return Direction.RIGHT;
+            }
+            else if(y < 2 )
+            {
+                return Direction.UP;
+            }
+            return Direction.DOWN;
+        }
+        if (y < 2)
+        {
+            return Direction.UP;
         }
         else if (y > 2)
         {
-            dir = Direction.DOWN;
+            return Direction.DOWN;
         }
-        Console.WriteLine(lastDirsList);
-        List<Direction> freeDirs = computeFreeDirections(state);
-        if (lastDirsList.Count == 5)
+        else if(x < 2 )
         {
-            if (lastDirsList[0] == lastDirsList[2] && lastDirsList[2] == lastDirsList[4] && lastDirsList[1] == lastDirsList[3])
-            {
-                if (lastDirsList[0] == Direction.UP || lastDirsList[0] == Direction.DOWN) 
-                {
-                    dir = Direction.RIGHT;
-                }
-                else
-                {
-                    dir = Direction.UP;
-                }
-            }
-        }   
-        if (freeDirs.Contains(dir))
-        {
-            return makeMove(action, dir, state, "I han äs Item gfundä...");
+            return Direction.LEFT;
         }
-        else if (x == 2)
-        {
-            if (Direction.RIGHT.isMoveable())
-            {
-                return makeMove(Action.MOVE, Direction.RIGHT, state, "I han äs Item gfundä...");
-            }
-            return makeMove(Action.MOVE, Direction.LEFT, state, "I han äs Item gfundä...");
-                
-        }
-        else if (y == 2)
-        {
-            if (Direction.UP.isMoveable())
-            {
-                return makeMove(Action.MOVE, Direction.UP, state, "I han äs Item gfundä...");
-            }
-            return makeMove(Action.MOVE, Direction.DOWN, state, "I han äs Item gfundä...");
-        }
-        return makeRandomMove(state);
-        
+        return Direction.RIGHT;
     }
-    private List<Direction> updateLastDirsList(GameState state, List<Direction> ldl, Direction newDir)
-    {
-        ldl.Add(newDir);
-        if (ldl.Count == 6)
-        {
-            ldl.RemoveAt(0);
-        }
-        return ldl;
 
-    }
     private List<int> getCoordOfNextItem(GameState state)
     {  
         for (int row = 0; row < 5; row++)
@@ -103,11 +113,6 @@ public class Monkey : BaseMonkey
         return new List<int> {-1, -1};
     }
 
-    private Move makeMove(Action action, Direction dir, GameState state, string msg)
-    {
-        lastDirsList = updateLastDirsList(state, lastDirsList, dir);
-        return new Move(action, dir, state.round, msg);
-    }
 
     private Move makeRandomMove(GameState state)
     {
@@ -121,7 +126,6 @@ public class Monkey : BaseMonkey
             direction = selectRandomDirection(state);
         }
         lastDir = direction;
-        lastDirsList = updateLastDirsList(state, lastDirsList, direction);
         return new Move(Action.MOVE, direction, state.round, "I suäch ässä...");
     }
 
