@@ -23,27 +23,35 @@ namespace junglestate {
 
         private Direction selectDirection(GameState state, Mode mode) {
             List<Direction> freeDirs = computeFreeDirections(state);
-            if(mode == Mode.Farm){ //Farm Mode
-                if(!freeDirs.Contains(LastDirection)){ //! = quasi if not
-                    Random random = new System.Random();
-                    Random r = new Random();
-                    Direction NewDirection = freeDirs[r.Next(freeDirs.Count)];
+            Direction NewDirection;
 
+            if(mode == Mode.Farm){ //Farm Mode
+                Random random = new System.Random();
+                Random r = new Random();
+                if(!(freeDirs.Contains(LastDirection))){ //! = quasi if not
+
+                    NewDirection = freeDirs[r.Next(freeDirs.Count)];
                     while(LastDirection.opposite() == NewDirection){ //so it doesn't go back the same direction
 
                         NewDirection=freeDirs[r.Next(freeDirs.Count)];
                     }
-
+                    
                     LastDirection=NewDirection;
-                    return NewDirection;
                 }
+                else{
+                    NewDirection = LastDirection;
+                }
+                return NewDirection;
             }
             if(mode == Mode.Flee){
-                return
+                return LastDirection;
 
             }
             if(mode == Mode.Hunt){
-
+                return LastDirection;
+            }
+            else{
+                return LastDirection;
             }
         }
             
