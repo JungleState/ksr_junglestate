@@ -15,7 +15,7 @@ public class Monkey : BaseMonkey {
         
         nextDir = getItem("", state, freeDirs, r);
 
-        if (nextDir == Direction.NONE) {
+        if (nextDir == Direction.NONE || state.getCell(nextDir).item == Item.FOREST) {
             if (this.monkeyMode == "walk") {
                 if (freeDirs.Contains(this.defaultDir)) {
                     nextDir = this.defaultDir;
