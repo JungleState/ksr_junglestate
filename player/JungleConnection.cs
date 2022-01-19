@@ -133,7 +133,7 @@ class JungleConnection : IDisposable {
 
     private void printState(dynamic data) {
         if (config.useConsole) {
-            // Console.Clear();
+            Console.Clear();
             Console.WriteLine("Field: " + data.field);
             Console.WriteLine("Round: " + data.round);
             Console.WriteLine("Health: " + data.lives);

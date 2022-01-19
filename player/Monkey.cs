@@ -21,12 +21,14 @@ public class Monkey : BaseMonkey {
             return new Move(Action.MOVE, directionOfItem, state.round, "Items. Items! ITEMS!!");
         }
 
-        // Otherwise: attempt to move in the same direction as last round
-        if (lastDir.isMoveable() && state.getCell(lastDir).isFree()) {
+        // Otherwise: attempt to move in the same direction as last round (80%)
+        Random random =new System.Random();
+        Random r = new Random();
+        if (lastDir.isMoveable() && state.getCell(lastDir).isFree() && 4 > r.Next(5)) {
             return new Move(Action.MOVE, lastDir, state.round, "Walking is fun.");
         }
 
-        // Otherwise: random move
+        // Otherwise: random move (20%)
         Direction direction = selectRandomDirection(state);
         lastDir = direction;
         return new Move(Action.MOVE, direction, state.round, "Where should I go?");
@@ -80,8 +82,7 @@ public class Monkey : BaseMonkey {
             }
         }
         // item can be reached in 2 turns
-        
-
+        List<Direction> direction2List = new List<Direction>();
 
 
 
