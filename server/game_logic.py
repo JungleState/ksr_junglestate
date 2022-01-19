@@ -145,7 +145,7 @@ class Game:
         self.move_list = []
         self.player_list = []
         self.safed_items_list = []
-        self.last_moves = []
+        self.shooting = []
         self.updated = False
         self.serverName = name
         (self.field_lengh, self.field_height) = field_dimensions
@@ -285,7 +285,6 @@ class Game:
 
     def doNextRound(self):
         move_list = list(self.move_list)
-        self.last_moves = move_list
         self.updated = True
         self.move_list.clear()
         for move in move_list:  # check for moving
@@ -415,6 +414,18 @@ class Game:
         logging.debug(f'Player {player.uuid} scored {score}')
         player.points += score
 
+    def formatShooting(self):
+        shotJson = {}
+        for shot in self.shooting:
+            shotJson.update({
+                "id": self.player_list.index(shot[0]),
+                "coords": shot[1]
+                })
+
+        self.shooting = []
+
+        return shotJson
+
     def executeShooting(self, player, dir):
         if player.coconuts > 0:
             logging.debug(f"Shooting player {player.id} in direction {dir}!")
@@ -440,6 +451,8 @@ class Game:
             elif dir == 7:
                 toCoordinates[1] -= 1
                 toCoordinates[0] -= 1
+
+            self.shooting.append((player, dir))
 
             checkField = self.getElementAtCoords(toCoordinates)
 

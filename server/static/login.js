@@ -26,7 +26,6 @@ async function login(join_mode, game_id) {
 
     if (!serverName) {
         serverName = randomNames[Math.floor(Math.random()*randomNames.length)];
-        alert(serverName);
     }
 
     // Set options
