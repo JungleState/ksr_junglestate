@@ -76,7 +76,8 @@ def GetJSON(game_id, user):
                         "mode": user.mode,
                         "name_list": game.GetPlayers(),
                         "serverName": game.serverName,
-                        "serverId": game.id
+                        "serverId": game.id,
+                        "shooting": game.formatShooting()
                         }
 
 

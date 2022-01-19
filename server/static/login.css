@@ -3,17 +3,6 @@
   src: url(fonts/EvilEmpire-4BBVK.ttf);
 }
 
-/* body {
-    text-align: center;
-    margin-left: 35%;
-    margin-right: 35%;
-    background-color: rgb(41, 97, 9);
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
-/* margin: auto; */
-/*} */
-
 html,
 body {
   /* height:100%;
@@ -97,7 +86,7 @@ button {
   margin: 10px;
   text-align: center;
   /*font-family: JungleFont;*/
-  border-radius: 10px;
+  border-radius: 7px;
 }
 
 .lockimage {

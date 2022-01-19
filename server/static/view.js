@@ -75,7 +75,8 @@ class View{
     }
 
     specMode(json) {
-        console.log(json);
+        console.log(json.shooting);
+
         let l = json.scoreboard.length;
         let navigation = document.getElementById('navigation');
 
