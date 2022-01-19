@@ -67,10 +67,6 @@ class View{
     }
 
     specMode(json) {
-        if (json.shooting.length > 0) {
-            console.log(json);
-        }
-
         console.log(json.shooting);
 
         let l = json.scoreboard.length;
