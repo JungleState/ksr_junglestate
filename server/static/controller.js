@@ -1,6 +1,7 @@
 class Controller {
     constructor(view) {
         let updateTitle = true;
+        let FPS = 5;
 
         // listen for input
         window.onkeydown = (key) => {
@@ -29,7 +30,7 @@ class Controller {
             if (json.lives == 0) {
                 document.documentElement.style.setProperty('--visibility' , "visible")
             }
-        }, 500);
+        }, (1000/FPS));
     }
 
     async getData() {
