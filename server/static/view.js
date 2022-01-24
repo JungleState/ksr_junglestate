@@ -33,7 +33,7 @@ class View{
                 }
                 else{ //numbers are players
                     //tile.setAttribute('name', playerdict[charcode]);
-                    if(tile.getAttribute('id') != Object.keys(json.name_list[parseInt(charcode)]).toString()){
+                    if(tile.getAttribute('class') != "player"){
                         tile.setAttribute('class', "player");
                         tile.setAttribute('id', Object.keys(json.name_list)[parseInt(charcode)].toString()); //I need to append uuid for coconut throwing
                         var playername = document.createElement("playername");
@@ -48,8 +48,9 @@ class View{
         }
         this.shoot("0", "right");
         //for the shoot animation if players shoot coconut
-        for(let player in json.projectiles){
-            this.shoot(player, json.projectiles.direction); //fix, not right yet: do tis<-------------------------------------------------------------------------------------------------------------------------
+        for(let player in json.shooting){
+            this.shoot(player.id, player.coords);
+            console.log(player)
         }
 
 
