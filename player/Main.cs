@@ -4,14 +4,14 @@ using Microsoft.Extensions.Logging;
 namespace junglestate;
 
 class GlobalOptions {
-    [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "http://127.0.0.1:5500/")]
-    public string Server { get; set; } = "http://127.0.0.1:5500/";
+    [Option('s', "server", Required = false, HelpText = "Server URL.", Default = "https://junglecamp-tfszpy3t2a-oa.a.run.app/")]
+    public string Server { get; set; } = "https://junglecamp-tfszpy3t2a-oa.a.run.app/";
     [Option('m', "monkey", Required = false, HelpText = "The monkey class to use.", Default = "")]
     public string Monkey { get; set; } = "";
     [Option('d', "delay", Required = false, HelpText = "Update delay in millis.", Default = 100)]
     public int Delay { get; set; } = 500;
-    [Option('n', "name", Required = false, HelpText = "The monkey name, must be unique per game.", Default = "Hooey")]
-    public string Name { get; set; } = "Hooey";
+    [Option('n', "name", Required = false, HelpText = "The monkey name, must be unique per game.", Default = "Matt")]
+    public string Name { get; set; } = "Matt";
     [Option('q', "quiet", Required = false, HelpText = "Do not show game behavior in console.", Default = false)]
     public bool Quiet { get; set; } = false;
     [Option('t', "time", Required = false, HelpText = "Show average latency of HTTP calls.", Default = false)]
@@ -118,7 +118,7 @@ class MonkeyCommandLine {
         //     options.Delay = delayVal;
         // }
         // config.delay_ms = options.Delay;
-        config.delay_ms = 100;
+        config.delay_ms = 5000;
 
         Console.WriteLine($"Monkey name (default: {options.Name}): ");
         string? name = Console.ReadLine();
