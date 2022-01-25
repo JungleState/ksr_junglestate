@@ -65,7 +65,8 @@ def GetJSON(game_id, user):
                         "name": user.name,
                         "name_list": game.GetPlayers(),
                         "serverName": game.serverName,
-                        "serverId": game.id
+                        "serverId": game.id,
+                        "shooting": game.formatShooting()
                         }
             elif user.mode == "spec":  # returns JSON file for spectator
                 return {"id": user.uuid,
