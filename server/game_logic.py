@@ -46,6 +46,7 @@ class Player(Item):
         self.hits = 0
         self.x = 0
         self.y = 0
+        self.knock_score = 0
         # dimension of field of view matrix, needs to be odd
         self.sight = Rules.SIGHT * 2 + 1
         self.name = name
@@ -65,6 +66,7 @@ class Player(Item):
                 "lives": self.lives,
                 "points": self.points,
                 "active": self.active,
+                "knockScore": self.knock_score,
                 "message": self.message}
 
 
@@ -461,6 +463,7 @@ class Game:
                 logging.debug(f'Player {player2.uuid} hit')
                 if self.handlePlayerDamage(player2, Rules.Damage.COCONUT):
                     self.handleScore(player, Rules.Scores.KNOCK_OUT)
+                    player.knock_score += 1
                 else:
                     self.handleScore(player, Rules.Scores.HIT)
 
@@ -521,7 +524,9 @@ class Game:
                           "hits": [player.hits for player in self.player_list],
                           "name": [player.name[0] for player in self.player_list],
                           "message": [player.message for player in self.player_list],
-                          "active": [player.active for player in self.player_list]}
+                          "active": [player.active for player in self.player_list],
+                          "knockScore": [player.knock_score for player in self.player_list]
+                          }
 
         sorted_list = sorted(item_list_dict[f"{sortby}"])
         item_list = item_list_dict[f"{sortby}"]
