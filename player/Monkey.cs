@@ -55,20 +55,23 @@ public class Monkey : BaseMonkey {
     }
 
     private bool decideMove(GameState state, Item item) {
-        if (item == Item.PLAYER) { // Attack Mode
+        if (item == Item.PLAYER) { // Attack: Ignore if no lives / no coconuts
             if (state.playerInfo.lives == 1 || state.playerInfo.coconuts == 0) {
                 return false;
             }
         }
-        else if (item == Item.BANANA) {
+        else if (item == Item.BANANA) { // Banana: Ignore if 3 lives
             if (state.playerInfo.lives == 3) {
                 return false;
             } 
         }
-        else if (item == Item.COCONUT) {
+        else if (item == Item.COCONUT) { // Coconut: Ignore if 3 coconuts
             if (state.playerInfo.coconuts == 3) {
                 return false;
             }
+        }
+        else if (item == Item.FOREST || item == Item.EMPTY) { // Empty Cell: ignore
+            return false;
         }
 
         return true;

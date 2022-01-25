@@ -118,7 +118,7 @@ class MonkeyCommandLine {
         //     options.Delay = delayVal;
         // }
         // config.delay_ms = options.Delay;
-        config.delay_ms = 5000;
+        config.delay_ms = 2000;
 
         Console.WriteLine($"Monkey name (default: {options.Name}): ");
         string? name = Console.ReadLine();
