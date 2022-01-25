@@ -5,10 +5,16 @@ public class Monkey : BaseMonkey {
     private Direction lastDir = Direction.NONE;
     private int MAX_LIVES = 3;
     private int MAX_AMMO = 3;
+    private (int, int) movementBias = (0, 0);
+    private int BIAS_MULTIPLICATOR = 1;
+    private int MINIMUM_LIVES_FOR_ATTACK = 3;
 
     public override Move nextMove(GameState state) {
+        // Update the generel movement direction
+        movementBias = updateMovementBias(state, movementBias);
+
         // Attack player if possible
-        if (state.playerInfo.coconuts > 0 && state.playerInfo.lives > 2) {
+        if (state.playerInfo.coconuts > 0 && state.playerInfo.lives > MINIMUM_LIVES_FOR_ATTACK) {
             Direction target = directionOfEnemyInRangeWithLowestHealth(state);
             if (target != Direction.NONE) {
                 return new Move(Action.THROW, target, state.round, "RATATATATA!");
@@ -40,6 +46,26 @@ public class Monkey : BaseMonkey {
     private Direction selectRandomDirection(GameState state) {
         // select a random direction
         List<Direction> freeDirs = computeFreeDirections(state);
+        if (movementBias.Item1 < 0 && freeDirs.Contains(Direction.UP)) {
+            for (int i = 0; i < BIAS_MULTIPLICATOR; i++) {
+                freeDirs.Add(Direction.UP);
+            }
+        }
+        if (movementBias.Item1 > 0 && freeDirs.Contains(Direction.DOWN)) {
+            for (int i = 0; i < BIAS_MULTIPLICATOR; i++) {
+                freeDirs.Add(Direction.DOWN);
+            }
+        }
+        if (movementBias.Item2 < 0 && freeDirs.Contains(Direction.LEFT)) {
+            for (int i = 0; i < BIAS_MULTIPLICATOR; i++) {
+                freeDirs.Add(Direction.LEFT);
+            }
+        }
+        if (movementBias.Item2 > 0 && freeDirs.Contains(Direction.RIGHT)) {
+            for (int i = 0; i < BIAS_MULTIPLICATOR; i++) {
+                freeDirs.Add(Direction.RIGHT);
+            }
+        }
         Random random = new System.Random();
         Random r = new Random();
         return freeDirs[r.Next(freeDirs.Count)];
@@ -73,6 +99,9 @@ public class Monkey : BaseMonkey {
         // returns direction of collectable item that is used most
         // item can be reached in 1 turn
         foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
+            if (dir.isMoveable() && state.getCell(dir).item == Item.BANANA && state.playerInfo.lives < MAX_LIVES) {
+                return dir;
+            }
             if (dir.isMoveable() && state.getCell(dir).item == Item.PINEAPPLE) {
                 return dir;
             }
@@ -141,7 +170,12 @@ public class Monkey : BaseMonkey {
                     item0Value = 3;
                     break;
                 case Item.BANANA:
-                    item0Value = 2;
+                    if (state.playerInfo.lives < MAX_LIVES) {
+                        item0Value = 4;
+                    }
+                    else {
+                        item0Value = 2;
+                    }
                     break;
                 case Item.COCONUT:
                     if (state.playerInfo.coconuts < MAX_AMMO) {
@@ -155,7 +189,12 @@ public class Monkey : BaseMonkey {
                 item1Value = 3;
                 break;
             case Item.BANANA:
+                if (state.playerInfo.lives < MAX_LIVES) {
+                    item1Value = 4;
+                }
+                else {
                 item1Value = 2;
+                }
                 break;
             case Item.COCONUT:
                 if (state.playerInfo.coconuts < MAX_AMMO) {
@@ -169,5 +208,29 @@ public class Monkey : BaseMonkey {
         else {
             return coordinates0;
         }
+    }
+
+    private (int, int) updateMovementBias(GameState state, (int, int) movementBias) {
+        if (state.cells[1][0].item == Item.FOREST && state.cells[1][1].item == Item.FOREST
+         && state.cells[2][0].item == Item.FOREST && state.cells[2][1].item == Item.FOREST 
+         && state.cells[3][0].item == Item.FOREST && state.cells[3][1].item == Item.FOREST) {
+            movementBias = (movementBias.Item1, 1);
+        }
+        if (state.cells[1][4].item == Item.FOREST && state.cells[1][3].item == Item.FOREST
+         && state.cells[2][4].item == Item.FOREST && state.cells[2][3].item == Item.FOREST 
+         && state.cells[3][4].item == Item.FOREST && state.cells[3][3].item == Item.FOREST) {
+            movementBias = (movementBias.Item1, -1);
+        }
+        if (state.cells[0][1].item == Item.FOREST && state.cells[1][1].item == Item.FOREST
+         && state.cells[0][2].item == Item.FOREST && state.cells[1][2].item == Item.FOREST 
+         && state.cells[0][3].item == Item.FOREST && state.cells[1][3].item == Item.FOREST) {
+            movementBias = (1, movementBias.Item2);
+        }
+        if (state.cells[4][1].item == Item.FOREST && state.cells[3][1].item == Item.FOREST
+         && state.cells[4][2].item == Item.FOREST && state.cells[3][2].item == Item.FOREST 
+         && state.cells[4][3].item == Item.FOREST && state.cells[3][3].item == Item.FOREST) {
+            movementBias = (-1, movementBias.Item2);
+        }
+        return movementBias;
     }
 }
