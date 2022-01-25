@@ -2,151 +2,43 @@
 
 ///<summary>A simple monkey that moves randomly in free directions.</summary>
 public class Monkey : BaseMonkey {
-
-    private Direction defaultDir = Direction.RIGHT;
-    private string monkeyMode = "walk";
+    private Direction lastDir = Direction.NONE;
+    private int MAX_LIVES = 3;
+    private int MAX_AMMO = 3;
 
     public override Move nextMove(GameState state) {
-        List<Direction> freeDirs = computeFreeDirections(state);
-        Direction nextDir;
+        // Attack player if possible
+        if (state.playerInfo.coconuts > 0 && state.playerInfo.lives > 2) {
+            Direction target = directionOfEnemyInRangeWithLowestHealth(state);
+            if (target != Direction.NONE) {
+                return new Move(Action.THROW, target, state.round, "BAZ!");
+            }
+        }
+
+        // Collect items
+        Direction directionOfItem = directionOfClosestItemOfHighestValue(state);
+        if (directionOfItem != Direction.NONE) {
+            return new Move(Action.MOVE, directionOfItem, state.round, "Yummy");
+        }
+
+        // Otherwise: attempt to move in the same direction as last round (80%)
+        Random random = new System.Random();
         Random r = new Random();
-        
-        nextDir = getItem("", state, freeDirs, r);
-
-        if (nextDir == Direction.NONE || state.getCell(nextDir).item == Item.FOREST) {
-            if (this.monkeyMode == "walk") {
-                if (freeDirs.Contains(this.defaultDir)) {
-                    if (r.Next(5) == 0) {
-                        // 25% chance to change direction
-                        nextDir = newRandomDirection(freeDirs, r);
-                    }
-                    nextDir = this.defaultDir;
-                }
-                else {
-                    nextDir = newRandomDirection(freeDirs, r);
-                }
-
-                return new Move(Action.MOVE, nextDir, state.round, "Just walking...");
-            }
-        }
-        else {
-            if (this.monkeyMode == "attack") {
-                return new Move(Action.THROW, nextDir, state.round, "Attack!!");
-            }
-            else {
-                return new Move(Action.MOVE, nextDir, state.round, "Yummy");
-            }
+        if (lastDir.isMoveable() && state.getCell(lastDir).isFree() && 4 > r.Next(5)) {
+            return new Move(Action.MOVE, lastDir, state.round, "...");
         }
 
-        return new Move(Action.MOVE, Direction.NONE, state.round);
-    }
-
-    private Direction newRandomDirection(List<Direction> freeDirs, Random r) {
-        Direction nextDir;
-        while (true) {
-            nextDir = freeDirs[r.Next(freeDirs.Count)];
-            if (nextDir.opposite() != defaultDir || freeDirs.Count == 1) {
-                this.defaultDir = nextDir;
-                break;
-            }
+        // Otherwise: random move (20%)
+        Direction direction = selectRandomDirection(state);
+        if (direction == lastDir.opposite()) {
+            direction = selectRandomDirection(state);
         }
-
-        return nextDir;
-    }
-
-    private bool decideMove(GameState state, Item item) {
-        // if (item == Item.PLAYER) { // Attack: Ignore if no lives / no coconuts
-        //     if (state.playerInfo.lives == 1 || state.playerInfo.coconuts == 0) {
-        //         return false;
-        //     }
-        // }
-        if (item == Item.BANANA) { // Banana: Ignore if 3 lives
-            if (state.playerInfo.lives == 3) {
-                return false;
-            } 
-        }
-        else if (item == Item.COCONUT) { // Coconut: Ignore if 3 coconuts
-            if (state.playerInfo.coconuts == 3) {
-                return false;
-            }
-        }
-        else if (item == Item.FOREST || item == Item.EMPTY) { // Empty Cell
-            return false;
-        }
-
-        return true;
-    }
-
-    private Direction getItem(string type, GameState state, List<Direction> freeDirs, Random r) {
-        List<(int, int)> coords = new List<(int, int)>();
-        Direction newDir = Direction.NONE;
-        for (int i = 1; i < state.cells.Length - 1; i++) {
-            for (int j = 1; j < state.cells[i].Length - 1; j++) {
-                if (decideMove(state, state.cells[i][j].item)) {
-                    coords.Add((i, j));
-                }
-            }
-        }
-
-        coords.ForEach(dir => {
-            if (dir.Item2 == 2) {
-                if (dir.Item1 < 2) {
-                    if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
-                        this.monkeyMode = "attack";
-                    }
-                    else {
-                        this.monkeyMode = "walk";
-                    }
-                    System.Console.WriteLine("Item on top");
-                    newDir = Direction.UP;
-                    return;
-                }
-                else if (dir.Item1 > 2) {
-                    if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
-                        this.monkeyMode = "attack";
-                    }
-                    else {
-                        this.monkeyMode = "walk";
-                    }
-                    System.Console.WriteLine("Item on bottom");
-                    newDir = Direction.DOWN;
-                    return;
-                }
-            }
-            else if (dir.Item2 < 2 || dir.Item2 > 2) {
-                if (dir.Item1 == 2 && dir.Item2 < 2) {
-                    if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
-                        this.monkeyMode = "attack";
-                    }
-                    else {
-                        this.monkeyMode = "walk";
-                    }
-                    System.Console.WriteLine("Item left");
-                    newDir = Direction.LEFT;
-                    return;
-                }
-                else if (dir.Item1 == 2 && dir.Item2 > 2) {
-                    if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
-                        this.monkeyMode = "attack";
-                    }
-                    else {
-                        this.monkeyMode = "walk";
-                    }
-                    System.Console.WriteLine("Item right");
-                    newDir = Direction.RIGHT;
-                    return;
-                }
-            }
-
-            if (dir.Item1 == 2 && dir.Item2 == 2) {
-                return;
-            }
-        }); 
-
-        return newDir;
+        lastDir = direction;
+        return new Move(Action.MOVE, direction, state.round, "Kan Plan");
     }
 
     private Direction selectRandomDirection(GameState state) {
+        // select a random direction
         List<Direction> freeDirs = computeFreeDirections(state);
         Random random = new System.Random();
         Random r = new Random();
@@ -154,6 +46,7 @@ public class Monkey : BaseMonkey {
     }
 
     private List<Direction> computeFreeDirections(GameState state) {
+        // return list with empty
         List<Direction> result = new List<Direction>();
         foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
             if (dir.isMoveable() && state.getCell(dir).isFree()) {
@@ -162,4 +55,124 @@ public class Monkey : BaseMonkey {
         }
         return result;
     }
+
+    private Direction directionOfEnemyInRangeWithLowestHealth(GameState state) {
+        // returns direction of enemy in range with lowest health
+        Direction target = Direction.NONE;
+        foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
+            if (state.getCell(dir).item == Item.PLAYER) {
+                if (target == Direction.NONE /*|| state.getCell(target).playerInfo!.lives > state.getCell(dir).playerInfo!.lives*/) {
+                    target = dir;
+                }
+            }
+        }
+        return target;
+    }
+
+    private Direction directionOfClosestItemOfHighestValue(GameState state) {
+        // returns direction of collectable item that is used most
+        // item can be reached in 1 turn
+        foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
+            if (dir.isMoveable() && state.getCell(dir).item == Item.PINEAPPLE) {
+                return dir;
+            }
+            if (dir.isMoveable() && state.getCell(dir).item == Item.BANANA) {
+                return dir;
+            }
+            if (dir.isMoveable() && state.getCell(dir).item == Item.COCONUT && state.playerInfo.coconuts < MAX_AMMO) {
+                return dir;
+            }
+        }
+        // item can be reached in multiple turns
+        (int, int) coordinatesOfBestItem = (404, 404);
+        for (int i = 0; i < state.cells.Length; i++) {
+            for (int j = 0; j < state.cells[i].Length; j++) {
+                if (state.cells[i][j].isFree() && state.cells[i][j].item != Item.EMPTY) {
+                    coordinatesOfBestItem = compareTwoItems(state, coordinatesOfBestItem, (i, j));
+                }
+            }
+        }
+        // test if any found
+        if (coordinatesOfBestItem == (404, 404)) {
+            return Direction.NONE;
+        }
+        // move to item
+        Random random = new System.Random();
+        Random r = new Random();
+        if (r.Next(2) == 0) {
+            if (coordinatesOfBestItem.Item1 < 2 && state.cells[1][2].isFree()) {
+                return Direction.UP;
+            }
+            if (coordinatesOfBestItem.Item1 > 2 && state.cells[3][2].isFree()) {
+                return Direction.DOWN;
+            }
+            if (coordinatesOfBestItem.Item2 < 2 && state.cells[2][1].isFree()) {
+                return Direction.LEFT;
+            }
+            if (coordinatesOfBestItem.Item2 > 2 && state.cells[2][3].isFree()) {
+                return Direction.RIGHT;
+            }
+        }
+        else {
+            if (coordinatesOfBestItem.Item2 < 2 && state.cells[2][1].isFree()) {
+                return Direction.LEFT;
+            }
+            if (coordinatesOfBestItem.Item2 > 2 && state.cells[2][3].isFree()) {
+                return Direction.RIGHT;
+            }
+            if (coordinatesOfBestItem.Item1 < 2 && state.cells[1][2].isFree()) {
+                return Direction.UP;
+            }
+            if (coordinatesOfBestItem.Item1 > 2 && state.cells[3][2].isFree()) {
+                return Direction.DOWN;
+            }
+        }
+        
+        return Direction.NONE;
+    }
+
+    private (int, int) compareTwoItems(GameState state, (int, int) coordinates0, (int, int) coordinates1) {
+        // returns the item that is needed most
+        int item0Value = 0;
+        int item1Value = 0;
+        if (coordinates0 != (404, 404)) {
+            switch(state.cells[coordinates0.Item1][coordinates0.Item2].item) {
+                case Item.PINEAPPLE:
+                    item0Value = 3;
+                    break;
+                case Item.BANANA:
+                    if (state.playerInfo.lives < MAX_LIVES || true) {
+                        item0Value = 2;
+                    }
+                    break;
+                case Item.COCONUT:
+                    if (state.playerInfo.coconuts < MAX_AMMO) {
+                        item0Value = 1;
+                    }
+                    break;
+            }
+        }        
+        switch(state.cells[coordinates1.Item1][coordinates1.Item2].item) {
+            case Item.PINEAPPLE:
+                item1Value = 3;
+                break;
+            case Item.BANANA:
+                if (state.playerInfo.lives < MAX_LIVES) {
+                    item1Value = 2;
+                }
+                break;
+            case Item.COCONUT:
+                if (state.playerInfo.coconuts < MAX_AMMO) {
+                    item1Value = 1;
+                }
+                break;
+        }
+        if (item1Value > item0Value) {
+            return coordinates1;
+        }
+        else {
+            return coordinates0;
+        }
+    }
 }
+
