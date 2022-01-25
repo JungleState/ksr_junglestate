@@ -6,17 +6,18 @@ public class Monkey : BaseMonkey
     private Direction lastDir = Direction.NONE;
     private List<(int, int, int)> items = new List<(int, int, int)> {};
     private List<List<int>> paths = new List<List<int>> {};
-    private List<int> current_path = new List<int> {};
+    private List<Direction> current_path = new List<Direction> {};
     public override Move nextMove(GameState state) 
     {
-        items = getCoordsOfItems(state);
+        
         if (current_path.Count == 0)
         {
+            items = getCoordsOfItems(state);
             foreach ((int, int, int) item in items)
             {
-                paths.Add(findPath(item.Item1, item.Item2, item.Item3)); 
+                paths.Add(findPath(state, item.Item1, item.Item2, item.Item3)); 
             }
-            if (state.playerInfo.lives != 3)
+            if (state.playerInfo.lives < 3)
             {
                 foreach(List<int> path in paths)
                 {
@@ -24,6 +25,7 @@ public class Monkey : BaseMonkey
                     {
                         path.RemoveAt(0);
                         current_path = convertToDirectionPath(path);
+                        break;
                     }
                 }
             }
@@ -35,6 +37,7 @@ public class Monkey : BaseMonkey
                     {
                         path.RemoveAt(0);
                         current_path = convertToDirectionPath(path);
+                        break;
                     }
                 }   
             }
@@ -46,17 +49,19 @@ public class Monkey : BaseMonkey
                     {
                         path.RemoveAt(0);
                         current_path = convertToDirectionPath(path);
+                        break;
                     }
                 }  
             }
         }
-        if (current_path.Count == 0)
+        if (current_path.Count != 0)
         {
-            return makeRandomMove(state);
+            lastDir = current_path[0];
+            current_path.RemoveAt(0);
+            return new Move(Action.MOVE, lastDir, state.round, "I bin khul...");
         }
-        lastDir = current_path[0];
-        current_path.RemoveAt(0);
-        return new Move(Action.MOVE, lastDir, state.round, "I bin khul...");
+        return makeRandomMove(state);
+        
     }
 
 
@@ -116,12 +121,14 @@ public class Monkey : BaseMonkey
         List<int> path = new List<int> {item};
         List<(int, int)> path_cells = new List<(int, int)> {(2, 2)};
         int player_x = path_cells[0].Item1;
-        int player_y = path_cells[1].Item2;
+        int player_y = path_cells[0].Item2;
         List<(int, int)> add_new_possible_cells_to_go = new List<(int, int)> {};
         List<(int, int)> new_possible_cells_to_go = new List<(int, int)> {(x, y)};
         List<(int, int)> possible_cells_to_go = new List<(int, int)> {};
+        List<(int, int)> next_move_cells = new List<(int, int)> {};
         bool found_path = false;
         //makes list with all possible path cells
+        int j = 0;
         while (true)
         {
             if (found_path)
@@ -137,7 +144,7 @@ public class Monkey : BaseMonkey
                 {
                     if (state.cells[x+1][y].isFree())
                     {
-                        if (!new_possible_cells_to_go.Contains((x+1, y)) && !possible_cells_to_go.Contains((x+1, y)))
+                        if (!new_possible_cells_to_go.Contains((x+1, y)) && !possible_cells_to_go.Contains((x+1, y)) && !add_new_possible_cells_to_go.Contains((x+1, y)))
                         {
                             add_new_possible_cells_to_go.Add((x+1, y));
                         }
@@ -147,7 +154,7 @@ public class Monkey : BaseMonkey
                 {
                     if (state.cells[x-1][y].isFree())
                     {
-                        if (!new_possible_cells_to_go.Contains((x-1, y)) && !possible_cells_to_go.Contains((x-1, y)))
+                        if (!new_possible_cells_to_go.Contains((x-1, y)) && !possible_cells_to_go.Contains((x-1, y)) && !add_new_possible_cells_to_go.Contains((x-1, y)))
                         {
                             add_new_possible_cells_to_go.Add((x-1, y));
                         }
@@ -157,7 +164,7 @@ public class Monkey : BaseMonkey
                 {
                     if (state.cells[x][y+1].isFree())
                     {
-                        if (!new_possible_cells_to_go.Contains((x, y+1)) && !possible_cells_to_go.Contains((x, y+1)))
+                        if (!new_possible_cells_to_go.Contains((x, y+1)) && !possible_cells_to_go.Contains((x, y+1)) && !add_new_possible_cells_to_go.Contains((x, y+1)))
                         {
                             add_new_possible_cells_to_go.Add((x, y+1));
                         }
@@ -167,7 +174,7 @@ public class Monkey : BaseMonkey
                 {
                     if (state.cells[x][y-1].isFree())
                     {
-                        if (!new_possible_cells_to_go.Contains((x, y-1)) && !possible_cells_to_go.Contains((x, y-1)))
+                        if (!new_possible_cells_to_go.Contains((x, y-1)) && !possible_cells_to_go.Contains((x, y-1)) && !add_new_possible_cells_to_go.Contains((x, y-1)))
                         {
                             add_new_possible_cells_to_go.Add((x, y-1));
                         }
@@ -178,6 +185,7 @@ public class Monkey : BaseMonkey
             {
                 possible_cells_to_go.Add(coord);
             }
+            new_possible_cells_to_go.Clear();
             foreach((int, int) coord in add_new_possible_cells_to_go)
             {
                 new_possible_cells_to_go.Add(coord);
@@ -197,30 +205,45 @@ public class Monkey : BaseMonkey
             {
                 if (possible_cells_to_go.Contains((player_x+1, player_y)))
                 {
-                    path_cells.Add((player_x+1, player_y));
+                    next_move_cells.Add((player_x+1, player_y));
                 }
             }
-            else if (player_x != 0)
+            if (player_x != 0)
             {
                 if (possible_cells_to_go.Contains((player_x-1, player_y)))
                 {
-                    path_cells.Add((player_x-1, player_y));
+                    next_move_cells.Add((player_x-1, player_y));
                 }
             }
-            else if (player_y != 4)
+            if (player_y != 4)
             {
                 if (possible_cells_to_go.Contains((player_x, player_y+1)))
                 {
-                    path_cells.Add((player_x, player_y+1));
+                    next_move_cells.Add((player_x, player_y+1));
                 }
             }
-            else if (player_y != 0)
+            if (player_y != 0)
             {
                 if (possible_cells_to_go.Contains((player_x, player_y-1)))
                 {
-                    path_cells.Add((player_x, player_y-1));
+                    next_move_cells.Add((player_x, player_y-1));
                 }
             }
+            int shortest_distance = 50;
+            int index = 0;
+            for (int i = 0; i < next_move_cells.Count; i++)
+            {
+                int cell_x = next_move_cells[i].Item1;
+                int cell_y = next_move_cells[i].Item2;
+                int distance_cell_item = (item_x - cell_x)*(item_x - cell_x) + (item_y - cell_y)*(item_y - cell_y);
+                if (shortest_distance > distance_cell_item)
+                {
+                    index = i;
+                    shortest_distance = distance_cell_item;
+                }
+            }   
+            path_cells.Add(next_move_cells[index]);
+            next_move_cells.Clear();
             if (path_cells[path_cells.Count-1] == (item_x, item_y))
             {
                 break;
@@ -249,6 +272,7 @@ public class Monkey : BaseMonkey
                 path.Add(1);
             }
         }
+        Console.WriteLine(path.Count);
         return path;
 
     }
