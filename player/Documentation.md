@@ -3,7 +3,6 @@ This documentation explains how to use JungleState and how to create your own mo
 
 ## Spectator mode
 * Enter server name into web browser (e.g. https://junglecamp-tfszpy3t2a-oa.a.run.app)
-* Enter Nickname
 * Tick "Set as Spectator"
 * Click "New Game" OR
 * Join existing server (press "Join")
