@@ -141,6 +141,7 @@ class RandomGenerator(MapGenerator):
 class Game:
     def __init__(self, id, field_dimensions, name, generator=RandomGenerator(20, 1, 1, 1)):
         self.password = ""
+        self.consoleText = []
         self.id = id
         self.state = 0
         self.round = 0
@@ -408,6 +409,8 @@ class Game:
             logging.debug(f'Player {player.uuid} is knocked out - sleep well!')
             player.state = 1
             self.setElementAt(player.x, player.y, Items.EMPTY)
+            self.consoleText.append(f"{player.name} is knocked out!")
+            self.clearConsole()
             return True
         return False
 
@@ -464,6 +467,8 @@ class Game:
                 if self.handlePlayerDamage(player2, Rules.Damage.COCONUT):
                     self.handleScore(player, Rules.Scores.KNOCK_OUT)
                     player.knock_score += 1
+                    self.consoleText.append(f"{player.name} knocked out {player2.name}!")
+                    self.clearConsole() # Clear old messages
                 else:
                     self.handleScore(player, Rules.Scores.HIT)
 
@@ -476,6 +481,10 @@ class Game:
                     del self.safed_items_list[self.safed_items_list.index(
                         safed_item)]
                     break
+
+    def clearConsole(self):
+        if len(self.consoleText) == 8:
+            self.consoleText.pop(0)
 
     def getFOV(self, player):
         field_of_view_matrix = []

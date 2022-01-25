@@ -73,7 +73,7 @@ class View{
     }
 
     specMode(json) {
-        console.log(json.shooting);
+        console.log(json.console);
 
         let l = json.scoreboard.length;
         let navigation = document.getElementById('navigation');
@@ -98,6 +98,15 @@ class View{
         }
 
         this.addButton(json);
+
+        let cls = document.createElement('div');
+        cls.classList.add('cls');
+        for (let i = 0; i < json.console.length; i++) {
+            let newText = document.createElement('div');
+            newText.innerText = `- ${json.console[i]}`;
+            cls.appendChild(newText);
+        }
+        navigation.appendChild(cls);
     }
 
     clientMode(json) {

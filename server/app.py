@@ -78,7 +78,8 @@ def GetJSON(game_id, user):
                         "name_list": game.GetPlayers(),
                         "serverName": game.serverName,
                         "serverId": game.id,
-                        "shooting": game.formatShooting()
+                        "shooting": game.formatShooting(),
+                        "console": game.consoleText
                         }
 
 
@@ -149,6 +150,8 @@ def kickPlayer(user):
         for game in game_list:
             if game.id == user.game_id:
                 game.kickPlayer(user.name)
+                game.consoleText.append(f"{user.name} left the game!")
+                game.clearConsole()
                 if(len(game.player_list) == 0):
                     timer = threading.Timer(10, closeGame, [game])
                     timer.start()
@@ -242,6 +245,8 @@ def joinGame():
 
         if player_mode == 'client':
             game.join(user.name, user.uuid)
+            game.consoleText.append(f"{user.name} joined the game!")
+            game.clearConsole()
 
     # Join Game
     elif game_mode == 'joinExisting':
@@ -272,6 +277,8 @@ def joinGame():
 
                 if player_mode == 'client':
                     game.join(user.name, user.uuid)
+                    game.consoleText.append(f"{user.name} joined the game!")
+                    game.clearConsole()
 
                 break
 

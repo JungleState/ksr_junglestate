@@ -128,3 +128,14 @@ projectile{
 #round {
   border-bottom: 1px solid black;
 }
+
+.cls {
+  position: absolute;
+  margin-left: -6px;
+  margin-top: 5%;
+  width: 98.4%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid black;
+  padding: 5px;
+}
