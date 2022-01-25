@@ -1,4 +1,4 @@
-namespace junglestate;
+﻿namespace junglestate;
 
 ///<summary>A simple monkey that moves randomly in free directions.</summary>
 public class Monkey : BaseMonkey {
