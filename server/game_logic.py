@@ -415,9 +415,9 @@ class Game:
         player.points += score
 
     def formatShooting(self):
-        shotJson = {}
+        shotJson = {"shots": []}
         for shot in self.shooting:
-            shotJson.update({
+            shotJson["shots"].append({
                 "id": self.player_list.index(shot[0]),
                 "coords": shot[1]
                 })
