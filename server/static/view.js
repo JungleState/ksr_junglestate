@@ -81,7 +81,7 @@ class View{
 
         let title = document.createElement('div');
         title.classList.add('title');
-        title.innerText = 'Scoreboard - (Points/Lives/Nuts)';
+        title.innerText = 'Scoreboard - (Points/Lives/Nuts/Knocks)';
         navigation.appendChild(title);
 
         for (let i = 0; i < l; i++) {
@@ -92,7 +92,7 @@ class View{
                 console.log("inactive");
                 div.classList.add('inactive');
             }
-            div.innerText = `${i+1}. ${player.name} (${player.points}/${player.lives}/${player.coconuts}): ${player.message}`;
+            div.innerText = `${i+1}. ${player.name} (${player.points}/${player.lives}/${player.coconuts}/${player.knockScore}): ${player.message}`;
             navigation.appendChild(div);
         }
 
