@@ -24,29 +24,34 @@ class View{
             for(let tile of row_element.getElementsByTagName("cell")) { 
 
                 let charcode = stringfield[row].slice(column, column+2); //this cuts the 2 letters out of the string. the end(column+2) is exclusive
-                tile.innerHTML="";
+
 
                 if(isNaN(parseInt(charcode, 10))){ //parseInt returns NaN (Not a Number) if there is no number
+                    tile.innerHTML="";
                     tile.setAttribute('class', this.types[charcode]); //adds the type from the Matrix to the tile
+                    
                 }
                 else{ //numbers are players
                     //tile.setAttribute('name', playerdict[charcode]);
-                    tile.setAttribute('class', "player");
-                    tile.setAttribute('id', Object.keys(json.name_list)[parseInt(charcode)]); //I need to append uuid for coconut throwing
-                    var playername = document.createElement("playername");
-                    tile.appendChild(playername);
-                    playername.textContent= Object.values(json.name_list)[parseInt(charcode).toString()];
+                    if(tile.getAttribute('class') != "player"){
+                        tile.setAttribute('class', "player");
+                        tile.setAttribute('id', Object.keys(json.name_list)[parseInt(charcode)].toString()); //I need to append uuid for coconut throwing
+                        var playername = document.createElement("playername");
+                        tile.appendChild(playername);
+                        playername.textContent= Object.values(json.name_list)[parseInt(charcode).toString()];
+                    }
                 }
                 column+=2; //because every tile consists of 2 letters.
                 
             }
             row+=1;
         }
-        this.shoot("0", "right");
+        //this.shoot("0", "right");
         //for the shoot animation if players shoot coconut
-        for(let player in json.projectiles){
-            this.shoot(player, json.projectiles.direction); //fix, not right yet: do tis<-------------------------------------------------------------------------------------------------------------------------
-        }
+        //for(let player in json.shooting){
+        //this.shoot(player.id, player.coords);
+        //    console.log(player)
+        //}
 
 
         // Display stats
@@ -61,8 +66,12 @@ class View{
     shoot(id, direction){ //creates an projectile element with direction property where the player is.
 
         var player = document.getElementById(id);
-        var projectile = document.createElement("projectile", {direction: direction});
-        player.appendChild(projectile);
+
+        if(player.getElementsByTagName("projectile").length==0){ //so there's only one animation per round
+            var projectile = document.createElement("projectile", {direction: direction});
+            player.appendChild(projectile);
+        }
+        
         
     }
 
