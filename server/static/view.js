@@ -46,12 +46,12 @@ class View{
             }
             row+=1;
         }
-        this.shoot("0", "right");
+        //this.shoot("0", "right");
         //for the shoot animation if players shoot coconut
-        for(let player in json.shooting){
-            this.shoot(player.id, player.coords);
-            console.log(player)
-        }
+        //for(let player in json.shooting){
+        //this.shoot(player.id, player.coords);
+        //    console.log(player)
+        //}
 
 
         // Display stats
