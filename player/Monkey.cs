@@ -11,7 +11,7 @@ public class Monkey : BaseMonkey {
         Direction nextDir;
         Random r = new Random();
         
-        nextDir = getItem("", state, freeDirs, r);
+        nextDir = getItem("", state, freeDirs);
 
         if (nextDir == Direction.NONE || state.getCell(nextDir).item == Item.FOREST) {
             if (this.monkeyMode == "walk") {
@@ -77,7 +77,7 @@ public class Monkey : BaseMonkey {
         return true;
     }
 
-    private Direction getItem(string type, GameState state, List<Direction> freeDirs, Random r) {
+    private Direction getItem(string type, GameState state, List<Direction> freeDirs) {
         List<(int, int)> coords = new List<(int, int)>();
         Direction newDir = Direction.NONE;
         for (int i = 0; i < state.cells.Length; i++) {
@@ -88,60 +88,60 @@ public class Monkey : BaseMonkey {
             }
         }
 
-        coords.ForEach(dir => {
-            if (dir.Item2 == 2) {
-                if (dir.Item1 < 2) {
-                    if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
-                        this.monkeyMode = "attack";
-                    }
-                    else {
-                        this.monkeyMode = "walk";
-                    }
-                    System.Console.WriteLine("Item on top");
-                    newDir = Direction.UP;
-                    return;
-                }
-                else if (dir.Item1 > 2) {
-                    if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
-                        this.monkeyMode = "attack";
-                    }
-                    else {
-                        this.monkeyMode = "walk";
-                    }
-                    System.Console.WriteLine("Item on bottom");
-                    newDir = Direction.DOWN;
-                    return;
-                }
-            }
-            else if (dir.Item2 < 2 || dir.Item2 > 2) {
-                if (dir.Item1 == 2 && dir.Item2 < 2) {
-                    if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
-                        this.monkeyMode = "attack";
-                    }
-                    else {
-                        this.monkeyMode = "walk";
-                    }
-                    System.Console.WriteLine("Item left");
-                    newDir = Direction.LEFT;
-                    return;
-                }
-                else if (dir.Item1 == 2 && dir.Item2 > 2) {
-                    if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
-                        this.monkeyMode = "attack";
-                    }
-                    else {
-                        this.monkeyMode = "walk";
-                    }
-                    System.Console.WriteLine("Item right");
-                    newDir = Direction.RIGHT;
-                    return;
-                }
-            }
+        // coords.ForEach(dir => {
+        //     if (dir.Item2 == 2) {
+        //         if (dir.Item1 < 2) {
+        //             if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
+        //                 this.monkeyMode = "attack";
+        //             }
+        //             else {
+        //                 this.monkeyMode = "walk";
+        //             }
+        //             System.Console.WriteLine("Item on top");
+        //             newDir = Direction.UP;
+        //             return;
+        //         }
+        //         else if (dir.Item1 > 2) {
+        //             if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
+        //                 this.monkeyMode = "attack";
+        //             }
+        //             else {
+        //                 this.monkeyMode = "walk";
+        //             }
+        //             System.Console.WriteLine("Item on bottom");
+        //             newDir = Direction.DOWN;
+        //             return;
+        //         }
+        //     }
+        //     else if (dir.Item2 < 2 || dir.Item2 > 2) {
+        //         if (dir.Item1 == 2 && dir.Item2 < 2) {
+        //             if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
+        //                 this.monkeyMode = "attack";
+        //             }
+        //             else {
+        //                 this.monkeyMode = "walk";
+        //             }
+        //             System.Console.WriteLine("Item left");
+        //             newDir = Direction.LEFT;
+        //             return;
+        //         }
+        //         else if (dir.Item1 == 2 && dir.Item2 > 2) {
+        //             if (state.cells[dir.Item1][dir.Item2].item == Item.PLAYER) {
+        //                 this.monkeyMode = "attack";
+        //             }
+        //             else {
+        //                 this.monkeyMode = "walk";
+        //             }
+        //             System.Console.WriteLine("Item right");
+        //             newDir = Direction.RIGHT;
+        //             return;
+        //         }
+        //     }
 
-            if (dir.Item1 == 2 && dir.Item2 == 2) {
-                return;
-            }
-        }); 
+        //     if (dir.Item1 == 2 && dir.Item2 == 2) {
+        //         return;
+        //     }
+        // }); 
 
         return newDir;
     }
