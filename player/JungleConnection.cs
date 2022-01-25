@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace junglestate;
 sealed class JungleConfig {
-    internal Uri serverAddress = new Uri("http://localhost:5500/");
+    internal Uri serverAddress = new Uri("http://127.0.0.1:5500/");
     internal string password = "";
     internal int delay_ms = 500;
     internal bool useConsole = true;
@@ -60,10 +60,8 @@ class JungleConnection : IDisposable {
             mode = String.IsNullOrEmpty(gameId) ? "newGame" : "joinExisting",
             game_id = gameId
         };
-        string jsonData = JsonConvert.SerializeObject(joinData);
-        var content = new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
 
-        var response = await client.PostAsync(new Uri(config.serverAddress, "joinGame"), content);
+        var response = await client.PostAsync(new Uri(config.serverAddress, "joinGame"), makeJsonContent(joinData));
         var json = await response.Content.ReadAsStringAsync();
         if (!response.IsSuccessStatusCode) {
             config.logger.LogError(json);
@@ -97,6 +95,11 @@ class JungleConnection : IDisposable {
             Console.WriteLine("!!!!!!!!!!!");
             Console.WriteLine("Score: " + score);
         }
+    }
+
+    private StringContent makeJsonContent(object content) {
+        string jsonData = JsonConvert.SerializeObject(content);
+        return new StringContent(jsonData, System.Text.Encoding.UTF8, "application/json");
     }
 
     private async Task<Tuple<bool, int>> getData() {
@@ -151,24 +154,30 @@ class JungleConnection : IDisposable {
         switch (next.action) {
             case Action.MOVE:
                 if (next.direction.isMoveable()) {
-                    sendCommand(next.action, next.direction);
+                    sendCommand(next.action, next.direction, next.message);
                 }
                 break;
             case Action.THROW:
-                sendCommand(next.action, next.direction);
+                sendCommand(next.action, next.direction, next.message);
                 break;
             default:
-                sendCommand(Action.STAY, Direction.NONE);
+                sendCommand(Action.STAY, Direction.NONE, next.message);
                 break;
         }
     }
 
-    private async void sendCommand(Action action, Direction direction) {
+    private async void sendCommand(Action action, Direction direction, string message = "") {
         try {
             if (config.useConsole) {
                 Console.WriteLine("-> Action: " + action.ToString() + " " + direction.ToString());
             }
-            await actionMeasurer.measureTask(client.PostAsync(new Uri(config.serverAddress, "action/" + (int)action + "/" + (int)direction), new StringContent("")));
+
+            Uri requestUri = new Uri(config.serverAddress, "action/" + (int)action + "/" + (int)direction);
+            var actionData = new {
+                status = message
+            };
+
+            await actionMeasurer.measureTask(client.PostAsync(requestUri, makeJsonContent(actionData)));
         } catch (Exception e) {
             config.logger.LogError(e, "Problem sending command.");
         }

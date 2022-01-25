@@ -3,17 +3,6 @@
   src: url(fonts/EvilEmpire-4BBVK.ttf);
 }
 
-/* body {
-    text-align: center;
-    margin-left: 35%;
-    margin-right: 35%;
-    background-color: rgb(41, 97, 9);
-    /* display: flex;
-    align-items: center;
-    justify-content: center; */
-/* margin: auto; */
-/*} */
-
 html,
 body {
   /* height:100%;
@@ -40,15 +29,6 @@ body {
   height: 100vh;
 }
 
-.window {
-    
-    /* border-width: thick;
-    border: solid; */
-    
-    
-    /* height: 33vh; */
-    
-}
 
 
 
@@ -59,19 +39,20 @@ body {
     background-color: rgb(236, 236, 236);
     padding:3vh;
     color: black;
-    height: 35vh;
+    height: 50vh;
     border-radius: 7px;
-    transform: translate(0%, -75vh);
+    transform: translate(0%, -80vh);
     margin: auto;
     width: 25vw;
     
 }
 
 .login input{
-    margin-left: 10vh;
-    width: 15vw;
+    margin-left: 2vw;
+    width: 20vw;
     padding-top: 1vh;
     padding-bottom: 1vh;
+    
 }
 
 .login h1 {
@@ -79,10 +60,25 @@ body {
 }
 
 .login .org {
+  padding-top: 7vh;
     font-style: italic;
     color: grey;
 }
 
+div .desc {
+  padding-top: 10px;
+  padding-bottom: 1px;
+  margin-left: 2vw;
+  
+}
+
+button {
+  margin-top: 4vh;
+  width: 20.4vw;
+  margin-left: 2vw;
+  padding-top: 1vh;
+  padding-bottom: 1vh;  
+}
 
 .server {
   display: flex;
@@ -90,7 +86,7 @@ body {
   margin: 10px;
   text-align: center;
   /*font-family: JungleFont;*/
-  border-radius: 10px;
+  border-radius: 7px;
 }
 
 .lockimage {

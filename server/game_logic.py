@@ -4,6 +4,7 @@ import logging
 import threading
 logging.getLogger().setLevel("DEBUG")
 
+
 class Item:
     def __init__(self, name, id):
         self.name = name
@@ -12,14 +13,16 @@ class Item:
     def __str__(self) -> str:
         return self.id
 
+
 class Rules:
     TIME_TO_MOVE = 0.5
     SIGHT = 2
+
     class Scores:
-        KNOCK_OUT = 25
-        HIT = 10
-        PINEAPPLE = 5
-        BANANA = 0
+        KNOCK_OUT = 50
+        HIT = 25
+        PINEAPPLE = 15
+        BANANA = 5
 
     class Damage:
         COCONUT = 1
@@ -43,13 +46,16 @@ class Player(Item):
         self.hits = 0
         self.x = 0
         self.y = 0
-        self.sight = Rules.SIGHT * 2 + 1  # dimension of field of view matrix, needs to be odd
+        self.knock_score = 0
+        # dimension of field of view matrix, needs to be odd
+        self.sight = Rules.SIGHT * 2 + 1
         self.name = name
         self.lives = 3
         self.coconuts = 2
         self.points = 0
         self.state = 0  # 0 = alive ; 1 = dead
         self.active = True
+        self.message = ""
 
     def item_dict(self):
         return {"coconuts": self.coconuts,
@@ -59,7 +65,9 @@ class Player(Item):
                 "name": self.name,
                 "lives": self.lives,
                 "points": self.points,
-                "active": self.active}
+                "active": self.active,
+                "knockScore": self.knock_score,
+                "message": self.message}
 
 
 class MapGenerator:
@@ -131,24 +139,31 @@ class RandomGenerator(MapGenerator):
 
 
 class Game:
-    def __init__(self, id, field_dimensions, generator=RandomGenerator(20, 1, 1, 1)):
+    def __init__(self, id, field_dimensions, name, generator=RandomGenerator(20, 1, 1, 1)):
         self.password = ""
+        self.consoleText = []
         self.id = id
         self.state = 0
         self.round = 0
         self.move_list = []
         self.player_list = []
         self.safed_items_list = []
-        self.last_moves = []
+        self.shooting = []
         self.updated = False
+        self.serverName = name
         (self.field_lengh, self.field_height) = field_dimensions
         # field dimension 1st element = x; 2nd element = y
         self.matrix = generator.purge(
             generator.generate(self.field_lengh, self.field_height))
         self.field_dim = [self.field_lengh, self.field_height]
         self.fullRoundEvent = threading.Event()
-        self.roundMakerThread = threading.Thread(target=self.blockUntilNextRound, name="roundMaker", daemon=True)
+        self.stopEvent = threading.Event()
+        self.roundMakerThread = threading.Thread(
+            target=self.blockUntilNextRound, name="roundMaker", daemon=True)
         self.roundMakerThread.start()
+
+    def dispose(self):
+        self.stopEvent.set()
 
     def getId(self):
         pass
@@ -217,7 +232,8 @@ class Game:
         6: left
         7: up left"""
         if len(self.move_list) == 0:
-            timer = threading.Timer(Rules.TIME_TO_MOVE, functools.partial(self.kickOffRound, self.round))
+            timer = threading.Timer(Rules.TIME_TO_MOVE, functools.partial(
+                self.kickOffRound, self.round))
             timer.start()
 
         for move in self.move_list:
@@ -256,20 +272,22 @@ class Game:
                                 "coconuts": player.coconuts,
                                 "points": player.points})
         return player_list
-    
+
     def kickOffRound(self, round):
         if round == self.round:
-            logging.debug("Next round after timeout - not all players have moved!")
+            logging.debug(
+                "Next round after timeout - not all players have moved!")
             self.fullRoundEvent.set()
 
     def blockUntilNextRound(self):
         while self.fullRoundEvent.wait():
             self.fullRoundEvent.clear()
+            if self.stopEvent.is_set():
+                return
             self.doNextRound()
 
     def doNextRound(self):
         move_list = list(self.move_list)
-        self.last_moves = move_list
         self.updated = True
         self.move_list.clear()
         for move in move_list:  # check for moving
@@ -295,6 +313,14 @@ class Game:
                     del self.safed_items_list[self.safed_items_list.index(
                         safed_item)]
         self.round += 1
+
+    def spawnItem(self, item):
+        while True:
+            x = randint(1, self.field_dim[0]-Rules.SIGHT)
+            y = randint(1, self.field_dim[1]-Rules.SIGHT)
+            if self.getElementAt(x, y) == Items.EMPTY:
+                self.setElementAt(x, y, item)
+                break
 
     def getElementAt(self, x, y):
         return self.matrix[y][x]
@@ -351,14 +377,13 @@ class Game:
                 item_picked_up = True
 
             elif checkField == Items.COCONUT:
-                print(player.coconuts)
                 if player.coconuts < 3:
+                    item_picked_up = True
                     player.coconuts += 1
                     for safed_item in self.safed_items_list:
                         if safed_item[1] == toCoordinates:
                             index = self.safed_items_list.index(safed_item)
                             del self.safed_items_list[index]
-                            item_picked_up = True
                             break
                 else:
                     safed_item_in_safed_items_list = False
@@ -374,16 +399,7 @@ class Game:
                 player.x, player.y = toCoordinates[0], toCoordinates[1]
 
             if item_picked_up:
-                while True:
-                    x = randint(1, self.field_dim[0]-Rules.SIGHT)
-                    y = randint(1, self.field_dim[1]-Rules.SIGHT)
-                    if self.getElementAt(x, y) == Items.EMPTY:
-                        self.setElementAt(x, y, checkField)
-                        break
-
-                
-
-                
+                self.spawnItem(checkField)
 
     def handlePlayerDamage(self, player, damage=1):
         """Inflicts damage on the given player and returns True if the player is knocked out."""
@@ -393,6 +409,8 @@ class Game:
             logging.debug(f'Player {player.uuid} is knocked out - sleep well!')
             player.state = 1
             self.setElementAt(player.x, player.y, Items.EMPTY)
+            self.consoleText.append(f"{player.name} is knocked out!")
+            self.clearConsole()
             return True
         return False
 
@@ -400,6 +418,18 @@ class Game:
         """Changes the given player's score."""
         logging.debug(f'Player {player.uuid} scored {score}')
         player.points += score
+
+    def formatShooting(self):
+        shotJson = {"shots": []}
+        for shot in self.shooting:
+            shotJson["shots"].append({
+                "id": self.player_list.index(shot[0]),
+                "coords": shot[1]
+                })
+
+        self.shooting = []
+
+        return shotJson
 
     def executeShooting(self, player, dir):
         if player.coconuts > 0:
@@ -427,6 +457,8 @@ class Game:
                 toCoordinates[1] -= 1
                 toCoordinates[0] -= 1
 
+            self.shooting.append((player, dir))
+
             checkField = self.getElementAtCoords(toCoordinates)
 
             if isinstance(checkField, Player):  # player field
@@ -434,6 +466,9 @@ class Game:
                 logging.debug(f'Player {player2.uuid} hit')
                 if self.handlePlayerDamage(player2, Rules.Damage.COCONUT):
                     self.handleScore(player, Rules.Scores.KNOCK_OUT)
+                    player.knock_score += 1
+                    self.consoleText.append(f"{player.name} knocked out {player2.name}!")
+                    self.clearConsole() # Clear old messages
                 else:
                     self.handleScore(player, Rules.Scores.HIT)
 
@@ -442,9 +477,14 @@ class Game:
             for safed_item in self.safed_items_list:
                 if safed_item[1] == [player.x, player.y]:
                     player.coconuts += 1
+                    self.spawnItem(Items.COCONUT)
                     del self.safed_items_list[self.safed_items_list.index(
                         safed_item)]
                     break
+
+    def clearConsole(self):
+        if len(self.consoleText) == 8:
+            self.consoleText.pop(0)
 
     def getFOV(self, player):
         field_of_view_matrix = []
@@ -482,7 +522,7 @@ class Game:
                     return player.state
 
     def GetPlayers(self):
-        return {player.id: player.name for player in self.player_list}
+        return {self.player_list.index(player): player.name for player in self.player_list}
 
     def Scoreboard(self, sortby, hyrarchy):
         sorted_player_list = [i for i in range(len(self.player_list))]
@@ -492,7 +532,10 @@ class Game:
                           "knockouts": [player.knockouts for player in self.player_list],
                           "hits": [player.hits for player in self.player_list],
                           "name": [player.name[0] for player in self.player_list],
-                          "active": [player.active for player in self.player_list]}
+                          "message": [player.message for player in self.player_list],
+                          "active": [player.active for player in self.player_list],
+                          "knockScore": [player.knock_score for player in self.player_list]
+                          }
 
         sorted_list = sorted(item_list_dict[f"{sortby}"])
         item_list = item_list_dict[f"{sortby}"]
@@ -511,5 +554,4 @@ class Game:
         elif hyrarchy == "incr":
             if sortby == "name":
                 sorted_player_id_list.reverse()
-        print(sorted_player_id_list)
         return sorted_player_id_list

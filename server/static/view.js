@@ -24,18 +24,22 @@ class View{
             for(let tile of row_element.getElementsByTagName("cell")) { 
 
                 let charcode = stringfield[row].slice(column, column+2); //this cuts the 2 letters out of the string. the end(column+2) is exclusive
-                tile.innerHTML="";
+
 
                 if(isNaN(parseInt(charcode, 10))){ //parseInt returns NaN (Not a Number) if there is no number
+                    tile.innerHTML="";
                     tile.setAttribute('class', this.types[charcode]); //adds the type from the Matrix to the tile
+                    
                 }
                 else{ //numbers are players
                     //tile.setAttribute('name', playerdict[charcode]);
-                    tile.setAttribute('class', "player");
-                    tile.setAttribute('id', Object.keys(json.name_list)[parseInt(charcode)]); //I need to append uuid for coconut throwing
-                    var playername = document.createElement("playername");
-                    tile.appendChild(playername);
-                    playername.textContent= Object.values(json.name_list)[parseInt(charcode)];
+                    if(tile.getAttribute('class') != "player"){
+                        tile.setAttribute('class', "player");
+                        tile.setAttribute('id', Object.keys(json.name_list)[parseInt(charcode)].toString()); //I need to append uuid for coconut throwing
+                        var playername = document.createElement("playername");
+                        tile.appendChild(playername);
+                        playername.textContent= Object.values(json.name_list)[parseInt(charcode).toString()];
+                    }
                 }
                 column+=2; //because every tile consists of 2 letters.
                 
@@ -43,8 +47,9 @@ class View{
             row+=1;
         }
         //for the shoot animation if players shoot coconut
-        for(let player in json.projectiles){
-            this.shoot(player, json.projectiles.direction) //fix, not right yet: do tis<-------------------------------------------------------------------------------------------------------------------------
+        console.log(json.shooting)
+        for(let [index, player] of Object.entries(json.shooting.shots)){
+            this.shoot(player.id, player.coords);
         }
 
 
@@ -57,15 +62,19 @@ class View{
         }
     }
 
-    shoot(uuid, direction){ //creates an projectile element with direction property where the player is.
-
-        var player = document.getElementById(uuid);
-        var projectile = document.createElement("projectile", {direction: direction});
+    shoot(id, direction){ //creates an projectile element with direction property where the player is.
+        let player = document.getElementById(id);
+        let projectile = document.createElement("projectile");
+        projectile.setAttribute("direction", direction)
         player.appendChild(projectile);
+        
+        
         
     }
 
     specMode(json) {
+        console.log(json.console);
+
         let l = json.scoreboard.length;
         let navigation = document.getElementById('navigation');
 
@@ -73,19 +82,31 @@ class View{
 
         let title = document.createElement('div');
         title.classList.add('title');
-        title.innerText = 'Scoreboard - Points';
+        title.innerText = 'Scoreboard - (Points/Lives/Nuts/Knocks)';
         navigation.appendChild(title);
 
         for (let i = 0; i < l; i++) {
             let div = document.createElement('div');
             div.classList.add('playerSb');
-            if (!json.scoreboard[i].active) {
+            let player = json.scoreboard[i];
+            if (!player.active) {
                 console.log("inactive");
                 div.classList.add('inactive');
             }
-            div.innerText = `${i+1}. ${json.scoreboard[i].name} (${json.scoreboard[i].points})`;
+            div.innerText = `${i+1}. ${player.name} (${player.points}/${player.lives}/${player.coconuts}/${player.knockScore}): ${player.message}`;
             navigation.appendChild(div);
         }
+
+        this.addButton(json);
+
+        let cls = document.createElement('div');
+        cls.classList.add('cls');
+        for (let i = 0; i < json.console.length; i++) {
+            let newText = document.createElement('div');
+            newText.innerText = `- ${json.console[i]}`;
+            cls.appendChild(newText);
+        }
+        navigation.appendChild(cls);
     }
 
     clientMode(json) {
@@ -94,6 +115,26 @@ class View{
         this.navigation.querySelector('#lives').innerHTML = `Lives: ${json.lives}`;
         this.navigation.querySelector('#points').innerHTML = `Points: ${json.points}`;
         this.navigation.querySelector('#round').innerHTML = `Round: ${json.round}`;
+    }
+
+    addButton(json) {
+        let navigation = document.getElementById('navigation');
+
+        // Server Description
+        let descriptionDiv = document.createElement('div');
+        descriptionDiv.classList.add('description');
+        descriptionDiv.innerText = `Server: ${json.serverName} (Id: ${json.serverId})`;
+        navigation.appendChild(descriptionDiv);
+
+        // Leave-Game button
+        let button = document.createElement("button");
+        button.classList.add('leave');
+        button.addEventListener('click', async () => {
+            await fetch('/logOut');
+            window.location.replace('/login');
+        });
+        button.innerText = 'Leave Game';
+        navigation.appendChild(button);
     }
 }
 

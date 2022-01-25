@@ -38,7 +38,11 @@ playername{
 }
 
 projectile{
-  /*projectile stuff (coconut)*/
+  display: block;
+  position: relative;
+  background-size: cover;
+  background-image: url(sprites/coconut.png);
+  aspect-ratio: 1/1;
 }
 
 #grid{
@@ -108,9 +112,30 @@ projectile{
 }
 
 .playerSb {
-  padding: 0 5px;
+  padding: 0 5px 5px 0;
+  border-bottom: 1px solid black;
 }
 
 .playerSb.inactive {
   color: grey;
+}
+
+.leave {
+  position: relative;
+  margin-top: 5px;
+}
+
+#round {
+  border-bottom: 1px solid black;
+}
+
+.cls {
+  position: absolute;
+  margin-left: -6px;
+  margin-top: 5%;
+  width: 98.4%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid black;
+  padding: 5px;
 }

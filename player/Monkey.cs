@@ -1,10 +1,4 @@
-﻿// For usage in Visual Studio Code:
-//     - Download C# extension
-//     - Download NET: https://dotnet.microsoft.com/download
-//     - Open Terminal
-//     - Move into "player" folder: "cd player"
-//     - Download Json.NET: "dotnet add package Newtonsoft.Json
-//     - Run: "dotnet run"
+﻿namespace junglestate;
 
 namespace junglestate {
     ///<summary>A simple monkey that moves randomly in free directions.</summary>
@@ -26,6 +20,11 @@ namespace junglestate {
                 return new Move(Action.MOVE, direction, state.round, "UNCLE BEN STYLE");
             }
         }
+        // Otherwise: random move
+        Direction direction = selectRandomDirection(state);
+        lastDir = direction;
+        return new Move(Action.MOVE, direction, state.round, "didn't see this coming, eh?");
+    }
 
         private Direction selectDirection(GameState state, Mode mode) {
 
@@ -106,7 +105,7 @@ namespace junglestate {
                     result.Add(dir);
                 }
             }
-            return result;
         }
+        return result;
     }
 }
