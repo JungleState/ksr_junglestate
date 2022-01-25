@@ -46,12 +46,11 @@ class View{
             }
             row+=1;
         }
-        //this.shoot("0", "right");
         //for the shoot animation if players shoot coconut
-        //for(let player in json.shooting){
-        //this.shoot(player.id, player.coords);
-        //    console.log(player)
-        //}
+        console.log(json.shooting)
+        for(let player in json.shooting.shots){
+            this.shoot(player.id, player.coords);
+        }
 
 
         // Display stats
@@ -64,13 +63,10 @@ class View{
     }
 
     shoot(id, direction){ //creates an projectile element with direction property where the player is.
-
-        var player = document.getElementById(id);
-
-        if(player.getElementsByTagName("projectile").length==0){ //so there's only one animation per round
-            var projectile = document.createElement("projectile", {direction: direction});
-            player.appendChild(projectile);
-        }
+        let player = document.getElementById(id);
+        let projectile = document.createElement("projectile", {direction: direction});
+        player.appendChild(projectile);
+        
         
         
     }
