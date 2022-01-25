@@ -17,44 +17,88 @@ namespace junglestate {
             Flee
         }
         public override Move nextMove(GameState state) {
-            Direction direction = selectDirection(state, Mode.Farm);
-            return new Move(Action.MOVE, direction, state.round);
+            if(state.playerInfo.lives<=2){
+                Direction direction = selectDirection(state, Mode.Flee);
+                return new Move(Action.MOVE, direction, state.round, "RUN BOYYS RUN");
+            }
+            else{
+                Direction direction = selectDirection(state, Mode.Farm);
+                return new Move(Action.MOVE, direction, state.round, "UNCLE BEN STYLE");
+            }
         }
 
         private Direction selectDirection(GameState state, Mode mode) {
-            List<Direction> freeDirs = computeFreeDirections(state);
-            Direction NewDirection;
+
 
             if(mode == Mode.Farm){ //Farm Mode
-                Random random = new System.Random();
-                Random r = new Random();
-                if(!(freeDirs.Contains(LastDirection))){ //! = quasi if not
 
-                    NewDirection = freeDirs[r.Next(freeDirs.Count)];
-                    while(LastDirection.opposite() == NewDirection){ //so it doesn't go back the same direction
-
-                        NewDirection=freeDirs[r.Next(freeDirs.Count)];
+                foreach(Direction dir in Enum.GetValues(typeof(Direction))){
+                    if (dir.isMoveable() && state.getCell(dir).item == Item.PINEAPPLE) {
+                        return dir;
                     }
-                    
-                    LastDirection=NewDirection;
+                    if (dir.isMoveable() && state.getCell(dir).item == Item.BANANA) {
+                        return dir;
+                    }
+                    if (dir.isMoveable() && state.getCell(dir).item == Item.COCONUT && state.playerInfo.coconuts < 3) {
+                        return dir;
+                    }
                 }
-                else{
-                    NewDirection = LastDirection;
-                }
-                return NewDirection;
+                return defaultmove(state);
+
+                
             }
             if(mode == Mode.Flee){
-                return LastDirection;
+                foreach(Direction dir in Enum.GetValues(typeof(Direction))){
+                    if(dir.isMoveable() && state.getCell(dir).item == Item.BANANA){
+                        return dir;
+                    }
+                    if(state.getCell(dir).item == Item.PLAYER){
+                        if(dir.isMoveable() && state.getCell(dir.opposite()).isFree()){
+                            return dir.opposite();
+                        }
+                        if(dir == Direction.UP_RIGHT || dir == Direction.UP_LEFT && state.getCell(Direction.DOWN).isFree()){
+                            return Direction.DOWN;
+                        }
+                        if(dir == Direction.DOWN_RIGHT || dir == Direction.DOWN_LEFT && state.getCell(Direction.UP).isFree()){
+                            return Direction.UP;
+                        }
+                    }
+                }
+                return defaultmove(state);
 
             }
             if(mode == Mode.Hunt){
                 return LastDirection;
             }
             else{
-                return LastDirection;
+                throw new System.Exception("forbidden Mode");
             }
         }
             
+        private Direction defaultmove(GameState state){
+                List<Direction> freeDirs = computeFreeDirections(state);
+                Direction NewDirection;
+                Random r = new Random();
+
+                if(LastDirection.isMoveable() && state.getCell(LastDirection).isFree()){ //moves same dir if possible
+
+                    if(r.Next(0, 100) <= 25){ //25% chance of randomly changing direction
+                        NewDirection = freeDirs[r.Next(freeDirs.Count)];
+                    }
+                    else{
+                        NewDirection=LastDirection;
+                    }
+                }
+                else{
+                    NewDirection = freeDirs[r.Next(freeDirs.Count)];
+
+                    if(NewDirection == LastDirection){  //so the chance of going back is smaller, but not 0
+                        NewDirection=freeDirs[r.Next(freeDirs.Count)];
+                    }
+                }
+                LastDirection=NewDirection;
+                return NewDirection;
+        }
         private List<Direction> computeFreeDirections(GameState state) {
             List<Direction> result = new List<Direction>();
             foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
