@@ -4,116 +4,254 @@
 public class Monkey : BaseMonkey 
 {
     private Direction lastDir = Direction.NONE;
-    private bool move_x_priority = true;
-    private bool already_changed_priority = false;
+    private List<(int, int, int)> items = new List<(int, int, int)> {};
+    private List<List<int>> paths = new List<List<int>> {};
+    private List<int> current_path = new List<int> {};
     public override Move nextMove(GameState state) 
     {
-        if (state.playerInfo.coconuts > 0)
+        items = getCoordsOfItems(state);
+        if (current_path.Count == 0)
         {
-            return new Move(Action.THROW, Direction.UP, state.round, "I bin khul...");
+            foreach ((int, int, int) item in items)
+            {
+                paths.Add(findPath(item.Item1, item.Item2, item.Item3)); 
+            }
+            if (state.playerInfo.lives != 3)
+            {
+                foreach(List<int> path in paths)
+                {
+                    if(path[0] == 1)
+                    {
+                        path.RemoveAt(0);
+                        current_path = convertToDirectionPath(path);
+                    }
+                }
+            }
+            if (state.playerInfo.coconuts == 0 && current_path.Count == 0)
+            {
+                foreach(List<int> path in paths)
+                {
+                    if(path[0] == 0)
+                    {
+                        path.RemoveAt(0);
+                        current_path = convertToDirectionPath(path);
+                    }
+                }   
+            }
+            else//take next best path to item
+            {
+                foreach(List<int> path in paths)
+                {
+                    if(path[0] != 0)
+                    {
+                        path.RemoveAt(0);
+                        current_path = convertToDirectionPath(path);
+                    }
+                }  
+            }
         }
-        List<int> coords = getCoordOfNextItem(state);
-        Direction dir = Direction.UP;
-        int x = coords[1];
-        int y = coords[0];
-        if (x == -1 && y == -1)
+        if (current_path.Count == 0)
         {
             return makeRandomMove(state);
         }
-        dir = getDirectionToMoveFromItemCoords(x, y);
-        List<Direction> freeDirs = computeFreeDirections(state);
-        if (freeDirs.Contains(dir))
-        {
-            already_changed_priority = false;
-            return new Move(Action.MOVE, dir, state.round, "I han äs Item gfundä");
-        }
-        Random random = new System.Random();
-        Random r = new Random();
-        List<Direction> I_hass_C;
-        Direction random_dir;
-        if (move_x_priority)
-        {
-            I_hass_C = new List<Direction>{Direction.RIGHT, Direction.LEFT};
-            random_dir = I_hass_C[r.Next(I_hass_C.Count)];
-            if (freeDirs.Contains(random_dir))
-            {
-                changeMovePriority();
-                return new Move(Action.MOVE, random_dir, state.round, "I ändärä min wäg");
-            }
-            changeMovePriority();
-            return new Move(Action.MOVE, random_dir.opposite(), state.round, "I ändärä min wäg");
-        }
-        I_hass_C = new List<Direction>{Direction.UP, Direction.DOWN};
-        random_dir = I_hass_C[r.Next(I_hass_C.Count)];
-        if (freeDirs.Contains(random_dir))
-        {
-            changeMovePriority();
-            return new Move(Action.MOVE, random_dir, state.round, "I ändärä min wäg");
-        }
-        changeMovePriority();
-        return new Move(Action.MOVE, random_dir.opposite(), state.round, "I ändärä min wäg");
-        
+        lastDir = current_path[0];
+        current_path.RemoveAt(0);
+        return new Move(Action.MOVE, lastDir, state.round, "I bin khul...");
     }
 
-    private void changeMovePriority()
-    {
-        if (!already_changed_priority)
-        {
-            already_changed_priority = true;
-            move_x_priority = !move_x_priority;
-        }
-    }
-    private Direction getDirectionToMoveFromItemCoords(int x, int y)
-    {
-        if (move_x_priority)
-        {
-            if (x < 2)
-            {
-                return Direction.LEFT;
-            }
-            else if (x > 2)
-            {
-                return Direction.RIGHT;
-            }
-            else if(y < 2 )
-            {
-                return Direction.UP;
-            }
-            return Direction.DOWN;
-        }
-        if (y < 2)
-        {
-            return Direction.UP;
-        }
-        else if (y > 2)
-        {
-            return Direction.DOWN;
-        }
-        else if(x < 2 )
-        {
-            return Direction.LEFT;
-        }
-        return Direction.RIGHT;
-    }
 
-    private List<int> getCoordOfNextItem(GameState state)
+    private List<(int, int, int)> getCoordsOfItems(GameState state)
     {  
+        //returns list of Item coords (item_id, x, y)
+        //ids: 0=coconut, 1=banana, 2=pinapple
+        List<(int, int, int)> items = new List<(int, int, int)> {};
         for (int row = 0; row < 5; row++)
         {
             for (int column = 0; column < 5; column++)
-            {   
+            {
                 switch (state.cells[row][column].item)
                 {
+                    case Item.COCONUT:
+                        items.Add((0, row, column));
+                        break;
                     case Item.BANANA:
+                        items.Add((1, row, column));
+                        break;
                     case Item.PINEAPPLE:
-                        return new List<int> {row, column};
-                }
+                        items.Add((2, row, column));   
+                        break;        
+                }       
             }
         }
-        return new List<int> {-1, -1};
+        return items;
     }
 
+    private List<Direction> convertToDirectionPath(List<int> int_path)
+    {
+        List<Direction> dir_path = new List<Direction> {};
+        foreach (int dir in int_path)
+        {
+            switch (dir)
+            {
+                case 1:
+                    dir_path.Add(Direction.UP);
+                    break;
+                case 2:
+                    dir_path.Add(Direction.RIGHT);
+                    break;
+                case 3:
+                    dir_path.Add(Direction.DOWN);
+                    break;
+                case 4:
+                    dir_path.Add(Direction.LEFT);
+                    break;
+            }
+        }
+        return dir_path;
+    }
+    private List<int> findPath(GameState state, int item, int x, int y)
+    {
+        int item_x = x;
+        int item_y = y;
+        List<int> path = new List<int> {item};
+        List<(int, int)> path_cells = new List<(int, int)> {(2, 2)};
+        int player_x = path_cells[0].Item1;
+        int player_y = path_cells[1].Item2;
+        List<(int, int)> add_new_possible_cells_to_go = new List<(int, int)> {};
+        List<(int, int)> new_possible_cells_to_go = new List<(int, int)> {(x, y)};
+        List<(int, int)> possible_cells_to_go = new List<(int, int)> {};
+        bool found_path = false;
+        //makes list with all possible path cells
+        while (true)
+        {
+            if (found_path)
+            {
+                break;
+            }
+            foreach ((int, int) cell_coords in new_possible_cells_to_go)
+            {
 
+                x = cell_coords.Item1;
+                y = cell_coords.Item2;
+                if (x != 4)
+                {
+                    if (state.cells[x+1][y].isFree())
+                    {
+                        if (!new_possible_cells_to_go.Contains((x+1, y)) && !possible_cells_to_go.Contains((x+1, y)))
+                        {
+                            add_new_possible_cells_to_go.Add((x+1, y));
+                        }
+                    }
+                }
+                if (x != 0)
+                {
+                    if (state.cells[x-1][y].isFree())
+                    {
+                        if (!new_possible_cells_to_go.Contains((x-1, y)) && !possible_cells_to_go.Contains((x-1, y)))
+                        {
+                            add_new_possible_cells_to_go.Add((x-1, y));
+                        }
+                    }
+                }
+                if (y != 4)
+                {
+                    if (state.cells[x][y+1].isFree())
+                    {
+                        if (!new_possible_cells_to_go.Contains((x, y+1)) && !possible_cells_to_go.Contains((x, y+1)))
+                        {
+                            add_new_possible_cells_to_go.Add((x, y+1));
+                        }
+                    }
+                }
+                if (y != 0)
+                {
+                    if (state.cells[x][y-1].isFree())
+                    {
+                        if (!new_possible_cells_to_go.Contains((x, y-1)) && !possible_cells_to_go.Contains((x, y-1)))
+                        {
+                            add_new_possible_cells_to_go.Add((x, y-1));
+                        }
+                    }
+                }
+            }
+            foreach((int, int) coord in new_possible_cells_to_go)
+            {
+                possible_cells_to_go.Add(coord);
+            }
+            foreach((int, int) coord in add_new_possible_cells_to_go)
+            {
+                new_possible_cells_to_go.Add(coord);
+            }
+            add_new_possible_cells_to_go.Clear();
+            if (new_possible_cells_to_go.Count == 0 || new_possible_cells_to_go.Contains((2, 2)))
+            {
+                found_path = true;
+            }
+        }
+        //find path cells out of possible path cells
+        while (true)
+        {
+            player_x = path_cells[path_cells.Count-1].Item1;
+            player_y = path_cells[path_cells.Count-1].Item2;
+            if (player_x != 4)
+            {
+                if (possible_cells_to_go.Contains((player_x+1, player_y)))
+                {
+                    path_cells.Add((player_x+1, player_y));
+                }
+            }
+            else if (player_x != 0)
+            {
+                if (possible_cells_to_go.Contains((player_x-1, player_y)))
+                {
+                    path_cells.Add((player_x-1, player_y));
+                }
+            }
+            else if (player_y != 4)
+            {
+                if (possible_cells_to_go.Contains((player_x, player_y+1)))
+                {
+                    path_cells.Add((player_x, player_y+1));
+                }
+            }
+            else if (player_y != 0)
+            {
+                if (possible_cells_to_go.Contains((player_x, player_y-1)))
+                {
+                    path_cells.Add((player_x, player_y-1));
+                }
+            }
+            if (path_cells[path_cells.Count-1] == (item_x, item_y))
+            {
+                break;
+            }
+            
+        } 
+        //convert path cells into direction list
+        for (int i = 0; i < path_cells.Count-1; i++)
+        {
+            int delta_x = path_cells[i+1].Item1 - path_cells[i].Item1;
+            int delta_y = path_cells[i+1].Item2 - path_cells[i].Item2;
+            if (delta_x == 1)
+            {
+                path.Add(2);
+            }
+            else if (delta_x == -1)
+            {
+                path.Add(4);
+            }
+            else if (delta_y == 1)
+            {
+                path.Add(3);
+            }
+            else if (delta_y == -1)
+            {
+                path.Add(1);
+            }
+        }
+        return path;
+
+    }
     private Move makeRandomMove(GameState state)
     {
         if (lastDir.isMoveable() && state.getCell(lastDir).isFree()) 
