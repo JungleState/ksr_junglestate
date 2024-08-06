@@ -1,7 +1,7 @@
 certifi>=2022.12.07
 click==8.0.1
 flask==1.1.2
-gunicorn==20.1.0
+gunicorn==22.0.0
 importlib-metadata==3.10.0
 itsdangerous==2.0.1
 jinja2==3.0.1
